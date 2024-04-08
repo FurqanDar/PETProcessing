@@ -11,10 +11,11 @@ TODOs:
     * (weighted_series_sum) Refactor the DecayFactor key extraction into its own function
     * (weighted_series_sum) Refactor verbose reporting into the class as it is unrelated to
       computation
+    * (write_tacs) Shift save into a np.savetxt with the region name as the header comment
+    * (write_tacs) Shift to accepting color-key dictionaries rather than a file path.
 
 """
 import os
-import json
 import re
 import ants
 import nibabel
@@ -24,7 +25,11 @@ from . import image_io
 from . import math_lib
 
 
-def weighted_series_sum(input_image_4d_path: str, out_image_path: str, half_life: float, verbose: bool) -> np.ndarray:
+def weighted_series_sum(
+        input_image_4d_path: str,
+        out_image_path: str,
+        half_life: float,
+        verbose: bool) -> np.ndarray:
     r"""
     Sum a 4D image series weighted based on time and re-corrected for decay correction.
 
@@ -141,7 +146,7 @@ def motion_correction(
     pet_sum_image_ants = ants.from_nibabel(pet_ref_image)
 
     pet_moco_ants_dict = ants.motion_correction(
-        pet_ants, 
+        pet_ants,
         pet_sum_image_ants,
         type_of_transform='Rigid'
         )
@@ -300,7 +305,6 @@ def extract_tac_from_4dnifty_using_mask(input_image_4d_path: str,
     return tac_out
 
 
-# TODO: Shift to accepting color-key dictionaries rather than a file path.
 def write_tacs(input_image_4d_path: str,
                color_table_path: str,
                segmentation_image_path: str,
@@ -334,7 +338,6 @@ def write_tacs(input_image_4d_path: str,
             verbose=verbose
             ).tolist()
         region_json['tac']['activity'] = extracted_tac.tolist()
-        # TODO: Shift this into a np.savetxt with the region name as the header comment
         out_tac_path = os.path.join(out_tac_dir, f'tac-{region_name}.json')
         image_io.write_dict_to_json(meta_data_dict=region_json, out_path=out_tac_path)
 

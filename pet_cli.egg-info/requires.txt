@@ -1,0 +1,10 @@
+numpy
+scipy
+numba
+pandas
+nibabel
+antspyx
+SimpleITK
+matplotlib
+sphinx
+pydata-sphinx-theme
