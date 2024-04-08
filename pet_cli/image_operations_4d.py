@@ -105,9 +105,11 @@ def weighted_series_sum(
         image_frame_start=image_frame_start,
         image_decay_correction=image_decay_correction
         )
-    pet_sum_image = nibabel.nifti1.Nifti1Image(dataobj=image_weighted_sum,
-                                               affine=pet_image.affine,
-                                               header=pet_image.header)
+    pet_sum_image = nibabel.nifti1.Nifti1Image(
+        dataobj=image_weighted_sum,
+        affine=pet_image.affine,
+        header=pet_image.header
+        )
     nibabel.save(pet_sum_image, out_image_path)
     if verbose:
         print(f"(ImageOps4d): weighted sum image saved to {out_image_path}")
@@ -118,7 +120,8 @@ def motion_correction(
         input_image_4d_path: str,
         reference_image_path: str,
         out_image_path: str,
-        verbose: bool) -> tuple[np.ndarray, list[str], list[float]]:
+        verbose: bool,
+        **kwargs) -> tuple[np.ndarray, list[str], list[float]]:
     """
     Correct PET image series for inter-frame motion. Runs rigid motion correction module
     from Advanced Normalisation Tools (ANTs) with default inputs. 
@@ -133,6 +136,7 @@ def motion_correction(
         out_image_path (str): Path to a .nii or .nii.gz file to which the motion corrected PET
             series is written.
         verbose (bool): Set to `True` to output processing information.
+        kwargs (keyword arguments): Additional arguments passed to `ants.motion_correction`.
 
     Returns:
         pet_moco_np (np.ndarray): Motion corrected PET image series as a numpy array.
@@ -148,7 +152,8 @@ def motion_correction(
     pet_moco_ants_dict = ants.motion_correction(
         pet_ants,
         pet_sum_image_ants,
-        type_of_transform='Rigid'
+        type_of_transform='Rigid',
+        kwargs=kwargs
         )
     if verbose:
         print('(ImageOps4D): motion correction finished.')
@@ -226,8 +231,7 @@ def resample_segmentation(
         input_image_4d_path: str,
         segmentation_image_path: str,
         out_seg_path: str,
-        verbose: bool
-        ):
+        verbose: bool):
     """
     Resamples a segmentation image to the resolution of a 4D PET series image. Takes the affine 
     information stored in the PET image, and the shape of the image frame data, as well as the 
@@ -258,10 +262,11 @@ def resample_segmentation(
         print(f'Resampled segmentation saved to {out_seg_path}')
 
 
-def extract_tac_from_4dnifty_using_mask(input_image_4d_path: str,
-                                        segmentation_image_path: str,
-                                        values: list[int],
-                                        verbose: bool, ) -> np.ndarray:
+def extract_tac_from_4dnifty_using_mask(
+        input_image_4d_path: str,
+        segmentation_image_path: str,
+        values: list[int],
+        verbose: bool) -> np.ndarray:
     """
     Creates a time-activity curve (TAC) by computing the average value within a region, for each 
     frame in a 4D PET image series. Takes as input a PET image, which has been registered to
@@ -305,12 +310,13 @@ def extract_tac_from_4dnifty_using_mask(input_image_4d_path: str,
     return tac_out
 
 
-def write_tacs(input_image_4d_path: str,
-               color_table_path: str,
-               segmentation_image_path: str,
-               out_tac_dir: str,
-               verbose: bool,
-               time_frame_keyword: str = 'FrameReferenceTime'):
+def write_tacs(
+        input_image_4d_path: str,
+        color_table_path: str,
+        segmentation_image_path: str,
+        out_tac_dir: str,
+        verbose: bool,
+        time_frame_keyword: str = 'FrameReferenceTime'):
     """
     Function to write Tissue Activity Curves for each region, given a segmentation,
     4D PET image, and color table. Computes the average of the PET image within each
