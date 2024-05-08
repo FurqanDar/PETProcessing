@@ -4,7 +4,7 @@ on 4D PET imaging series. These functions typically take one or more paths to im
 data in NIfTI format, and save modified data to a NIfTI file, and may return the
 modified imaging array as output.
 
-Class :class:`ImageOps4D` is also included in this module, and provides specific
+Class :class:`ImageOps4D`` is also included in this module, and provides specific
 implementations of the functions presented herein.
 
 TODOs:
@@ -28,7 +28,6 @@ from scipy.interpolate import interp1d
 import ants
 import nibabel
 from nibabel import processing
-import fsl
 import numpy as np
 from . import image_io
 from . import math_lib
@@ -51,9 +50,9 @@ def weighted_series_sum(input_image_4d_path: str,
     
         f_i'=f_i\times \frac{t_i}{d_i}
 
-    Where :math:`f_i,t_i,d_i` are the i-th frame, frame duration, and decay correction factor of
+    Where :math:`f_i,t_i,d_i`` are the i-th frame, frame duration, and decay correction factor of
     the PET series. This scaled image is summed over the time axis. Then, to get the output, we
-    multiply by a factor called `total decay` and divide by the full length of the image:
+    multiply by a factor called ``total decay`` and divide by the full length of the image:
 
     .. math::
 
@@ -77,19 +76,19 @@ def weighted_series_sum(input_image_4d_path: str,
         out_image_path (str): Path to a .nii or .nii.gz file to which the weighted
             sum is written.
         half_life (float): Half life of the PET radioisotope in seconds.
-        verbose (bool): Set to `True` to output processing information.
+        verbose (bool): Set to ``True`` to output processing information.
         start_time (float): Time, relative to scan start in seconds, at which
-            calculation begins. Must be used with `end_time`. Default value 0.
+            calculation begins. Must be used with ``end_time``. Default value 0.
         end_time (float): Time, relative to scan start in seconds, at which
-            calculation ends. Use value `-1` to use all frames in image series.
-            If equal to `start_time`, one frame at start_time is used. Default value -1.
+            calculation ends. Use value ``-1`` to use all frames in image series.
+            If equal to ``start_time`, one frame at start_time is used. Default value -1.
 
     Returns:
         summed_image (np.ndarray): 3D image array, in the same space as the input,
             with the weighted sum calculation applied.
 
     Raises:
-        ValueError: If `half_life` is zero or negative.
+        ValueError: If ``half_life`` is zero or negative.
     """
     if half_life <= 0:
         raise ValueError('(ImageOps4d): Radioisotope half life is zero or negative.')
@@ -152,14 +151,14 @@ def determine_motion_target(motion_target_option: Union[str,tuple],
                             input_image_4d_path: str=None,
                             half_life: float=None):
     """
-    Produce a motion target given the `motion_target_option` from a method
+    Produce a motion target given the ``motion_target_option`` from a method
     running registrations on PET, i.e. :meth:`motion_correction` or
     :meth:`register_pet`.
 
     The motion target option can be a string or a tuple. If it is a string,
     then if this string is a file, use the file as the motion target.
 
-    If it is the option `weighted_series_sum`, then run
+    If it is the option ``weighted_series_sum``, then run
     :meth:`weighted_series_sum` and return the output path.
 
     If it is a tuple, run a weighted sum on the PET series on a range of 
@@ -176,7 +175,7 @@ def determine_motion_target(motion_target_option: Union[str,tuple],
             be supplied by the parent method employing this function. Default
             value None.
         half_life (float): Half life of the radiotracer used in the image
-            located at `input_image_4d_path`. Only used if a calculation is
+            located at ``input_image_4d_path``. Only used if a calculation is
             performed.
     
     Returns:
@@ -237,7 +236,7 @@ def motion_correction(input_image_4d_path: str,
             data.
         out_image_path (str): Path to a .nii or .nii.gz file to which the
             motion corrected PET series is written.
-        verbose (bool): Set to `True` to output processing information.
+        verbose (bool): Set to ``True`` to output processing information.
         type_of_transform (str): Type of transform to perform on the PET image,
             must be one of antspy's transformation types, i.e. 'DenseRigid' or
             'Translation'. Any transformation type that uses >6 degrees of
@@ -245,7 +244,7 @@ def motion_correction(input_image_4d_path: str,
             :py:func:`ants.registration`.
         half_life (float): Half life of the PET radioisotope in seconds.
         kwargs (keyword arguments): Additional arguments passed to
-            `ants.motion_correction`.
+            :py:func:`ants.motion_correction`.
 
     Returns:
         pet_moco_np (np.ndarray): Motion corrected PET image series as a numpy
@@ -312,7 +311,7 @@ def register_pet(input_reg_image_path: str,
             >6 degrees of freedom is not recommended, use with caution. See :py:func:`ants.registration`.
         out_image_path (str): Path to a .nii or .nii.gz file to which the registered PET series
             is written.
-        verbose (bool): Set to `True` to output processing information.
+        verbose (bool): Set to ``True`` to output processing information.
         kwargs (keyword arguments): Additional arguments passed to :py:func:`ants.registration`.
     """
     motion_target = determine_motion_target(motion_target_option=motion_target_option,
@@ -364,7 +363,7 @@ def warp_pet_atlas(input_image_path: str,
         atlas_image_path (str): Atlas to which input image is warped.
         out_image_path (str): Path to which warped image is saved.
         type_of_transform (str): Type of non-linear transform applied to input 
-            image using `ants.registration`.
+            image using :py:func:`ants.registration`.
         kwargs (keyword arguments): Additional arguments passed to
             :py:func:`ants.registration`.
     
@@ -443,16 +442,16 @@ def apply_xfm_fsl(input_image_path: str,
     different images to atlas space, for example.
 
     .. important::
-        Requires installation of `FSL`, and environment variables `FSLDIR` and
-        `FSLOUTPUTTYPE` set appropriately in the shell.
+        Requires installation of ``FSL``, and environment variables ``FSLDIR`` and
+        ``FSLOUTPUTTYPE`` set appropriately in the shell.
 
     Args:
         input_image_path (str): Path to image on which transform is applied.
         ref_image_path (str): Path to image to which transform is applied.
         out_image_path (str): Path to which the transformed image is saved.
         warp_path (str): Path to FSL warp file.
-        premat_path (str): Path to FSL `premat` matrix file.
-        postmat_path (str): Path to FSL `postmat` matrix file.
+        premat_path (str): Path to FSL ``premat`` matrix file.
+        postmat_path (str): Path to FSL ``postmat`` matrix file.
         kwargs (keyword arguments): Additional arguments passed to
             :py:func:`fsl.wrappers.applywarp`.
     """
@@ -477,7 +476,7 @@ def resample_segmentation(input_image_4d_path: str,
     """
     Resamples a segmentation image to the resolution of a 4D PET series image. Takes the affine 
     information stored in the PET image, and the shape of the image frame data, as well as the 
-    segmentation image, and applies NiBabel's `resample_from_to` to resample the segmentation to
+    segmentation image, and applies NiBabel's ``resample_from_to`` to resample the segmentation to
     the resolution of the PET image. This is used for extracting TACs from PET imaging where the 
     PET and ROI data are registered to the same space, but have different resolutions.
 
@@ -488,7 +487,7 @@ def resample_segmentation(input_image_4d_path: str,
             image, where integer indices label specific regions.
         out_seg_path (str): Path to a .nii or .nii.gz file to which the resampled segmentation
             image is written.
-        verbose (bool): Set to `True` to output processing information.
+        verbose (bool): Set to ``True`` to output processing information.
     """
     pet_image = nibabel.load(input_image_4d_path)
     seg_image = nibabel.load(segmentation_image_path)
@@ -521,7 +520,7 @@ def extract_tac_from_4dnifty_using_mask(input_image_4d_path: str,
             input.
         region (int): Value in the segmentation image corresponding to a region
             over which the TAC is computed.
-        verbose (bool): Set to `True` to output processing information.
+        verbose (bool): Set to ``True`` to output processing information.
 
     Returns:
         tac_out (np.ndarray): Mean of PET image within regions for each frame in 4D PET series.
@@ -587,15 +586,15 @@ def write_tacs(input_image_4d_path: str,
 class ImageOps4d():
     """
     :class:`ImageOps4D` to provide basic implementations of the preprocessing functions in module
-    `image_operations_4d`. Uses a properties dictionary `preproc_props` to
+    ``image_operations_4d``. Uses a properties dictionary ``preproc_props`` to
     determine the inputs and outputs of preprocessing methods.
 
     Key methods include:
-        - :meth:`update_props`: Update properties dictionary `preproc_props`
+        - :meth:`update_props`: Update properties dictionary ``preproc_props``
           with new properties.
-        - :meth:`run_preproc`: Given a method in `image_operations_4d`, run the
+        - :meth:`run_preproc`: Given a method in ``image_operations_4d``, run the
           provided method with inputs and outputs determined by properties
-          dictionary `preproc_props`.
+          dictionary ``preproc_props``.
 
     Attributes:
         -`output_directory`: Directory in which files are written to.
@@ -637,9 +636,6 @@ class ImageOps4d():
     def __init__(self,
                  output_directory: str,
                  output_filename_prefix: str) -> None:
-        """
-        Init
-        """
         self.output_directory = os.path.abspath(output_directory)
         self.output_filename_prefix = output_filename_prefix
         self.preproc_props = self._init_preproc_props()
@@ -655,7 +651,7 @@ class ImageOps4d():
             * FilePathPET (str): Path to PET file to be analysed.
             * FilePathMocoInp (str): Path to PET file to be motion corrected.
             * FilePathRegInp (str): Path to PET file to be registered to anatomical data.
-            * FilePathAnat (str): Path to anatomical image to which `FilePathRegInp` is registered.
+            * FilePathAnat (str): Path to anatomical image to which ``FilePathRegInp`` is registered.
             * FilePathTACInput (str): Path to PET file with which TACs are computed.
             * FilePathSeg (str): Path to a segmentation image in anatomical space.
             * FilePathLabelMap (str): Path to a label map file, indexing segmentation values to ROIs.
@@ -665,7 +661,7 @@ class ImageOps4d():
             * HalfLife (float): Half life of radioisotope.
             * RegionExtract (int): Region index in the segmentation image to extract TAC from, if running TAC on a single ROI.
             * TimeFrameKeyword (str): Keyword in metadata file corresponding to frame timing array to be used in analysis.
-            * Verbose (bool): Set to `True` to output processing information.
+            * Verbose (bool): Set to ``True`` to output processing information.
 
         """
         preproc_props = {'FilePathPET': None,
@@ -695,7 +691,7 @@ class ImageOps4d():
                 list of fields.
 
         Returns:
-            updated_props (dict): The updated `preproc_props` dictionary.
+            updated_props (dict): The updated ``preproc_props`` dictionary.
 
 
         """
@@ -719,7 +715,7 @@ class ImageOps4d():
     def _check_method_props_exist(self,
                                  method_name: str) -> None:
         """
-        Check if all necessary properties exist in the `props` dictionary to
+        Check if all necessary properties exist in the ``props`` dictionary to
         run the given method.
 
         Args:
