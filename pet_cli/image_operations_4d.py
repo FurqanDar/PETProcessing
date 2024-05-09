@@ -567,19 +567,20 @@ def write_tacs(input_image_4d_path: str,
                          "'FrameReferenceTime' or 'FrameTimesStart'")
 
     pet_meta = image_io.ImageIO.load_metadata_for_nifty_with_same_filename(input_image_4d_path)
-    label_map = image_io.ImageIO.read_label_map_json(label_map_file=label_map_path)
-    regions_list = label_map['data']
+    label_map = image_io.ImageIO.read_label_map_tsv(label_map_file=label_map_path)
+    regions_abrev = label_map['abbreviations']
+    regions_map = label_map['mappings']
 
     tac_extraction_func = extract_tac_from_4dnifty_using_mask
 
-    for region_index, region_name in regions_list:
+    for i, _maps in enumerate(label_map['mappings']):
         extracted_tac = tac_extraction_func(input_image_4d_path=input_image_4d_path,
                                             segmentation_image_path=segmentation_image_path,
-                                            region=int(region_index),
+                                            region=int(regions_map[i]),
                                             verbose=verbose)
         region_tac_file = np.array([pet_meta[time_frame_keyword],extracted_tac]).T
-        header_text = f'{time_frame_keyword}\t{region_name}_mean_activity'
-        out_tac_path = os.path.join(out_tac_dir, f'tac-{region_name}.tsv')
+        header_text = f'{time_frame_keyword}\t{regions_abrev[i]}_mean_activity'
+        out_tac_path = os.path.join(out_tac_dir, f'tac-{regions_abrev[i]}.tsv')
         np.savetxt(out_tac_path,region_tac_file,delimiter='\t',header=header_text,comments='')
 
 
