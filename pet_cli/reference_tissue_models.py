@@ -1,5 +1,15 @@
+"""
+Todo:
+    * Add the Ichise paper citations.
+    * Add the SRTM and FRTM paper citations.
+
+"""
+
 import numpy as np
 from scipy.optimize import curve_fit as sp_fit
+import numba
+from .graphical_analysis import get_index_from_threshold
+from .graphical_analysis import cumulative_trapezoidal_integral as cum_trapz
 from . import tcms_as_convolutions as tcms_conv
 
 
@@ -390,3 +400,304 @@ def fit_frtm_to_tac_with_bounds(tgt_tac_vals: np.ndarray,
     
     return sp_fit(f=_fitting_frtm, xdata=ref_tac_times, ydata=tgt_tac_vals,
                   p0=st_values, bounds=[lo_values, hi_values])
+
+
+@numba.njit(fastmath=True)
+def fit_mrtm_original_to_tac(tgt_tac_vals: np.ndarray,
+                             ref_tac_times: np.ndarray,
+                             ref_tac_vals: np.ndarray,
+                             t_thresh_in_mins: float):
+    r"""
+    Fit the original (1996) Multilinear Reference Tissue Model (MRTM) to the provided target Time Activity Curve (TAC)
+    values given the reference TAC, times, and threshold time (in minutes). The data are fit for all values beyond the
+    threshold. We assume that the target TAC and reference TAC are sampled at the same times.
+
+    .. important::
+        This function assumes that both TACs are sampled at the same time, and that the time is in minutes.
+
+
+    We have the following multilinear regression:
+    
+    .. math::
+    
+        \frac{\int_{0}^{T}C(t)\mathrm{d}t}{C(T)}=\frac{V}{V^{\prime}} \frac{\int_{0}^{T}C^{\prime}(t)\mathrm{d}t}{C(T)}
+        - \frac{V}{V^{\prime}k_{2}^{\prime}} \frac{C^{\prime}(T)}{C(T)} + b
+
+
+    Args:
+        tgt_tac_vals (np.ndarray): Target TAC values to fit the MRTM.
+        ref_tac_times (np.ndarray): Times of the reference TAC (in minutes).
+        ref_tac_vals (np.ndarray): Reference TAC values.
+        t_thresh_in_mins (float): Threshold time in minutes.
+
+    Returns:
+        np.ndarray: Array containing fit results. (:math:`\frac{V}{V^{\prime}}`,
+        :math:`\frac{V}{V^{\prime}k_{2}^{\prime}}`, :math:`b`)
+
+    Note:
+        This function is implemented with numba for improved performance.
+        
+    """
+    
+    non_zero_indices = np.argwhere(tgt_tac_vals != 0.).T[0]
+    
+    if len(non_zero_indices) <= 2:
+        return np.asarray([np.nan, np.nan, np.nan])
+    
+    t_thresh = get_index_from_threshold(times_in_minutes=ref_tac_times[non_zero_indices],
+                                        t_thresh_in_minutes=t_thresh_in_mins)
+    
+    if len(ref_tac_times[non_zero_indices][t_thresh:]) <= 2:
+        return np.asarray([np.nan, np.nan, np.nan])
+    
+    y = cum_trapz(xdata=ref_tac_times, ydata=tgt_tac_vals, initial=0.0)
+    y = y[non_zero_indices] / tgt_tac_vals[non_zero_indices]
+    
+    x1 = cum_trapz(xdata=ref_tac_times, ydata=ref_tac_vals, initial=0.0)
+    x1 = x1[non_zero_indices] / tgt_tac_vals[non_zero_indices]
+    
+    x2 = ref_tac_vals[non_zero_indices] / tgt_tac_vals[non_zero_indices]
+    
+    x_matrix = np.ones((len(y), 3), float)
+    x_matrix[:, 0] = x1[:]
+    x_matrix[:, 1] = x2[:]
+    
+    fit_ans = np.linalg.lstsq(x_matrix[t_thresh:], y[t_thresh:])[0]
+    return fit_ans
+
+
+@numba.njit(fastmath=True)
+def fit_mrtm_2003_to_tac(tgt_tac_vals: np.ndarray,
+                         ref_tac_times: np.ndarray,
+                         ref_tac_vals: np.ndarray,
+                         t_thresh_in_mins: float):
+    r"""
+    Fit the 2003 Multilinear Reference Tissue Model (MRTM) to the provided target Time Activity Curve (TAC) values given
+    the reference TAC, times, and threshold time (in minutes). The data are fit for all values beyond the threshold. We
+    assume that the target TAC and reference TAC are sampled at the same times.
+
+    .. important::
+        This function assumes that both TACs are sampled at the same time, and that the time is in minutes.
+
+    We have the following multilinear regression:
+
+    .. math::
+
+        C(T)=-\frac{V}{V^{\prime}b} \int_{0}^{T}C^{\prime}(t)\mathrm{d}t + \frac{1}{b} \int_{0}^{T}C(t)\mathrm{d}t
+        - \frac{V}{V^{\prime}k_{2}^{\prime}b}C^{\prime}(T)
+
+
+    Args:
+        tgt_tac_vals (np.ndarray): Target TAC values to fit the MRTM.
+        ref_tac_times (np.ndarray): Times of the reference TAC (in minutes).
+        ref_tac_vals (np.ndarray): Reference TAC values.
+        t_thresh_in_mins (float): Threshold time in minutes.
+
+    Returns:
+        np.ndarray: Array containing fit results. (:math:`-\frac{V}{V^{\prime}b}`,
+        :math:`\frac{1}{b}`, :math:`-\frac{V}{V^{\prime}k_{2}^{\prime}b}`)
+
+    Note:
+        This function is implemented with numba for improved performance.
+
+    """
+    
+    t_thresh = get_index_from_threshold(times_in_minutes=ref_tac_times, t_thresh_in_minutes=t_thresh_in_mins)
+    if t_thresh == -1:
+        return np.asarray([np.nan, np.nan, np.nan])
+    
+    y = tgt_tac_vals
+    x_matrix = np.ones((len(y), 3), float)
+    x_matrix[:, 0] = cum_trapz(xdata=ref_tac_times, ydata=ref_tac_vals, initial=0.0)
+    x_matrix[:, 1] = cum_trapz(xdata=ref_tac_times, ydata=tgt_tac_vals, initial=0.0)
+    x_matrix[:, 2] = ref_tac_vals
+    
+    fit_ans = np.linalg.lstsq(x_matrix[t_thresh:], y[t_thresh:])[0]
+    return fit_ans
+
+
+@numba.njit(fastmath=True)
+def fit_mrtm2_2003_to_tac(tgt_tac_vals: np.ndarray,
+                          ref_tac_times: np.ndarray,
+                          ref_tac_vals: np.ndarray,
+                          t_thresh_in_mins: float,
+                          k2_prime: float):
+    r"""
+    Fit the second version of Multilinear Reference Tissue Model (MRTM2) to the provided target Time Activity Curve
+    (TAC) values given the reference TAC, times, threshold time (in minutes), and k2_prime. The data are fit for all
+    values beyond the threshold. We assume that the target TAC and reference TAC are sampled at the same times.
+    
+    .. important::
+        This function assumes that both TACs are sampled at the same time, and that the time is in minutes.
+
+    We have the following multilinear regression:
+
+    .. math::
+
+        C(T) = -\frac{V}{V^{\prime}b}\left(\int_{0}^{T}C^{\prime}(t)\mathrm{d}t -\frac{1}{k_{2}^{\prime}}C^{\prime}(T) \right)
+        + \frac{1}{b} \int_{0}^{T}C(t)\mathrm{d}t
+
+
+    Args:
+        tgt_tac_vals (np.ndarray): Target TAC values to fit the MRTM2.
+        ref_tac_times (np.ndarray): Times of the reference TAC (in minutes).
+        ref_tac_vals (np.ndarray): Reference TAC values.
+        t_thresh_in_mins (float): Threshold time in minutes.
+        k2_prime (float): Kinetic parameter: washout rate for the reference region.
+
+    Returns:
+        np.ndarray: Array containing fit results. (:math:`-\frac{V}{V^{\prime}b}`, :math:`\frac{1}{b}`)
+
+    Note:
+        This function is implemented with numba for improved performance.
+        
+    """
+    
+    t_thresh = get_index_from_threshold(times_in_minutes=ref_tac_times, t_thresh_in_minutes=t_thresh_in_mins)
+    if t_thresh == -1:
+        return np.asarray([np.nan, np.nan])
+    
+    x1 = cum_trapz(xdata=ref_tac_times, ydata=ref_tac_vals, initial=0.0)
+    x1 += ref_tac_vals / k2_prime
+    x2 = cum_trapz(xdata=ref_tac_times, ydata=tgt_tac_vals, initial=0.0)
+
+    y = tgt_tac_vals
+    x_matrix = np.ones((len(y), 2), float)
+    x_matrix[:, 0] = x1[:]
+    x_matrix[:, 1] = x2[:]
+    
+    fit_ans = np.linalg.lstsq(x_matrix[t_thresh:], y[t_thresh:])[0]
+    return fit_ans
+
+
+def calc_BP_from_mrtm_original_fit(fit_vals: np.ndarray) -> float:
+    r"""
+    Given the original MRTM (`Ichise et. al, 1996`) fit values, we calculate the binding potential (BP).
+    
+    The binding potential (BP) is defined as:
+    
+    .. math::
+    
+        \mathrm{BP} = \beta_0 - 1
+        
+    where :math:`\beta_0` is the first fit coefficient.
+    
+    
+    Args:
+        fit_vals (np.ndarray): The multilinear regression fit values for the original MRTM.
+            Output of :func:`fit_mrtm_original_to_tac`.
+
+    Returns:
+        float: Binding potential (BP) value.
+        
+    See Also:
+        :func:`fit_mrtm_original_to_tac` where the order of the regression coefficients is laid out.
+        
+    """
+    return fit_vals[0] - 1.0
+
+
+def calc_BP_from_mrtm_2003_fit(fit_vals: np.ndarray) -> float:
+    r"""
+    Given the 2003 MRTM (`Ichise et. al, 1996`) fit values, we calculate the binding potential (BP).
+
+    The binding potential (BP) is calculated as:
+
+    .. math::
+
+        \mathrm{BP} = -\left(\frac{\beta_0}{\beta_1} + 1\right)
+
+    where :math:`\beta_0` is the first fit coefficient, and :math:`\beta_1` is the second fit coefficient.
+
+    Args:
+        fit_vals (np.ndarray): The multilinear regression fit values for the 2003 MRTM.
+            Output of :func:`fit_mrtm_2003_to_tac`.
+
+    Returns:
+        float: Binding potential (BP) value.
+
+    See Also:
+        :func:`fit_mrtm_2003_to_tac` where the order of the regression coefficients is laid out.
+
+    """
+    return -(fit_vals[0]/fit_vals[1] + 1.0)
+
+
+def calc_BP_from_mrtm2_2003_fit(fit_vals: np.ndarray) -> float:
+    r"""
+    Given the 2003 MRTM2 (`Ichise et. al, 1996`) fit values, we calculate the binding potential (BP).
+
+    The binding potential (BP) is calculated as:
+
+    .. math::
+
+        \mathrm{BP} = -\left(\frac{\beta_0}{\beta_1} + 1\right)
+
+    where :math:`\beta_0` is the first fit coefficient, and :math:`\beta_1` is the second fit coefficient.
+
+    Args:
+        fit_vals (np.ndarray): The multilinear regression fit values for the original MRTM.
+            Output of :func:`fit_mrtm2_2003_to_tac`.
+
+    Returns:
+        float: Binding potential (BP) value.
+
+    See Also:
+        :func:`fit_mrtm2_2003_to_tac` where the order of the regression coefficients is laid out.
+
+    """
+    return -(fit_vals[0]/fit_vals[1] + 1.0)
+
+
+def calc_k2prime_from_mrtm_original_fit(fit_vals: np.ndarray):
+    r"""
+    Given the original MRTM (`Ichise et. al, 1996`) fit values, we calculate :math:`k_{2}^{\prime}`.
+
+    The :math:`k_{2}^{\prime}` is calculated as:
+
+    .. math::
+
+         k_{2}^{\prime}= \frac{\beta_{0}}{\beta_{1}}
+
+    where :math:`\beta_0` is the first fit coefficient and :math:`\beta_1` is the second fit coefficient.
+
+
+    Args:
+        fit_vals (np.ndarray): The multilinear regression fit values for the original MRTM.
+            Output of :func:`fit_mrtm_original_to_tac`.
+
+    Returns:
+        float: :math:`k_2^\prime` value.
+
+    See Also:
+        :func:`fit_mrtm_original_to_tac` where the order of the regression coefficients is laid out.
+
+    """
+    return fit_vals[0]/fit_vals[1]
+
+
+def calc_k2prime_from_mrtm_2003_fit(fit_vals: np.ndarray):
+    r"""
+    Given the 2003 MRTM (`Ichise et. al, 2003`) fit values, we calculate :math:`k_{2}^{\prime}`.
+
+    The :math:`k_{2}^{\prime}` is calculated as:
+
+    .. math::
+
+         k_{2}^{\prime}= \frac{\beta_{0}}{\beta_{2}}
+
+    where :math:`\beta_0` is the first fit coefficient and :math:`\beta_2` is the third fit coefficient.
+
+
+    Args:
+        fit_vals (np.ndarray): The multilinear regression fit values for the original MRTM.
+            Output of :func:`fit_mrtm_2003_to_tac`.
+
+    Returns:
+        float: :math:`k_2^\prime` value.
+
+    See Also:
+        :func:`fit_mrtm_2003_to_tac` where the order of the regression coefficients is laid out.
+
+    """
+    return fit_vals[0]/fit_vals[2]

@@ -8,9 +8,13 @@ import os
 import json
 import numpy
 import shutil
-# import warnings
+import warnings
+from pathlib import Path
+from bids_validator import BIDSValidator
 from nibabel.nifti1 import Nifti1Image
 from nibabel.filebasedimages import FileBasedImage
+
+
 # from .registration_tools import ImageIO
 
 
@@ -78,6 +82,11 @@ class BidsInstance:
                                  "space",
                                  "description",
                                  "image_type")
+        self.required_metadata = ("FrameReferenceTime",
+                                  "FrameTimesStart",
+                                  "FrameDuration",
+                                  ["DecayFactor", "DecayCorrectionFactor"],
+                                  ["TracerRadionuclide", "Radiopharmaceutical"])
         self._setup_dynamic_methods()
         self._create_bids_scaffold()
 
@@ -273,6 +282,50 @@ class BidsInstance:
 
     #    def load_from_cache(self, name: str) -> None: # get, if none -> warning
     #        return self.path_cache[name]
+
+    def cache_sidecar_metadata(self, pet_sidecar_filepath: str) -> None:
+        """
+        Loads metadata from a JSON file specified by `pet_sidecar_filepath`, updates the instance
+        with dynamic attributes based on the `required_metadata`, and issues warnings for any
+        required metadata keys that are missing.
+
+        This method dynamically sets attributes on the instance for each key in `required_metadata`
+        that is found in the JSON file's keys. If `required_metadata` contains lists of keys,
+        it checks for any of those keys in the JSON file and uses the first matching key to set
+        an attribute named after the first key in the list. If a key from `required_metadata` (whether
+        a single key or any key from a list) is not found in the JSON keys, a warning is issued indicating
+        its absence.
+
+        Args:
+            pet_sidecar_filepath (str): The file path to the JSON file from which to load metadata. This
+                file should contain a dictionary where each key-value pair corresponds to metadata that
+                might be required.
+
+        Returns:
+            None
+
+        Raises:
+            JSONDecodeError: If the JSON file is malformed and cannot be decoded.
+            FileNotFoundError: If the specified file does not exist.
+            Warning: Issues a runtime warning through the `warnings` module if required keys are missing
+                from the JSON data.
+        """
+        metadata_cache = load_json(filepath=pet_sidecar_filepath)
+        json_keys = metadata_cache.keys()
+        for keys in self.required_metadata:
+            if isinstance(keys, list):
+                if any(key in json_keys for key in keys):
+                    for json_key in json_keys:
+                        if json_key in keys:
+                            setattr(self, keys[0], metadata_cache[json_key])
+                            break
+                else:
+                    warnings.warn(f"{keys} is not found in {pet_sidecar_filepath}")
+            else:
+                if keys in json_keys:
+                    setattr(self, keys, metadata_cache[keys])
+                else:
+                    warnings.warn(f"{keys} is not found in {pet_sidecar_filepath}")
 
     def change_session(self, value: str, compile_filepath: bool = True):
         """
@@ -609,3 +662,58 @@ def load_tsv_simple(filepath: str) -> list:
     with open(filepath, 'r', encoding='utf-8') as file:
         data = [line.strip().split('\t') for line in file]
     return data
+
+
+def validate_filepath_as_bids(filepath: str) -> bool:
+    """
+    Validate whether a given filepath conforms to the Brain Imaging Data Structure (BIDS) standard.
+
+    Args:
+        filepath (str): The path to the file to be validated.
+
+    Returns:
+        bool: True if the file conforms to the BIDS standard, False otherwise.
+
+    """
+    validator = BIDSValidator()
+    return validator.is_bids(filepath)
+
+
+def validate_directory_as_bids(project_path: str) -> bool:
+    """
+    Validate whether all files in a given directory and its subdirectories (excluding specified ones)
+    conform to the Brain Imaging Data Structure (BIDS) standard.
+
+    Args:
+        project_path (str): The root directory of the project to validate.
+
+    Returns:
+        bool: True if all files in the directory conform to the BIDS standard, False if any do not.
+
+    Raises:
+        FileNotFoundError: If the provided project_path does not exist or is inaccessible.
+
+    Notes:
+        Excludes directories typically not needed for BIDS validation, such as 'code', 'derivatives',
+        'sourcedata', '.git', and 'stimuli'. Also skips directories starting with 'sub-' to focus on top-level structure.
+    """
+    excluded_dirs = {'code', 'derivatives', 'sourcedata', '.git', 'stimuli'}
+    all_passed = True
+    failed_file_paths = []
+
+    for root, dirs, files in os.walk(project_path, topdown=True):
+        dirs[:] = [d for d in dirs if d not in excluded_dirs and not d.startswith('sub-')]
+        for file in files:
+            filepath = os.path.join(root, file)
+            if not validate_filepath_as_bids(filepath):
+                failed_file_paths.append(filepath)
+                all_passed = False
+
+    if failed_file_paths:
+        print("Failed file paths:")
+        for path in failed_file_paths:
+            print(path)
+    else:
+        print("All files passed validation.")
+
+    return all_passed

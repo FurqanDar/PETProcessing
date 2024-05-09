@@ -1,3 +1,16 @@
+"""
+This module contains a class to wrap the PETPVC package accessible via `PETPVC on GitHub <https://github.com/UCL/PETPVC>`_.
+This package allows for numerous partial volume correction methods on PET data.
+
+Note:
+    This module is primarily a wrapper for the PETPVC package implemented via a Docker image
+    hosted on `DockerHub <https://hub.docker.com/r/benthomas1984/petpvc>`_. The Docker image is Linux-based.
+
+Requires:
+    The module relies on the :doc:`docker <docker:index>` module.
+
+"""
+
 import os
 import docker
 from docker.errors import ImageNotFound, APIError
@@ -8,12 +21,29 @@ class PetPvc:
     """
     Handles operations for PET partial volume correction using a Docker container.
 
-    This class manages the setup and execution of the `PETPVC package on Github <https://github.com/UCL/PETPVC>`_ processes in Docker via a `docker image hosted on DockerHub <https://hub.docker.com/r/benthomas1984/petpvc>`_, handling
+    This class manages the setup and execution of processes using the PETPVC package,
+    accessible via `PETPVC on GitHub <https://github.com/UCL/PETPVC>`_ and a Docker image
+    hosted on `DockerHub <https://hub.docker.com/r/benthomas1984/petpvc>`_. It manages
     image retrieval, input/output setup, and command execution.
 
     Attributes:
         client (docker.DockerClient): A Docker client connected to the local system.
         image_name (str): The Docker image name to use for PETPVC processes.
+
+    Examples:
+        Initialize the PETPVC handler and run a correction process:
+
+        .. code-block:: python
+
+            from petpvc_module import PetPvc
+            petpvc_handler = PetPvc()
+            petpvc_handler.run_petpvc(
+                pet_4d_filepath="/path/to/input/pet_image.nii",
+                output_filepath="/path/to/output/corrected_pet_image.nii",
+                pvc_method="RBV",
+                psf_dimensions=(6.0, 6.0, 6.0),
+                mask_filepath="/path/to/input/brain_mask.nii",
+                verbose=True)
     """
 
     def __init__(self):
@@ -52,12 +82,12 @@ class PetPvc:
             docker.errors.APIError: If the Docker client encounters an API error.
         """
         common_path = os.path.commonpath([pet_4d_filepath, output_filepath])
-        docker_pet_input = "/data/" + pet_4d_filepath.replace(common_path, "").lstrip('/')
-        docker_output = "/data/" + output_filepath.replace(common_path, "").lstrip('/')
+        docker_pet_input = "/data/" + pet_4d_filepath.replace(common_path, "").lstrip(os.sep).replace(os.sep, '/')
+        docker_output = "/data/" + output_filepath.replace(common_path, "").lstrip(os.sep).replace(os.sep, '/')
         docker_volumes = {common_path: {'bind': '/data', 'mode': 'rw'}}
         command = f"petpvc --input {docker_pet_input} --output {docker_output} --pvc {pvc_method}"
         if mask_filepath is not None:
-            docker_mask_input = "/data/" + mask_filepath.replace(common_path, "").lstrip('/')
+            docker_mask_input = "/data/" + mask_filepath.replace(common_path, "").lstrip(os.sep).replace(os.sep, '/')
             command = command + f" --mask {docker_mask_input}"
         if isinstance(psf_dimensions, tuple):
             command = command + f" -x {psf_dimensions[0]} -y {psf_dimensions[1]} -z {psf_dimensions[2]}"
