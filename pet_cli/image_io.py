@@ -9,7 +9,7 @@ import nibabel
 from nibabel.filebasedimages import FileBasedHeader, FileBasedImage
 import numpy as np
 import pandas as pd
-
+from pet_cli import useful_functions
 
 def write_dict_to_json(meta_data_dict: dict, out_path: str):
     """
@@ -21,6 +21,33 @@ def write_dict_to_json(meta_data_dict: dict, out_path: str):
     """
     with open(out_path, 'w', encoding='utf-8') as copy_file:
         json.dump(meta_data_dict, copy_file, indent=4)
+
+
+def convert_ctab_to_dseg(ctab_path: str,
+                         dseg_path: str,
+                         column_names: list[str]=['mapping','name','r','g','b','a','ttype']):
+    """
+    Convert a FreeSurfer compatible color table into a BIDS compatible label
+    map ``dseg.tsv``.
+
+    Args:
+        ctab_path (str): Path to FreeSurfer compatible color table.
+        column_names (list[str]): List of columns present in color table. Must
+            include 'mapping' and 'name'.
+    """
+    ctab_columns = ['index','']
+    fs_ctab = pd.read_csv(ctab_path,
+                          delim_whitespace=True,
+                          header=None,
+                          comment='#',
+                          names=column_names)
+    label_map = pd.DataFrame(columns=['name','abbreviation','mapping']).rename_axis('index')
+    label_map['name'] = fs_ctab['name']
+    label_map['mapping'] = fs_ctab['mapping']
+    label_map['abbreviation'] = useful_functions.build_label_map(fs_ctab['name'])
+    label_map = label_map.sort_values(by=['mapping'])
+    label_map.to_csv(dseg_path,sep='\t')
+    return label_map
 
 
 class ImageIO():
