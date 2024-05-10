@@ -531,7 +531,10 @@ def extract_tac_from_4dnifty_using_mask(input_image_4d_path: str,
     """
 
     pet_image_4d = nibabel.load(input_image_4d_path).get_fdata()
-    num_frames = pet_image_4d.shape[3]
+    if len(pet_image_4d.shape)==4:
+        num_frames = pet_image_4d.shape[3]
+    else:
+        num_frames = 1
     seg_image = nibabel.load(segmentation_image_path).get_fdata()
 
     if seg_image.shape!=pet_image_4d.shape[:3]:
@@ -547,6 +550,42 @@ def extract_tac_from_4dnifty_using_mask(input_image_4d_path: str,
     masked_image = pet_image_4d[masked_voxels].reshape((-1, num_frames))
     tac_out = np.mean(masked_image, axis=0)
     return tac_out
+
+
+def suvr(input_image_path: str,
+         segmentation_image_path: str,
+         ref_region: int,
+         out_image_path: str,
+         verbose: bool):
+    """
+    Computes an ``SUVR`` (Standard Uptake Value Ratio) by taking the average of
+    an input image within a reference region, and dividing the input image by
+    said average value.
+
+    Args:
+        input_image_path (str): Path to 3D weighted series sum or other
+            parametric image on which we compute SUVR.
+        segmentation_image_path (str): Path to segmentation image, which we use
+            to compute average uptake value in the reference region.
+        ref_region (int): Region number mapping to the reference region in the
+            segmentation image.
+        out_image_path (str): Path to output image file which is written to.
+        verbose (bool): Set to ``True`` to output processing information.
+    """
+    ref_region_avg = extract_tac_from_4dnifty_using_mask(input_image_4d_path=input_image_path,
+                                                         segmentation_image_path=segmentation_image_path,
+                                                         region=ref_region,
+                                                         verbose=verbose)
+
+    pet_nibabel = nibabel.load(filename=input_image_path)
+    pet_image = pet_nibabel.get_fdata()
+    suvr_image = pet_image / ref_region_avg,
+
+    out_image = nibabel.nifti1.Nifti1Image(dataobj=suvr_image,
+                                           affine=pet_nibabel.affine,
+                                           header=pet_nibabel.header)
+    nibabel.save(img=out_image,filename=out_image_path)
+    return out_image
 
 
 def write_tacs(input_image_4d_path: str,
