@@ -25,6 +25,7 @@ import tempfile
 from typing import Union
 import fsl.wrappers
 from scipy.interpolate import interp1d
+from scipy.ndimage import gaussian_filter
 import ants
 import nibabel
 from nibabel import processing
@@ -582,6 +583,11 @@ def suvr(input_image_path: str,
                                            affine=pet_nibabel.affine,
                                            header=pet_nibabel.header)
     nibabel.save(img=out_image,filename=out_image_path)
+
+    copy_meta_path = re.sub('.nii.gz|.nii', '.json', out_image_path)
+    meta_data_dict = image_io.ImageIO.load_metadata_for_nifty_with_same_filename(input_image_path)
+    image_io.write_dict_to_json(meta_data_dict=meta_data_dict, out_path=copy_meta_path)
+
     return out_image
 
 
@@ -598,8 +604,25 @@ def gauss_blur(input_image_path: str,
         out_image_path (str): Path to save the blurred output image.
         verbose (bool): Set to ``True`` to output processing information.
     """
-    input_image = nibabel.load(filename=input_image_path)
+    input_nibabel = nibabel.load(filename=input_image_path)
+    input_image = input_nibabel.get_fdata()
+    input_zooms = input_nibabel.header.get_zooms()
 
+    blur_sigma = blur_size_mm / input_zooms[:3]
+    blur_image = gaussian_filter(input=input_image,
+                                 sigma=blur_sigma,
+                                 axes=(0,1,2))
+
+    out_image = nibabel.nifti1.Nifti1Image(dataobj=blur_image,
+                                           affine=input_nibabel.affine,
+                                           header=input_nibabel.header)
+    nibabel.save(img=out_image,filename=out_image_path)
+
+    copy_meta_path = re.sub('.nii.gz|.nii', '.json', out_image_path)
+    meta_data_dict = image_io.ImageIO.load_metadata_for_nifty_with_same_filename(input_image_path)
+    image_io.write_dict_to_json(meta_data_dict=meta_data_dict, out_path=copy_meta_path)
+
+    return out_image
 
 def write_tacs(input_image_4d_path: str,
                label_map_path: str,
