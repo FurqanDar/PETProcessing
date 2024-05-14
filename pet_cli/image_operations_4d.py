@@ -532,7 +532,10 @@ def extract_tac_from_4dnifty_using_mask(input_image_4d_path: str,
     """
 
     pet_image_4d = nibabel.load(input_image_4d_path).get_fdata()
-    num_frames = pet_image_4d.shape[3]
+    if len(pet_image_4d.shape)==4:
+        num_frames = pet_image_4d.shape[3]
+    else:
+        num_frames = 1
     seg_image = nibabel.load(segmentation_image_path).get_fdata()
 
     if seg_image.shape!=pet_image_4d.shape[:3]:
