@@ -549,6 +549,58 @@ def extract_tac_from_4dnifty_using_mask(input_image_4d_path: str,
     return tac_out
 
 
+def suvr(input_image_path: str,
+         segmentation_image_path: str,
+         ref_region: int,
+         out_image_path: str,
+         verbose: bool):
+    """
+    Computes an ``SUVR`` (Standard Uptake Value Ratio) by taking the average of
+    an input image within a reference region, and dividing the input image by
+    said average value.
+
+    Args:
+        input_image_path (str): Path to 3D weighted series sum or other
+            parametric image on which we compute SUVR.
+        segmentation_image_path (str): Path to segmentation image, which we use
+            to compute average uptake value in the reference region.
+        ref_region (int): Region number mapping to the reference region in the
+            segmentation image.
+        out_image_path (str): Path to output image file which is written to.
+        verbose (bool): Set to ``True`` to output processing information.
+    """
+    ref_region_avg = extract_tac_from_4dnifty_using_mask(input_image_4d_path=input_image_path,
+                                                         segmentation_image_path=segmentation_image_path,
+                                                         region=ref_region,
+                                                         verbose=verbose)
+
+    pet_nibabel = nibabel.load(filename=input_image_path)
+    pet_image = pet_nibabel.get_fdata()
+    suvr_image = pet_image / ref_region_avg,
+
+    out_image = nibabel.nifti1.Nifti1Image(dataobj=suvr_image,
+                                           affine=pet_nibabel.affine,
+                                           header=pet_nibabel.header)
+    nibabel.save(img=out_image,filename=out_image_path)
+    return out_image
+
+
+def gauss_blur(input_image_path: str,
+               blur_size_mm: float,
+               out_image_path: str,
+               verbose: bool):
+    """
+    Blur an image with a 3D Gaussian kernal of a provided size in mm.
+
+    Args:
+        input_image_path (str): Path to 3D or 4D input image to be blurred.
+        blur_size_mm (float): Size of the Gaussian kernal in mm.
+        out_image_path (str): Path to save the blurred output image.
+        verbose (bool): Set to ``True`` to output processing information.
+    """
+    input_image = nibabel.load(filename=input_image_path)
+
+
 def write_tacs(input_image_4d_path: str,
                label_map_path: str,
                segmentation_image_path: str,

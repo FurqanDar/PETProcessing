@@ -35,7 +35,6 @@ def convert_ctab_to_dseg(ctab_path: str,
         column_names (list[str]): List of columns present in color table. Must
             include 'mapping' and 'name'.
     """
-    ctab_columns = ['index','']
     fs_ctab = pd.read_csv(ctab_path,
                           delim_whitespace=True,
                           header=None,
