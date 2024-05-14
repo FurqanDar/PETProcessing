@@ -1,0 +1,17 @@
+Metadata-Version: 2.1
+Name: pet-cli
+Version: 0.0.1
+License-File: LICENSE
+Requires-Dist: docker
+Requires-Dist: numpy
+Requires-Dist: scipy
+Requires-Dist: numba
+Requires-Dist: pandas
+Requires-Dist: nibabel
+Requires-Dist: antspyx
+Requires-Dist: fslpy
+Requires-Dist: SimpleITK
+Requires-Dist: matplotlib
+Requires-Dist: sphinx
+Requires-Dist: pydata-sphinx-theme
+Requires-Dist: bids_validator

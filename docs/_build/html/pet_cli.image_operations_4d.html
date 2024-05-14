@@ -1,0 +1,939 @@
+
+<!DOCTYPE html>
+
+
+<html lang="English (US)" data-content_root="./" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>10. Operations On 4D Images &#8212; PET Processing Module</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="_static/styles/theme.css?digest=8d27b9dea8ad943066ae" rel="stylesheet" />
+<link href="_static/styles/bootstrap.css?digest=8d27b9dea8ad943066ae" rel="stylesheet" />
+<link href="_static/styles/pydata-sphinx-theme.css?digest=8d27b9dea8ad943066ae" rel="stylesheet" />
+
+  
+  <link href="_static/vendor/fontawesome/6.5.1/css/all.min.css?digest=8d27b9dea8ad943066ae" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.1/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.1/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.1/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=a746c00c" />
+    <link rel="stylesheet" type="text/css" href="_static/plot_directive.css" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=8d27b9dea8ad943066ae" />
+<link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=8d27b9dea8ad943066ae" />
+  <script src="_static/vendor/fontawesome/6.5.1/js/all.min.js?digest=8d27b9dea8ad943066ae"></script>
+
+    <script src="_static/documentation_options.js?v=cd7df0db"></script>
+    <script src="_static/doctools.js?v=888ff710"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'pet_cli.image_operations_4d';</script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="11. Mathematical Operations Library" href="pet_cli.math_lib.html" />
+    <link rel="prev" title="9. Interpolation Blood Data" href="pet_cli.blood_input.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="English (US)"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <a id="pst-skip-link" class="skip-link" href="#main-content">Skip to main content</a>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>
+    Back to top
+  </button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__primary"
+          id="__primary"/>
+  <label class="overlay overlay-primary" for="__primary"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__secondary"
+          id="__secondary"/>
+  <label class="overlay overlay-secondary" for="__secondary"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar">
+<div class="bd-header__inner bd-page-width">
+  <label class="sidebar-toggle primary-toggle" for="__primary">
+    <span class="fa-solid fa-bars"></span>
+  </label>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+
+<a class="navbar-brand logo" href="index.html">
+  
+  
+  
+  
+  
+  
+    <p class="title logo__title">PET Processing Module</p>
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav class="navbar-nav">
+  <ul class="bd-navbar-elements navbar-nav">
+    
+                    <li class="nav-item current active">
+                      <a class="nav-link nav-internal" href="modules.html">
+                        Modules
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="cli_ref.html">
+                        CLI Reference
+                      </a>
+                    </li>
+                
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+ <script>
+ document.write(`
+   <button class="btn navbar-btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<script>
+document.write(`
+  <button class="btn btn-sm navbar-btn theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="theme-switch nav-link" data-mode="light"><i class="fa-solid fa-sun fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="dark"><i class="fa-solid fa-moon fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg"></i></span>
+  </button>
+`);
+</script></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+ <script>
+ document.write(`
+   <button class="btn navbar-btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script>
+    </div>
+  
+
+  
+    <label class="sidebar-toggle secondary-toggle" for="__secondary" tabindex="0">
+      <span class="fa-solid fa-outdent"></span>
+    </label>
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          <div class="navbar-item">
+<nav class="navbar-nav">
+  <ul class="bd-navbar-elements navbar-nav">
+    
+                    <li class="nav-item current active">
+                      <a class="nav-link nav-internal" href="modules.html">
+                        Modules
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="cli_ref.html">
+                        CLI Reference
+                      </a>
+                    </li>
+                
+  </ul>
+</nav></div>
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<script>
+document.write(`
+  <button class="btn btn-sm navbar-btn theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="theme-switch nav-link" data-mode="light"><i class="fa-solid fa-sun fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="dark"><i class="fa-solid fa-moon fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg"></i></span>
+  </button>
+`);
+</script></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+<nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="pet_cli.image_io.html">1. Image IO</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pet_cli.tac_interpolation.html">2. TAC Interpolation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pet_cli.tcms_as_convolutions.html">3. TCMs As Convolutions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pet_cli.graphical_analysis.html">4. Graphical Analysis Of TACs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pet_cli.reference_tissue_models.html">5. Reference Tissue Models</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pet_cli.parametric_images.html">6. Parametric Images</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pet_cli.graphical_plots.html">7. Graphical Analysis Plots</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pet_cli.image_visualization.html">8. Image Visualization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pet_cli.blood_input.html">9. Interpolation Blood Data</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">10. Operations On 4D Images</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pet_cli.math_lib.html">11. Mathematical Operations Library</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pet_cli.bids_utils.html">12. BIDS File Management Utilities</a></li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+
+
+<nav aria-label="Breadcrumb">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="modules.html" class="nav-link">Modules</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page"><span...</li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="module-pet_cli.image_operations_4d">
+<span id="operations-on-4d-images"></span><h1><span class="section-number">10. </span>Operations On 4D Images<a class="headerlink" href="#module-pet_cli.image_operations_4d" title="Link to this heading">#</a></h1>
+<p>The 'image_operations_4d' module provides several functions used to do preprocessing
+on 4D PET imaging series. These functions typically take one or more paths to imaging
+data in NIfTI format, and save modified data to a NIfTI file, and may return the
+modified imaging array as output.</p>
+<p>Class <code class="xref py py-class docutils literal notranslate"><span class="pre">ImageOps4D</span></code> is also included in this module, and provides specific
+implementations of the functions presented herein.</p>
+<dl class="simple">
+<dt>TODOs:</dt><dd><ul class="simple">
+<li><p>(weighted_series_sum) Refactor the DecayFactor key extraction into its own function</p></li>
+<li><p>(weighted_series_sum) Refactor verbose reporting into the class as it is unrelated to
+computation</p></li>
+<li><p>(write_tacs) Shift to accepting color-key dictionaries rather than a file path.</p></li>
+<li><p>(extract_tac_from_4dnifty_using_mask) Write the number of voxels in the mask, or the
+volume of the mask. This is necessary for certain analyses with the resulting tacs,
+such as finding the average uptake encompassing two regions.</p></li>
+<li><p>Methods that create new images should copy over a previous metadata file, if one exists,
+and create a new one if it does not.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py function">
+<dt class="sig sig-object py" id="pet_cli.image_operations_4d.weighted_series_sum">
+<span class="sig-name descname"><span class="pre">weighted_series_sum</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_image_4d_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">out_image_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">half_life</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start_time</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">end_time</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">-1</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.26)"><span class="pre">ndarray</span></a></span></span><a class="headerlink" href="#pet_cli.image_operations_4d.weighted_series_sum" title="Link to this definition">#</a></dt>
+<dd><p>Sum a 4D image series weighted based on time and re-corrected for decay correction.</p>
+<p>First, a scaled image is produced by multiplying each frame by its length in seconds,
+and dividing by the decay correction applied:</p>
+<div class="math notranslate nohighlight">
+\[f_i'=f_i\times \frac{t_i}{d_i}\]</div>
+<p>Where <span class="math notranslate nohighlight">\(f_i,t_i,d_i\)</span> are the i-th frame, frame duration, and decay correction factor of
+the PET series. This scaled image is summed over the time axis. Then, to get the output, we
+multiply by a factor called <cite>total decay</cite> and divide by the full length of the image:</p>
+<div class="math notranslate nohighlight">
+\[d_{S} = \frac{\lambda*t_{S}}{(1-\exp(-\lambda*t_{S}))(\exp(\lambda*t_{0}))}\]</div>
+<div class="math notranslate nohighlight">
+\[S(f) = \sum(f_i') * d_{S} / t_{S}\]</div>
+<p>where <span class="math notranslate nohighlight">\(\lambda=\log(2)/T_{1/2}\)</span> is the decay constant of the radio isotope,
+<span class="math notranslate nohighlight">\(t_0\)</span> is the start time of the first frame in the PET series, the subscript <span class="math notranslate nohighlight">\(S\)</span>
+indicates the total quantity computed over all frames, and <span class="math notranslate nohighlight">\(S(f)\)</span> is the final weighted
+sum image.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>input_image_4d_path</strong> (<em>str</em>) -- Path to a .nii or .nii.gz file containing a 4D
+PET image on which the weighted sum is calculated. Assume a metadata
+file exists with the same path and file name, but with extension .json,
+and follows BIDS standard.</p></li>
+<li><p><strong>out_image_path</strong> (<em>str</em>) -- Path to a .nii or .nii.gz file to which the weighted
+sum is written.</p></li>
+<li><p><strong>half_life</strong> (<em>float</em>) -- Half life of the PET radioisotope in seconds.</p></li>
+<li><p><strong>verbose</strong> (<em>bool</em>) -- Set to <cite>True</cite> to output processing information.</p></li>
+<li><p><strong>start_time</strong> (<em>float</em>) -- Time, relative to scan start in seconds, at which
+calculation begins. Must be used with <cite>end_time</cite>. Default value 0.</p></li>
+<li><p><strong>end_time</strong> (<em>float</em>) -- Time, relative to scan start in seconds, at which
+calculation ends. Use value <cite>-1</cite> to use all frames in image series.
+If equal to <cite>start_time</cite>, one frame at start_time is used. Default value -1.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><dl class="simple">
+<dt>3D image array, in the same space as the input,</dt><dd><p>with the weighted sum calculation applied.</p>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>summed_image (np.ndarray)</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>ValueError</strong> -- If <cite>half_life</cite> is zero or negative.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pet_cli.image_operations_4d.determine_motion_target">
+<span class="sig-name descname"><span class="pre">determine_motion_target</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">motion_target_option</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">tuple</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">input_image_4d_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">half_life</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pet_cli.image_operations_4d.determine_motion_target" title="Link to this definition">#</a></dt>
+<dd><p>Produce a motion target given the <cite>motion_target_option</cite> from a method
+running registrations on PET, i.e. <a class="reference internal" href="#pet_cli.image_operations_4d.motion_correction" title="pet_cli.image_operations_4d.motion_correction"><code class="xref py py-meth docutils literal notranslate"><span class="pre">motion_correction</span></code></a> or
+<a class="reference internal" href="#pet_cli.image_operations_4d.register_pet" title="pet_cli.image_operations_4d.register_pet"><code class="xref py py-meth docutils literal notranslate"><span class="pre">register_pet</span></code></a>.</p>
+<p>The motion target option can be a string or a tuple. If it is a string,
+then if this string is a file, use the file as the motion target.</p>
+<p>If it is the option <cite>weighted_series_sum</cite>, then run
+<a class="reference internal" href="#pet_cli.image_operations_4d.weighted_series_sum" title="pet_cli.image_operations_4d.weighted_series_sum"><code class="xref py py-meth docutils literal notranslate"><span class="pre">weighted_series_sum</span></code></a> and return the output path.</p>
+<p>If it is a tuple, run a weighted sum on the PET series on a range of
+frames. The elements of the tuple are treated as times in seconds, counted
+from the time of the first frame, i.e. (0,300) would average all frames
+from the first to the frame 300 seconds later. If the two elements are the
+same, returns the frame closest to the entered time.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>motion_target_option</strong> (<em>str</em><em> | </em><em>tuple</em>) -- Determines how the method behaves,
+according to the above description. Can be a file, a method
+('weighted_series_sum'), or a tuple range e.g. (0,300).</p></li>
+<li><p><strong>input_image_4d_path</strong> (<em>str</em>) -- Path to the PET image. This is intended to
+be supplied by the parent method employing this function. Default
+value None.</p></li>
+<li><p><strong>half_life</strong> (<em>float</em>) -- Half life of the radiotracer used in the image
+located at <cite>input_image_4d_path</cite>. Only used if a calculation is
+performed.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><dl class="simple">
+<dt>File to use as a target to compute</dt><dd><p>transformations on.</p>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>out_image_file (str)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pet_cli.image_operations_4d.motion_correction">
+<span class="sig-name descname"><span class="pre">motion_correction</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_image_4d_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">motion_target_option</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">tuple</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">out_image_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">type_of_transform</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'DenseRigid'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">half_life</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.26)"><span class="pre">ndarray</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#pet_cli.image_operations_4d.motion_correction" title="Link to this definition">#</a></dt>
+<dd><p>Correct PET image series for inter-frame motion. Runs rigid motion
+correction module from Advanced Normalisation Tools (ANTs) with default
+inputs.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>input_image_4d_path</strong> (<em>str</em>) -- Path to a .nii or .nii.gz file containing a 4D
+PET image to be motion corrected.</p></li>
+<li><p><strong>motion_target_option</strong> (<em>str</em><em> | </em><em>tuple</em>) -- Target image for computing
+transformation. See <a class="reference internal" href="#pet_cli.image_operations_4d.determine_motion_target" title="pet_cli.image_operations_4d.determine_motion_target"><code class="xref py py-meth docutils literal notranslate"><span class="pre">determine_motion_target</span></code></a>.</p></li>
+<li><p><strong>reference_image_path</strong> (<em>str</em>) -- Path to a .nii or .nii.gz file containing a
+3D reference image in the same space as the input PET image. Can be
+a weighted series sum, first or last frame, an average over a
+subset of frames, or another option depending on the needs of the
+data.</p></li>
+<li><p><strong>out_image_path</strong> (<em>str</em>) -- Path to a .nii or .nii.gz file to which the
+motion corrected PET series is written.</p></li>
+<li><p><strong>verbose</strong> (<em>bool</em>) -- Set to <cite>True</cite> to output processing information.</p></li>
+<li><p><strong>type_of_transform</strong> (<em>str</em>) -- Type of transform to perform on the PET image,
+must be one of antspy's transformation types, i.e. 'DenseRigid' or
+'Translation'. Any transformation type that uses &gt;6 degrees of
+freedom is not recommended, use with caution. See
+<code class="xref py py-func docutils literal notranslate"><span class="pre">ants.registration</span></code>.</p></li>
+<li><p><strong>half_life</strong> (<em>float</em>) -- Half life of the PET radioisotope in seconds.</p></li>
+<li><p><strong>kwargs</strong> (<em>keyword arguments</em>) -- Additional arguments passed to
+<cite>ants.motion_correction</cite>.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><dl class="simple">
+<dt>Motion corrected PET image series as a numpy</dt><dd><p>array.</p>
+</dd>
+<dt>pet_moco_params (list[str]): List of ANTS registration files applied to</dt><dd><p>each frame.</p>
+</dd>
+<dt>pet_moco_fd (list[float]): List of framewise displacement measure</dt><dd><p>corresponding to each frame transform.</p>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>pet_moco_np (np.ndarray)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pet_cli.image_operations_4d.register_pet">
+<span class="sig-name descname"><span class="pre">register_pet</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_reg_image_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reference_image_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">motion_target_option</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">tuple</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">out_image_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">type_of_transform</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'DenseRigid'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">half_life</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pet_cli.image_operations_4d.register_pet" title="Link to this definition">#</a></dt>
+<dd><p>Computes and runs rigid registration of 4D PET image series to 3D anatomical image, typically
+a T1 MRI. Runs rigid registration module from Advanced Normalisation Tools (ANTs) with  default
+inputs. Will upsample PET image to the resolution of anatomical imaging.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>input_reg_image_path</strong> (<em>str</em>) -- Path to a .nii or .nii.gz file containing a 4D
+PET image to be registered to anatomical space.</p></li>
+<li><p><strong>reference_image_path</strong> (<em>str</em>) -- Path to a .nii or .nii.gz file containing a 3D
+anatomical image to which PET image is registered.</p></li>
+<li><p><strong>motion_target_option</strong> (<em>str</em><em> | </em><em>tuple</em>) -- Target image for computing
+transformation. See <a class="reference internal" href="#pet_cli.image_operations_4d.determine_motion_target" title="pet_cli.image_operations_4d.determine_motion_target"><code class="xref py py-meth docutils literal notranslate"><span class="pre">determine_motion_target</span></code></a>.</p></li>
+<li><p><strong>type_of_transform</strong> (<em>str</em>) -- Type of transform to perform on the PET image, must be one of antspy's
+transformation types, i.e. 'DenseRigid' or 'Translation'. Any transformation type that uses
+&gt;6 degrees of freedom is not recommended, use with caution. See <code class="xref py py-func docutils literal notranslate"><span class="pre">ants.registration</span></code>.</p></li>
+<li><p><strong>out_image_path</strong> (<em>str</em>) -- Path to a .nii or .nii.gz file to which the registered PET series
+is written.</p></li>
+<li><p><strong>verbose</strong> (<em>bool</em>) -- Set to <cite>True</cite> to output processing information.</p></li>
+<li><p><strong>kwargs</strong> (<em>keyword arguments</em>) -- Additional arguments passed to <code class="xref py py-func docutils literal notranslate"><span class="pre">ants.registration</span></code>.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pet_cli.image_operations_4d.warp_pet_atlas">
+<span class="sig-name descname"><span class="pre">warp_pet_atlas</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_image_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">anat_image_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">atlas_image_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">out_image_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">type_of_transform</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'SyN'</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pet_cli.image_operations_4d.warp_pet_atlas" title="Link to this definition">#</a></dt>
+<dd><p>Compute and apply a warp on a 3D or 4D image in anatomical space
+to atlas space using ANTs.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>input_image_path</strong> (<em>str</em>) -- Image to be registered to atlas. Must be in
+anatomical space. May be 3D or 4D.</p></li>
+<li><p><strong>anat_image_path</strong> (<em>str</em>) -- Image used to compute registration to atlas space.</p></li>
+<li><p><strong>atlas_image_path</strong> (<em>str</em>) -- Atlas to which input image is warped.</p></li>
+<li><p><strong>out_image_path</strong> (<em>str</em>) -- Path to which warped image is saved.</p></li>
+<li><p><strong>type_of_transform</strong> (<em>str</em>) -- Type of non-linear transform applied to input
+image using <cite>ants.registration</cite>.</p></li>
+<li><p><strong>kwargs</strong> (<em>keyword arguments</em>) -- Additional arguments passed to
+<code class="xref py py-func docutils literal notranslate"><span class="pre">ants.registration</span></code>.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The computed transforms, saved to a temp dir.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>xfm_to_apply (list[str])</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pet_cli.image_operations_4d.apply_xfm_ants">
+<span class="sig-name descname"><span class="pre">apply_xfm_ants</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_image_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ref_image_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">out_image_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">xfm_paths</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pet_cli.image_operations_4d.apply_xfm_ants" title="Link to this definition">#</a></dt>
+<dd><p>Applies existing transforms in ANTs or ITK format to an input image, onto
+a reference image. This is useful for applying the same transform on
+different images to atlas space, for example.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>input_image_path</strong> (<em>str</em>) -- Path to image on which transform is applied.</p></li>
+<li><p><strong>ref_image_path</strong> (<em>str</em>) -- Path to image to which transform is applied.</p></li>
+<li><p><strong>out_image_path</strong> (<em>str</em>) -- Path to which the transformed image is saved.</p></li>
+<li><p><strong>xfm_paths</strong> (<em>list</em><em>[</em><em>str</em><em>]</em>) -- List of transforms to apply to image. Must be in
+ANTs or ITK format, and can be affine matrix or warp coefficients.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pet_cli.image_operations_4d.apply_xfm_fsl">
+<span class="sig-name descname"><span class="pre">apply_xfm_fsl</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_image_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ref_image_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">out_image_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">warp_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">premat_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">postmat_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pet_cli.image_operations_4d.apply_xfm_fsl" title="Link to this definition">#</a></dt>
+<dd><p>Applies existing transforms in FSL format to an input image, onto a
+reference image. This is useful for applying the same transform on
+different images to atlas space, for example.</p>
+<div class="admonition important">
+<p class="admonition-title">Important</p>
+<p>Requires installation of <cite>FSL</cite>, and environment variables <cite>FSLDIR</cite> and
+<cite>FSLOUTPUTTYPE</cite> set appropriately in the shell.</p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>input_image_path</strong> (<em>str</em>) -- Path to image on which transform is applied.</p></li>
+<li><p><strong>ref_image_path</strong> (<em>str</em>) -- Path to image to which transform is applied.</p></li>
+<li><p><strong>out_image_path</strong> (<em>str</em>) -- Path to which the transformed image is saved.</p></li>
+<li><p><strong>warp_path</strong> (<em>str</em>) -- Path to FSL warp file.</p></li>
+<li><p><strong>premat_path</strong> (<em>str</em>) -- Path to FSL <cite>premat</cite> matrix file.</p></li>
+<li><p><strong>postmat_path</strong> (<em>str</em>) -- Path to FSL <cite>postmat</cite> matrix file.</p></li>
+<li><p><strong>kwargs</strong> (<em>keyword arguments</em>) -- Additional arguments passed to
+<code class="xref py py-func docutils literal notranslate"><span class="pre">fsl.wrappers.applywarp</span></code>.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pet_cli.image_operations_4d.resample_segmentation">
+<span class="sig-name descname"><span class="pre">resample_segmentation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_image_4d_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">segmentation_image_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">out_seg_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pet_cli.image_operations_4d.resample_segmentation" title="Link to this definition">#</a></dt>
+<dd><p>Resamples a segmentation image to the resolution of a 4D PET series image. Takes the affine
+information stored in the PET image, and the shape of the image frame data, as well as the
+segmentation image, and applies NiBabel's <cite>resample_from_to</cite> to resample the segmentation to
+the resolution of the PET image. This is used for extracting TACs from PET imaging where the
+PET and ROI data are registered to the same space, but have different resolutions.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>input_image_4d_path</strong> (<em>str</em>) -- Path to a .nii or .nii.gz file containing a 4D
+PET image, registered to anatomical space, to which the segmentation file is resampled.</p></li>
+<li><p><strong>segmentation_image_path</strong> (<em>str</em>) -- Path to a .nii or .nii.gz file containing a 3D segmentation
+image, where integer indices label specific regions.</p></li>
+<li><p><strong>out_seg_path</strong> (<em>str</em>) -- Path to a .nii or .nii.gz file to which the resampled segmentation
+image is written.</p></li>
+<li><p><strong>verbose</strong> (<em>bool</em>) -- Set to <cite>True</cite> to output processing information.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pet_cli.image_operations_4d.extract_tac_from_4dnifty_using_mask">
+<span class="sig-name descname"><span class="pre">extract_tac_from_4dnifty_using_mask</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_image_4d_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">segmentation_image_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">region</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.26)"><span class="pre">ndarray</span></a></span></span><a class="headerlink" href="#pet_cli.image_operations_4d.extract_tac_from_4dnifty_using_mask" title="Link to this definition">#</a></dt>
+<dd><p>Creates a time-activity curve (TAC) by computing the average value within a region, for each
+frame in a 4D PET image series. Takes as input a PET image, which has been registered to
+anatomical space, a segmentation image, with the same sampling as the PET, and a list of values
+corresponding to regions in the segmentation image that are used to compute the average
+regional values. Currently, only the mean over a single region value is implemented.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>input_image_4d_path</strong> (<em>str</em>) -- Path to a .nii or .nii.gz file containing a 4D
+PET image, registered to anatomical space.</p></li>
+<li><p><strong>segmentation_image_path</strong> (<em>str</em>) -- Path to a .nii or .nii.gz file containing a 3D segmentation
+image, where integer indices label specific regions. Must have same sampling as PET
+input.</p></li>
+<li><p><strong>region</strong> (<em>int</em>) -- Value in the segmentation image corresponding to a region
+over which the TAC is computed.</p></li>
+<li><p><strong>verbose</strong> (<em>bool</em>) -- Set to <cite>True</cite> to output processing information.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Mean of PET image within regions for each frame in 4D PET series.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>tac_out (np.ndarray)</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>ValueError</strong> -- If the segmentation image and PET image have different
+    sampling.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pet_cli.image_operations_4d.write_tacs">
+<span class="sig-name descname"><span class="pre">write_tacs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_image_4d_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">label_map_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">segmentation_image_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">out_tac_dir</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">time_frame_keyword</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'FrameReferenceTime'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pet_cli.image_operations_4d.write_tacs" title="Link to this definition">#</a></dt>
+<dd><p>Function to write Tissue Activity Curves for each region, given a segmentation,
+4D PET image, and label map. Computes the average of the PET image within each
+region. Writes a JSON for each region with region name, frame start time, and mean
+value within region.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="pet_cli.image_operations_4d.ImageOps4d">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">ImageOps4d</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">output_directory</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_filename_prefix</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pet_cli.image_operations_4d.ImageOps4d" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p><code class="xref py py-class docutils literal notranslate"><span class="pre">ImageOps4D</span></code> to provide basic implementations of the preprocessing functions in module
+<cite>image_operations_4d</cite>. Uses a properties dictionary <cite>preproc_props</cite> to
+determine the inputs and outputs of preprocessing methods.</p>
+<dl class="simple">
+<dt>Key methods include:</dt><dd><ul class="simple">
+<li><p><a class="reference internal" href="#pet_cli.image_operations_4d.ImageOps4d.update_props" title="pet_cli.image_operations_4d.ImageOps4d.update_props"><code class="xref py py-meth docutils literal notranslate"><span class="pre">update_props</span></code></a>: Update properties dictionary <cite>preproc_props</cite>
+with new properties.</p></li>
+<li><p><a class="reference internal" href="#pet_cli.image_operations_4d.ImageOps4d.run_preproc" title="pet_cli.image_operations_4d.ImageOps4d.run_preproc"><code class="xref py py-meth docutils literal notranslate"><span class="pre">run_preproc</span></code></a>: Given a method in <cite>image_operations_4d</cite>, run the
+provided method with inputs and outputs determined by properties
+dictionary <cite>preproc_props</cite>.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Variables<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>-output_directory</strong> -- Directory in which files are written to.</p></li>
+<li><p><strong>-output_filename_prefix</strong> -- Prefix appended to beginning of written
+files.</p></li>
+<li><p><strong>-preproc_props</strong> -- Properties dictionary used to set parameters for PET
+preprocessing.</p></li>
+</ul>
+</dd>
+</dl>
+<p>Example:</p>
+<p>`
+.. code-block:: python
+output_directory = '/path/to/processing'
+output_filename_prefix = 'sub-01'
+sub_01 = pet_cli.image_operations_4d.ImageOps4d(output_directory,output_filename_prefix)
+params = {</p>
+<blockquote>
+<div><p>'FilePathPET': '/path/to/pet.nii.gz',
+'FilePathAnat': '/path/to/mri.nii.gz',
+'HalfLife': 1220.04,  # C11 half-life in seconds
+'FilePathRegInp': '/path/to/image/to/be/registered.nii.gz',
+'FilePathMocoInp': '/path/to/image/to/be/motion/corrected.nii.gz',
+'MotionTarget': '/path/to/pet/reference/target.nii.gz',
+'FilePathTACInput': '/path/to/registered/pet.nii.gz',
+'FilePathLabelMap': '/path/to/label/map.tsv',
+'FilePathSeg': '/path/to/segmentation.nii.gz',
+'TimeFrameKeyword': 'FrameTimesStart'  # using start time or midpoint reference time
+'Verbose': True,</p>
+</div></blockquote>
+<p>}
+sub_01.update_props(params)
+sub_01.run_preproc('weighted_series_sum')
+sub_01.run_preproc('motion_correction')
+sub_01.run_preproc('register_pet')
+sub_01.run_preproc('write_tacs')</p>
+<p><a href="#id1"><span class="problematic" id="id2">`</span></a></p>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><code class="xref py py-class docutils literal notranslate"><span class="pre">ImageIO</span></code></p>
+</div>
+<p>Init</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="pet_cli.image_operations_4d.ImageOps4d._init_preproc_props">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">_init_preproc_props</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="headerlink" href="#pet_cli.image_operations_4d.ImageOps4d._init_preproc_props" title="Link to this definition">#</a></dt>
+<dd><p>Initializes preproc properties dictionary.</p>
+<p>The available fields in the preproc properties dictionary are described
+as follows:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>FilePathPET (str): Path to PET file to be analysed.</p></li>
+<li><p>FilePathMocoInp (str): Path to PET file to be motion corrected.</p></li>
+<li><p>FilePathRegInp (str): Path to PET file to be registered to anatomical data.</p></li>
+<li><p>FilePathAnat (str): Path to anatomical image to which <cite>FilePathRegInp</cite> is registered.</p></li>
+<li><p>FilePathTACInput (str): Path to PET file with which TACs are computed.</p></li>
+<li><p>FilePathSeg (str): Path to a segmentation image in anatomical space.</p></li>
+<li><p>FilePathLabelMap (str): Path to a label map file, indexing segmentation values to ROIs.</p></li>
+<li><p>MotionTarget (str | tuple): Target for transformation methods. See <a class="reference internal" href="#pet_cli.image_operations_4d.determine_motion_target" title="pet_cli.image_operations_4d.determine_motion_target"><code class="xref py py-meth docutils literal notranslate"><span class="pre">determine_motion_target</span></code></a>.</p></li>
+<li><p>MocoPars (keyword arguments): Keyword arguments fed into the method call <code class="xref py py-meth docutils literal notranslate"><span class="pre">ants.motion_correction</span></code>.</p></li>
+<li><p>RegPars (keyword arguments): Keyword arguments fed into the method call <code class="xref py py-meth docutils literal notranslate"><span class="pre">ants.registration</span></code>.</p></li>
+<li><p>HalfLife (float): Half life of radioisotope.</p></li>
+<li><p>RegionExtract (int): Region index in the segmentation image to extract TAC from, if running TAC on a single ROI.</p></li>
+<li><p>TimeFrameKeyword (str): Keyword in metadata file corresponding to frame timing array to be used in analysis.</p></li>
+<li><p>Verbose (bool): Set to <cite>True</cite> to output processing information.</p></li>
+</ul>
+</div></blockquote>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pet_cli.image_operations_4d.ImageOps4d.update_props">
+<span class="sig-name descname"><span class="pre">update_props</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">new_preproc_props</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="headerlink" href="#pet_cli.image_operations_4d.ImageOps4d.update_props" title="Link to this definition">#</a></dt>
+<dd><p>Update the processing properties with items from a new dictionary.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>new_preproc_props</strong> (<em>dict</em>) -- Dictionary with updated properties
+values. Can have any or all fields filled from the available
+list of fields.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The updated <cite>preproc_props</cite> dictionary.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>updated_props (dict)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pet_cli.image_operations_4d.ImageOps4d._check_method_props_exist">
+<span class="sig-name descname"><span class="pre">_check_method_props_exist</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">method_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#pet_cli.image_operations_4d.ImageOps4d._check_method_props_exist" title="Link to this definition">#</a></dt>
+<dd><p>Check if all necessary properties exist in the <cite>props</cite> dictionary to
+run the given method.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>method_name</strong> (<em>str</em>) -- Name of method to be checked. Must be name of
+a method in this module.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pet_cli.image_operations_4d.ImageOps4d.run_preproc">
+<span class="sig-name descname"><span class="pre">run_preproc</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">method_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pet_cli.image_operations_4d.ImageOps4d.run_preproc" title="Link to this definition">#</a></dt>
+<dd><p>Run a specific preprocessing step.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>method_name</strong> (<em>str</em>) -- Name of method to be run. Must be name of a
+method in this module.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="pet_cli.blood_input.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title"><span class="section-number">9. </span>Interpolation Blood Data</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="pet_cli.math_lib.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title"><span class="section-number">11. </span>Mathematical Operations Library</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#pet_cli.image_operations_4d.weighted_series_sum"><code class="docutils literal notranslate"><span class="pre">weighted_series_sum</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#pet_cli.image_operations_4d.determine_motion_target"><code class="docutils literal notranslate"><span class="pre">determine_motion_target</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#pet_cli.image_operations_4d.motion_correction"><code class="docutils literal notranslate"><span class="pre">motion_correction</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#pet_cli.image_operations_4d.register_pet"><code class="docutils literal notranslate"><span class="pre">register_pet</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#pet_cli.image_operations_4d.warp_pet_atlas"><code class="docutils literal notranslate"><span class="pre">warp_pet_atlas</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#pet_cli.image_operations_4d.apply_xfm_ants"><code class="docutils literal notranslate"><span class="pre">apply_xfm_ants</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#pet_cli.image_operations_4d.apply_xfm_fsl"><code class="docutils literal notranslate"><span class="pre">apply_xfm_fsl</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#pet_cli.image_operations_4d.resample_segmentation"><code class="docutils literal notranslate"><span class="pre">resample_segmentation</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#pet_cli.image_operations_4d.extract_tac_from_4dnifty_using_mask"><code class="docutils literal notranslate"><span class="pre">extract_tac_from_4dnifty_using_mask</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#pet_cli.image_operations_4d.write_tacs"><code class="docutils literal notranslate"><span class="pre">write_tacs</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#pet_cli.image_operations_4d.ImageOps4d"><code class="docutils literal notranslate"><span class="pre">ImageOps4d</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pet_cli.image_operations_4d.ImageOps4d._init_preproc_props"><code class="docutils literal notranslate"><span class="pre">ImageOps4d._init_preproc_props</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pet_cli.image_operations_4d.ImageOps4d.update_props"><code class="docutils literal notranslate"><span class="pre">ImageOps4d.update_props</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pet_cli.image_operations_4d.ImageOps4d._check_method_props_exist"><code class="docutils literal notranslate"><span class="pre">ImageOps4d._check_method_props_exist</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pet_cli.image_operations_4d.ImageOps4d.run_preproc"><code class="docutils literal notranslate"><span class="pre">ImageOps4d.run_preproc</span></code></a></li>
+</ul>
+</li>
+</ul>
+  </nav></div>
+
+  <div class="sidebar-secondary-item">
+
+  <div class="tocsection sourcelink">
+    <a href="_sources/pet_cli.image_operations_4d.rst.txt">
+      <i class="fa-solid fa-file-lines"></i> Show Source
+    </a>
+  </div>
+</div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="_static/scripts/bootstrap.js?digest=8d27b9dea8ad943066ae"></script>
+<script src="_static/scripts/pydata-sphinx-theme.js?digest=8d27b9dea8ad943066ae"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2024, Furqan Dar, Bradley Judge, Noah Goldman.
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.2.6.
+    <br/>
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.15.2.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

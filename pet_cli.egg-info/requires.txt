@@ -1,0 +1,13 @@
+docker
+numpy
+scipy
+numba
+pandas
+nibabel
+antspyx
+fslpy
+SimpleITK
+matplotlib
+sphinx
+pydata-sphinx-theme
+bids_validator

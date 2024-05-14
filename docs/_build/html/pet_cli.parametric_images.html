@@ -1,0 +1,954 @@
+
+<!DOCTYPE html>
+
+
+<html lang="English (US)" data-content_root="./" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>6. Parametric Images &#8212; PET Processing Module</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="_static/styles/theme.css?digest=8d27b9dea8ad943066ae" rel="stylesheet" />
+<link href="_static/styles/bootstrap.css?digest=8d27b9dea8ad943066ae" rel="stylesheet" />
+<link href="_static/styles/pydata-sphinx-theme.css?digest=8d27b9dea8ad943066ae" rel="stylesheet" />
+
+  
+  <link href="_static/vendor/fontawesome/6.5.1/css/all.min.css?digest=8d27b9dea8ad943066ae" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.1/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.1/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.1/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=a746c00c" />
+    <link rel="stylesheet" type="text/css" href="_static/plot_directive.css" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=8d27b9dea8ad943066ae" />
+<link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=8d27b9dea8ad943066ae" />
+  <script src="_static/vendor/fontawesome/6.5.1/js/all.min.js?digest=8d27b9dea8ad943066ae"></script>
+
+    <script src="_static/documentation_options.js?v=cd7df0db"></script>
+    <script src="_static/doctools.js?v=888ff710"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'pet_cli.parametric_images';</script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="7. Graphical Analysis Plots" href="pet_cli.graphical_plots.html" />
+    <link rel="prev" title="5. Reference Tissue Models" href="pet_cli.reference_tissue_models.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="English (US)"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <a id="pst-skip-link" class="skip-link" href="#main-content">Skip to main content</a>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>
+    Back to top
+  </button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__primary"
+          id="__primary"/>
+  <label class="overlay overlay-primary" for="__primary"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__secondary"
+          id="__secondary"/>
+  <label class="overlay overlay-secondary" for="__secondary"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar">
+<div class="bd-header__inner bd-page-width">
+  <label class="sidebar-toggle primary-toggle" for="__primary">
+    <span class="fa-solid fa-bars"></span>
+  </label>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+
+<a class="navbar-brand logo" href="index.html">
+  
+  
+  
+  
+  
+  
+    <p class="title logo__title">PET Processing Module</p>
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav class="navbar-nav">
+  <ul class="bd-navbar-elements navbar-nav">
+    
+                    <li class="nav-item current active">
+                      <a class="nav-link nav-internal" href="modules.html">
+                        Modules
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="cli_ref.html">
+                        CLI Reference
+                      </a>
+                    </li>
+                
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+ <script>
+ document.write(`
+   <button class="btn navbar-btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<script>
+document.write(`
+  <button class="btn btn-sm navbar-btn theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="theme-switch nav-link" data-mode="light"><i class="fa-solid fa-sun fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="dark"><i class="fa-solid fa-moon fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg"></i></span>
+  </button>
+`);
+</script></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+ <script>
+ document.write(`
+   <button class="btn navbar-btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script>
+    </div>
+  
+
+  
+    <label class="sidebar-toggle secondary-toggle" for="__secondary" tabindex="0">
+      <span class="fa-solid fa-outdent"></span>
+    </label>
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          <div class="navbar-item">
+<nav class="navbar-nav">
+  <ul class="bd-navbar-elements navbar-nav">
+    
+                    <li class="nav-item current active">
+                      <a class="nav-link nav-internal" href="modules.html">
+                        Modules
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="cli_ref.html">
+                        CLI Reference
+                      </a>
+                    </li>
+                
+  </ul>
+</nav></div>
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<script>
+document.write(`
+  <button class="btn btn-sm navbar-btn theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="theme-switch nav-link" data-mode="light"><i class="fa-solid fa-sun fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="dark"><i class="fa-solid fa-moon fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg"></i></span>
+  </button>
+`);
+</script></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+<nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="pet_cli.image_io.html">1. Image IO</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pet_cli.tac_interpolation.html">2. TAC Interpolation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pet_cli.tcms_as_convolutions.html">3. TCMs As Convolutions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pet_cli.graphical_analysis.html">4. Graphical Analysis Of TACs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pet_cli.reference_tissue_models.html">5. Reference Tissue Models</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">6. Parametric Images</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pet_cli.graphical_plots.html">7. Graphical Analysis Plots</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pet_cli.image_visualization.html">8. Image Visualization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pet_cli.blood_input.html">9. Interpolation Blood Data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pet_cli.image_operations_4d.html">10. Operations On 4D Images</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pet_cli.math_lib.html">11. Mathematical Operations Library</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pet_cli.bids_utils.html">12. BIDS File Management Utilities</a></li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+
+
+<nav aria-label="Breadcrumb">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="modules.html" class="nav-link">Modules</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page"><span...</li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="module-pet_cli.parametric_images">
+<span id="parametric-images"></span><h1><span class="section-number">6. </span>Parametric Images<a class="headerlink" href="#module-pet_cli.parametric_images" title="Link to this heading">#</a></h1>
+<p>This module provides functions and a key class, <a class="reference internal" href="#pet_cli.parametric_images.GraphicalAnalysisParametricImage" title="pet_cli.parametric_images.GraphicalAnalysisParametricImage"><code class="xref py py-class docutils literal notranslate"><span class="pre">GraphicalAnalysisParametricImage</span></code></a>, for graphical analysis and
+creation of parametric images of 4D-PET scan data. It heavily utilizes <a class="reference external" href="https://numpy.org/doc/stable/reference/index.html#module-numpy" title="(in NumPy v1.26)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">numpy</span></code></a> for data manipulation and assumes
+the input as 4D PET images along with other required inputs.</p>
+<p>The <a class="reference internal" href="#pet_cli.parametric_images.GraphicalAnalysisParametricImage" title="pet_cli.parametric_images.GraphicalAnalysisParametricImage"><code class="xref py py-class docutils literal notranslate"><span class="pre">GraphicalAnalysisParametricImage</span></code></a> class encapsulates the main functionality of the module, and encompasses
+methods for initializing data, running and saving analysis, calculating various properties, and handling parametric
+image data.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="pet_cli.parametric_images.apply_linearized_analysis_to_all_voxels">
+<span class="sig-name descname"><span class="pre">apply_linearized_analysis_to_all_voxels</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pTAC_times</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.26)"><span class="pre">ndarray</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">pTAC_vals</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.26)"><span class="pre">ndarray</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">tTAC_img</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.26)"><span class="pre">ndarray</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">t_thresh_in_mins</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">analysis_func</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Callable</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.26)"><span class="pre">ndarray</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.26)"><span class="pre">ndarray</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#pet_cli.parametric_images.apply_linearized_analysis_to_all_voxels" title="Link to this definition">#</a></dt>
+<dd><p>Generates parametric images for 4D-PET data using the provided analysis method.</p>
+<p>This function iterates over each voxel in the given <cite>tTAC_img</cite> and applies the provided <cite>analysis_func</cite>
+to compute analysis values. The <cite>analysis_func</cite> should be a numba.jit function for optimization and
+should be following a signature compatible with either of the following: patlak_analysis, logan_analysis,
+or alt_logan_analysis.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>pTAC_times</strong> (<em>np.ndarray</em>) -- A 1D array representing the input TAC times in minutes.</p></li>
+<li><p><strong>pTAC_vals</strong> (<em>np.ndarray</em>) -- A 1D array representing the input TAC values. This array should
+be of the same length as <cite>pTAC_times</cite>.</p></li>
+<li><p><strong>tTAC_img</strong> (<em>np.ndarray</em>) -- A 4D array representing the 3D PET image over time.
+The shape of this array should be (x, y, z, time).</p></li>
+<li><p><strong>t_thresh_in_mins</strong> (<em>float</em>) -- A float representing the threshold time in minutes.
+It is applied when calling the <cite>analysis_func</cite>.</p></li>
+<li><p><strong>analysis_func</strong> (<em>Callable</em>) -- <p>A numba.jit function to apply to each voxel for given PET data.
+It should take the following arguments:</p>
+<blockquote>
+<div><ul>
+<li><p>input_tac_values: 1D numpy array for input TAC values</p></li>
+<li><p>region_tac_values: 1D numpy array for regional TAC values</p></li>
+<li><p>tac_times_in_minutes: 1D numpy array for TAC times in minutes</p></li>
+<li><p>t_thresh_in_minutes: a float for threshold time in minutes</p></li>
+</ul>
+</div></blockquote>
+</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><dl class="simple">
+<dt>A tuple of two 3D numpy arrays representing the calculated slope image</dt><dd><p>and the intercept image, each of the same spatial dimensions as
+<cite>tTAC_img</cite>.</p>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Tuple[np.ndarray, np.ndarray]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pet_cli.parametric_images.generate_parametric_images_with_graphical_method">
+<span class="sig-name descname"><span class="pre">generate_parametric_images_with_graphical_method</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pTAC_times</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.26)"><span class="pre">ndarray</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">pTAC_vals</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.26)"><span class="pre">ndarray</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">tTAC_img</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.26)"><span class="pre">ndarray</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">t_thresh_in_mins</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.26)"><span class="pre">ndarray</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.26)"><span class="pre">ndarray</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#pet_cli.parametric_images.generate_parametric_images_with_graphical_method" title="Link to this definition">#</a></dt>
+<dd><p>Generates parametric images for 4D-PET data using a specified graphical analysis method.</p>
+<p>This function maps one of the predefined method names to the corresponding analysis function,
+and then generates parametric images by applying it to the given 4D-PET data using the
+<cite>apply_linearized_analysis_to_all_voxels</cite> function.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>pTAC_times</strong> (<em>np.ndarray</em>) -- A 1D array representing the input TAC times in minutes.</p></li>
+<li><p><strong>pTAC_vals</strong> (<em>np.ndarray</em>) -- A 1D array representing the input TAC values. This array should
+be of the same length as <cite>pTAC_times</cite>.</p></li>
+<li><p><strong>tTAC_img</strong> (<em>np.ndarray</em>) -- A 4D array representing the 3D PET image over time.
+The shape of this array should be (x, y, z, time).</p></li>
+<li><p><strong>t_thresh_in_mins</strong> (<em>float</em>) -- A float representing the threshold time in minutes.</p></li>
+<li><p><strong>method_name</strong> (<em>str</em>) -- The analysis method's name to apply. Must be one of: 'patlak', 'logan', or 'alt_logan'.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><dl class="simple">
+<dt>A tuple of two 3D numpy arrays representing the calculated slope image</dt><dd><p>and the intercept image, each of the same spatial dimensions as
+<cite>tTAC_img</cite>.</p>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Tuple[np.ndarray, np.ndarray]</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>ValueError</strong> -- If the <cite>method_name</cite> is not one of the following: 'patlak', 'logan', 'alt_logan'.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pet_cli.parametric_images._safe_load_tac">
+<span class="sig-name descname"><span class="pre">_safe_load_tac</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.26)"><span class="pre">ndarray</span></a></span></span><a class="headerlink" href="#pet_cli.parametric_images._safe_load_tac" title="Link to this definition">#</a></dt>
+<dd><p>Loads time-activity curves (TAC) from a file.</p>
+<p>Tries to read a TAC from specified file and raises an exception if unable to do so. We assume that the file has two
+columns, the first corresponding to time and second corresponding to activity.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>filename</strong> (<em>str</em>) -- The name of the file to be loaded.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A numpy array containing the loaded TAC. The first index corresponds to the times, and the second
+corresponds to the activity.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>np.ndarray</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>Exception</strong> -- An error occurred loading the TAC.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pet_cli.parametric_images._safe_load_4dpet_nifty">
+<span class="sig-name descname"><span class="pre">_safe_load_4dpet_nifty</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Nifti1Image</span></span></span><a class="headerlink" href="#pet_cli.parametric_images._safe_load_4dpet_nifty" title="Link to this definition">#</a></dt>
+<dd><p>Safely load a 4D PET NIfTI file.</p>
+<p>This function checks if the given file has a '.nii' or '.nii.gz' extension, then tries to load it as a NIfTI file
+using the nibabel library. If the file cannot be loaded, it raises an exception.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>filename</strong> (<em>str</em>) -- The path of the NIfTI file to be loaded.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The loaded NIfTI 4D PET image.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Nifti1Image</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>ValueError</strong> -- If the file does not have a '.nii' or '.nii.gz' extension.</p></li>
+<li><p><strong>Exception</strong> -- If an error occurred while loading the NIfTI file.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="pet_cli.parametric_images.GraphicalAnalysisParametricImage">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">GraphicalAnalysisParametricImage</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_tac_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pet4D_img_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_directory</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_filename_prefix</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pet_cli.parametric_images.GraphicalAnalysisParametricImage" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Class for generating parametric images of 4D-PET images using graphical analyses. It provides methods to run
+graphical analysis, calculate properties of the resulting images, and save the results using file paths.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Variables<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>input_tac_path</strong> (<em>str</em>) -- Absolute path to the input Time-Activity Curve (TAC) file.</p></li>
+<li><p><strong>pet4D_img_path</strong> (<em>str</em>) -- Absolute path to the 4D PET image file.</p></li>
+<li><p><strong>output_directory</strong> (<em>str</em>) -- Absolute path to the output directory.</p></li>
+<li><p><strong>output_filename_prefix</strong> (<em>str</em>) -- Prefix of the output file names.</p></li>
+<li><p><strong>analysis_props</strong> (<em>dict</em>) -- Dictionary of properties of the graphical analysis.</p></li>
+<li><p><strong>slope_image</strong> (<em>np.ndarray</em>) -- The slope image resulting from the graphical analysis, initialized to None.</p></li>
+<li><p><strong>intercept_image</strong> (<em>np.ndarray</em>) -- The intercept image resulting from the graphical analysis, initialized to None.</p></li>
+</ul>
+</dd>
+</dl>
+<p>Initializes the GraphicalAnalysisParametricImage with the specified parameters.</p>
+<p>This method initializes necessary attributes for the GraphicalAnalysisParametricImage object with the provided
+arguments. It sets the absolute file paths for the input TAC, 4D PET image, and output directory, and
+initializes the analysis properties. Further, it initializes variables for the slope and intercept images.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>input_tac_path</strong> (<em>str</em>) -- Path to the input Time-Activity Curve (TAC) file.</p></li>
+<li><p><strong>pet4D_img_path</strong> (<em>str</em>) -- Path to the 4D PET image file.</p></li>
+<li><p><strong>output_directory</strong> (<em>str</em>) -- Path to the destination directory where output files will be saved.</p></li>
+<li><p><strong>output_filename_prefix</strong> (<em>str</em>) -- Prefix to use for the names of the output files.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="pet_cli.parametric_images.GraphicalAnalysisParametricImage.init_analysis_props">
+<span class="sig-name descname"><span class="pre">init_analysis_props</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pet_cli.parametric_images.GraphicalAnalysisParametricImage.init_analysis_props" title="Link to this definition">#</a></dt>
+<dd><p>Initializes the analysis properties dictionary.</p>
+<p>The analysis properties dictionary contains properties derived from the analysis.
+It begins with certain known values, such as file paths, but most values are initialized
+to None and filled in later as the analysis is performed.</p>
+<dl class="simple">
+<dt>Properties include:</dt><dd><ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">FilePathPTAC</span></code> (str): The path to the input Time-Activity Curve (TAC) file.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">FilePathTTAC</span></code> (str): The path to the 4D PET image file.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">MethodName</span></code> (str): The name of the graphical analysis method used, to be filled in later.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">ImageDimensions</span></code> (tuple): The dimensions of the images resulting from the analysis, to be filled in later.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">StartFrameTime</span></code> (float): The start time of the frame used in the analysis, filled in after the analysis.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">EndFrameTime</span></code> (float): The end time of the frame used in the analysis, filled in after the analysis.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">ThresholdTime</span></code> (float): The time threshold used in the analysis, filled in after the analysis.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">NumberOfPointsFit</span></code> (int): The number of points fitted in the analysis, filled in after the analysis.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">SlopeMaximum</span></code> (float): The maximum slope found in the analysis, filled in after the analysis.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">SlopeMinimum</span></code> (float): The minimum slope found in the analysis, filled in after the analysis.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">SlopeMean</span></code> (float): The mean of the slopes found in the analysis, filled in after the analysis.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">SlopeVariance</span></code> (float): The variance of the slopes found in the analysis, filled in after the analysis.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">InterceptMaximum</span></code> (float): The maximum intercept found in the analysis, filled in after the analysis.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">InterceptMinimum</span></code> (float): The minimum intercept found in the analysis, filled in after the analysis.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">InterceptMean</span></code> (float): The mean of the intercepts found in the analysis, filled in after the analysis.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">InterceptVariance</span></code> (float): The variance of the intercepts found in the analysis, filled in after the analysis.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The initialized properties dictionary.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>props (dict)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pet_cli.parametric_images.GraphicalAnalysisParametricImage.run_analysis">
+<span class="sig-name descname"><span class="pre">run_analysis</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">method_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">t_thresh_in_mins</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pet_cli.parametric_images.GraphicalAnalysisParametricImage.run_analysis" title="Link to this definition">#</a></dt>
+<dd><p>Executes the complete analysis procedure.</p>
+<p>This method orchestrates the full analysis by orchestrating the calculation of parametric images, as well as
+compiling the properties related to the analysis. Both are determined based on the provided method name and the
+threshold time.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>method_name</strong> (<em>str</em>) -- The name of the methodology adopted for the process.</p></li>
+<li><p><strong>t_thresh_in_mins</strong> (<em>float</em>) -- The threshold time used through the analysis (in minutes).</p></li>
+</ul>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="#pet_cli.parametric_images.GraphicalAnalysisParametricImage.calculate_parametric_images" title="pet_cli.parametric_images.GraphicalAnalysisParametricImage.calculate_parametric_images"><code class="xref py py-func docutils literal notranslate"><span class="pre">calculate_parametric_images</span></code></a></p></li>
+<li><p><a class="reference internal" href="#pet_cli.parametric_images.GraphicalAnalysisParametricImage.calculate_analysis_properties" title="pet_cli.parametric_images.GraphicalAnalysisParametricImage.calculate_analysis_properties"><code class="xref py py-func docutils literal notranslate"><span class="pre">calculate_analysis_properties</span></code></a></p></li>
+</ul>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pet_cli.parametric_images.GraphicalAnalysisParametricImage.save_analysis">
+<span class="sig-name descname"><span class="pre">save_analysis</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pet_cli.parametric_images.GraphicalAnalysisParametricImage.save_analysis" title="Link to this definition">#</a></dt>
+<dd><p>Stores the results from an analysis routine.</p>
+<p>This method executes the storage of parametric images, as well as the properties related to the analysis. It
+assumes that the method 'run_analysis' is called before this method.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>RuntimeError</strong> -- If the method 'run_analysis' is not called before this method.</p>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="#pet_cli.parametric_images.GraphicalAnalysisParametricImage.save_parametric_images" title="pet_cli.parametric_images.GraphicalAnalysisParametricImage.save_parametric_images"><code class="xref py py-func docutils literal notranslate"><span class="pre">save_parametric_images</span></code></a></p></li>
+<li><p><a class="reference internal" href="#pet_cli.parametric_images.GraphicalAnalysisParametricImage.save_analysis_properties" title="pet_cli.parametric_images.GraphicalAnalysisParametricImage.save_analysis_properties"><code class="xref py py-func docutils literal notranslate"><span class="pre">save_analysis_properties</span></code></a></p></li>
+</ul>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pet_cli.parametric_images.GraphicalAnalysisParametricImage.calculate_analysis_properties">
+<span class="sig-name descname"><span class="pre">calculate_analysis_properties</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">method_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">t_thresh_in_mins</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pet_cli.parametric_images.GraphicalAnalysisParametricImage.calculate_analysis_properties" title="Link to this definition">#</a></dt>
+<dd><p>Performs a set of calculations to collate various analysis properties.</p>
+<p>This method orchestrates the calculation of properties related to both the parametric images and the fitting
+process. It does this by calling <a class="reference internal" href="#pet_cli.parametric_images.GraphicalAnalysisParametricImage.calculate_parametric_images_properties" title="pet_cli.parametric_images.GraphicalAnalysisParametricImage.calculate_parametric_images_properties"><code class="xref py py-meth docutils literal notranslate"><span class="pre">calculate_parametric_images_properties</span></code></a> and
+<a class="reference internal" href="#pet_cli.parametric_images.GraphicalAnalysisParametricImage.calculate_fit_properties" title="pet_cli.parametric_images.GraphicalAnalysisParametricImage.calculate_fit_properties"><code class="xref py py-meth docutils literal notranslate"><span class="pre">calculate_fit_properties</span></code></a> respectively.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>method_name</strong> (<em>str</em>) -- The name of the method used for the fitting process.</p></li>
+<li><p><strong>t_thresh_in_mins</strong> (<em>float</em>) -- The threshold time (in minutes) used for the fitting process.</p></li>
+</ul>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="#pet_cli.parametric_images.GraphicalAnalysisParametricImage.calculate_parametric_images_properties" title="pet_cli.parametric_images.GraphicalAnalysisParametricImage.calculate_parametric_images_properties"><code class="xref py py-meth docutils literal notranslate"><span class="pre">calculate_parametric_images_properties</span></code></a></p></li>
+<li><p><a class="reference internal" href="#pet_cli.parametric_images.GraphicalAnalysisParametricImage.calculate_fit_properties" title="pet_cli.parametric_images.GraphicalAnalysisParametricImage.calculate_fit_properties"><code class="xref py py-meth docutils literal notranslate"><span class="pre">calculate_fit_properties</span></code></a></p></li>
+</ul>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None. The results are stored within the instance's <code class="docutils literal notranslate"><span class="pre">analysis_props</span></code> variable.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pet_cli.parametric_images.GraphicalAnalysisParametricImage.calculate_fit_properties">
+<span class="sig-name descname"><span class="pre">calculate_fit_properties</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">method_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">t_thresh_in_mins</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pet_cli.parametric_images.GraphicalAnalysisParametricImage.calculate_fit_properties" title="Link to this definition">#</a></dt>
+<dd><p>Calculates and stores the properties related to the fitting process.</p>
+<p>This method calculates several properties related to the fitting process, including the threshold time, the name
+of the method used, the start and end frame time, and the number of points used in the fit. These values are
+stored in the instance's <cite>analysis_props</cite> variable.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>method_name</strong> (<em>str</em>) -- The name of the methodology adopted for the fitting process.</p></li>
+<li><p><strong>t_thresh_in_mins</strong> (<em>float</em>) -- The threshold time (in minutes) used in the fitting process.</p></li>
+</ul>
+</dd>
+</dl>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This method relies on the <a class="reference internal" href="#pet_cli.parametric_images._safe_load_tac" title="pet_cli.parametric_images._safe_load_tac"><code class="xref py py-func docutils literal notranslate"><span class="pre">_safe_load_tac</span></code></a> function to load time-activity curve (TAC) data from the
+file at <code class="docutils literal notranslate"><span class="pre">self.input_tac_path</span></code>, and the <a class="reference internal" href="pet_cli.graphical_analysis.html#pet_cli.graphical_analysis.get_index_from_threshold" title="pet_cli.graphical_analysis.get_index_from_threshold"><code class="xref py py-func docutils literal notranslate"><span class="pre">pet_cli.graphical_analysis.get_index_from_threshold</span></code></a>
+function to get the index from the threshold time.</p>
+</div>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="#pet_cli.parametric_images._safe_load_tac" title="pet_cli.parametric_images._safe_load_tac"><code class="xref py py-func docutils literal notranslate"><span class="pre">_safe_load_tac</span></code></a>: Function to safely load TAC data from a file.</p></li>
+<li><p><a class="reference internal" href="pet_cli.graphical_analysis.html#pet_cli.graphical_analysis.get_index_from_threshold" title="pet_cli.graphical_analysis.get_index_from_threshold"><code class="xref py py-func docutils literal notranslate"><span class="pre">pet_cli.graphical_analysis.get_index_from_threshold</span></code></a>: Function to get the index from the threshold time.</p></li>
+</ul>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None. The results are stored within the instance's <code class="docutils literal notranslate"><span class="pre">analysis_props</span></code> variable.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pet_cli.parametric_images.GraphicalAnalysisParametricImage.calculate_parametric_images_properties">
+<span class="sig-name descname"><span class="pre">calculate_parametric_images_properties</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pet_cli.parametric_images.GraphicalAnalysisParametricImage.calculate_parametric_images_properties" title="Link to this definition">#</a></dt>
+<dd><p>Initiates the calculation of properties for parametric images.</p>
+<p>This method triggers the calculation of statistical properties for slope and intercept images.
+Additionally, it captures the shape of the slope image as the 'ImageDimensions' and stores it in <cite>analysis_props</cite>.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>You should ensure the <cite>slope_image</cite> attribute has been correctly set before calling this method. This means
+that <cite>run_analysis</cite> has already been called.</p>
+</div>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p>calculate_slope_image_properties: Method to calculate various statistics for slope image.
+calculate_intercept_image_properties: Method to calculate various statistics for intercept image.</p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None. The results are stored within the instance's <cite>analysis_props</cite> variable.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pet_cli.parametric_images.GraphicalAnalysisParametricImage.calculate_slope_image_properties">
+<span class="sig-name descname"><span class="pre">calculate_slope_image_properties</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pet_cli.parametric_images.GraphicalAnalysisParametricImage.calculate_slope_image_properties" title="Link to this definition">#</a></dt>
+<dd><p>Calculates and stores statistical properties of the slope image.</p>
+<p>This method calculates the maximum, minimum, mean, and variance of
+the <cite>slope_image</cite> attribute, and stores these values in the <cite>analysis_props</cite> dictionary.</p>
+<p>The keys in <cite>analysis_props</cite> for these values are: <cite>SlopeMaximum</cite>, <cite>SlopeMinimum</cite>,
+<cite>SlopeMean</cite>, and <cite>SlopeVariance</cite>, respectively.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>You should ensure the <cite>slope_image</cite> attribute has been correctly set before calling this method.</p>
+</div>
+<p>No explicit return value. The results are stored within the instance's <cite>analysis_props</cite> variable.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pet_cli.parametric_images.GraphicalAnalysisParametricImage.calculate_intercept_image_properties">
+<span class="sig-name descname"><span class="pre">calculate_intercept_image_properties</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pet_cli.parametric_images.GraphicalAnalysisParametricImage.calculate_intercept_image_properties" title="Link to this definition">#</a></dt>
+<dd><p>Calculates and stores statistical properties of the intercept image.</p>
+<p>This method calculates the maximum, minimum, mean, and variance of
+the <cite>intercept_image</cite> attribute, and stores these values in the <cite>analysis_props</cite> dictionary.</p>
+<p>The keys in <cite>analysis_props</cite> for these values are: <cite>InterceptMaximum</cite>, <cite>InterceptMinimum</cite>, <cite>InterceptMean</cite>,
+and <cite>InterceptVariance</cite>, respectively.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>You should ensure the <cite>intercept_image</cite> attribute has been correctly set before calling this method.</p>
+</div>
+<p>No explicit return value. The results are stored within the instance's <cite>analysis_props</cite> variable.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pet_cli.parametric_images.GraphicalAnalysisParametricImage.calculate_parametric_images">
+<span class="sig-name descname"><span class="pre">calculate_parametric_images</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">method_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">t_thresh_in_mins</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pet_cli.parametric_images.GraphicalAnalysisParametricImage.calculate_parametric_images" title="Link to this definition">#</a></dt>
+<dd><p>Performs graphical analysis of PET parametric images and generates/updates the slope and intercept images.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>This method divides the PET image values by 37000 for unit conversion to Bq/cc. Be aware of this if you are
+using this function with PET images that are in other units!</p>
+</div>
+<p>This method uses the given graphical analysis method and threshold to perform the analysis given the input Time
+Activity Curve (TAC) and 4D PET image, and updates the slope and intercept images accordingly. PET images are
+loaded from the specified path and divided by 37000 to convert the values to Bq/cc. Then, the parametric images
+are calculated using the specified graphical method and threshold time by explicitly analyzing each voxel in
+the 4D PET image.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>method_name</strong> (<em>str</em>) -- The name of the graphical analysis method to be used.</p></li>
+<li><p><strong>t_thresh_in_mins</strong> (<em>float</em>) -- The threshold time in minutes.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>Exception</strong> -- An error occurred during the graphical analysis. This could be due to an invalid method name or</p></li>
+<li><p><strong>incorrect inputs to the method.</strong> -- </p></li>
+</ul>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="#pet_cli.parametric_images.generate_parametric_images_with_graphical_method" title="pet_cli.parametric_images.generate_parametric_images_with_graphical_method"><code class="xref py py-func docutils literal notranslate"><span class="pre">generate_parametric_images_with_graphical_method</span></code></a></p></li>
+<li><p><a class="reference internal" href="pet_cli.graphical_analysis.html#pet_cli.graphical_analysis.patlak_analysis" title="pet_cli.graphical_analysis.patlak_analysis"><code class="xref py py-func docutils literal notranslate"><span class="pre">pet_cli.graphical_analysis.patlak_analysis</span></code></a></p></li>
+<li><p><a class="reference internal" href="pet_cli.graphical_analysis.html#pet_cli.graphical_analysis.logan_analysis" title="pet_cli.graphical_analysis.logan_analysis"><code class="xref py py-func docutils literal notranslate"><span class="pre">pet_cli.graphical_analysis.logan_analysis</span></code></a></p></li>
+<li><p><a class="reference internal" href="pet_cli.graphical_analysis.html#pet_cli.graphical_analysis.alternative_logan_analysis" title="pet_cli.graphical_analysis.alternative_logan_analysis"><code class="xref py py-func docutils literal notranslate"><span class="pre">pet_cli.graphical_analysis.alternative_logan_analysis</span></code></a></p></li>
+</ul>
+</div>
+<p class="rubric">Notes</p>
+<p>The conversion to Bq/cc is hard-coded, and could be changed in later versions of the module.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pet_cli.parametric_images.GraphicalAnalysisParametricImage.save_parametric_images">
+<span class="sig-name descname"><span class="pre">save_parametric_images</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pet_cli.parametric_images.GraphicalAnalysisParametricImage.save_parametric_images" title="Link to this definition">#</a></dt>
+<dd><p>Saves the slope and intercept images as NIfTI files in the specified output directory.</p>
+<p>This method generates and saves two NIfTI files: one for the slope image and one for the intercept image.
+It uses the output directory and filename prefix provided during instantiation of the class,
+along with the analysis method name, to generate a filename prefix for both images.
+The filenames follow the patterns <cite>{output_filename_prefix}-parametric-{method}-slope.nii.gz</cite> and
+<cite>{output_filename_prefix}-parametric-{method}-intercept.nii.gz</cite> respectively.
+The affine transformation matrix for the new NIfTI images is derived from the original 4D PET image.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>None</strong> -- </p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>IOError</strong> -- An error occurred accessing the output_directory or while writing to the NIfTI file.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pet_cli.parametric_images.GraphicalAnalysisParametricImage.save_analysis_properties">
+<span class="sig-name descname"><span class="pre">save_analysis_properties</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pet_cli.parametric_images.GraphicalAnalysisParametricImage.save_analysis_properties" title="Link to this definition">#</a></dt>
+<dd><p>Saves the analysis properties to a JSON file in the output directory.</p>
+<p>This method involves saving a dictionary of analysis properties, which include file paths, analysis method,
+start and end frame times, threshold time, number of points fitted, and various properties like the maximum,
+minimum, mean, and variance of slopes and intercepts found in the analysis. These analysis properties are
+written to a JSON file in the output directory with the name following the pattern
+<cite>{output_filename_prefix}-analysis-props.json</cite>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>None</strong> -- </p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>IOError</strong> -- An error occurred accessing the output_directory or while writing to the JSON file.</p>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="#pet_cli.parametric_images.GraphicalAnalysisParametricImage.save_analysis_properties" title="pet_cli.parametric_images.GraphicalAnalysisParametricImage.save_analysis_properties"><code class="xref py py-func docutils literal notranslate"><span class="pre">save_analysis_properties</span></code></a></p></li>
+</ul>
+</div>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="pet_cli.reference_tissue_models.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title"><span class="section-number">5. </span>Reference Tissue Models</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="pet_cli.graphical_plots.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title"><span class="section-number">7. </span>Graphical Analysis Plots</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#pet_cli.parametric_images.apply_linearized_analysis_to_all_voxels"><code class="docutils literal notranslate"><span class="pre">apply_linearized_analysis_to_all_voxels</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#pet_cli.parametric_images.generate_parametric_images_with_graphical_method"><code class="docutils literal notranslate"><span class="pre">generate_parametric_images_with_graphical_method</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#pet_cli.parametric_images._safe_load_tac"><code class="docutils literal notranslate"><span class="pre">_safe_load_tac</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#pet_cli.parametric_images._safe_load_4dpet_nifty"><code class="docutils literal notranslate"><span class="pre">_safe_load_4dpet_nifty</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#pet_cli.parametric_images.GraphicalAnalysisParametricImage"><code class="docutils literal notranslate"><span class="pre">GraphicalAnalysisParametricImage</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pet_cli.parametric_images.GraphicalAnalysisParametricImage.init_analysis_props"><code class="docutils literal notranslate"><span class="pre">GraphicalAnalysisParametricImage.init_analysis_props</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pet_cli.parametric_images.GraphicalAnalysisParametricImage.run_analysis"><code class="docutils literal notranslate"><span class="pre">GraphicalAnalysisParametricImage.run_analysis</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pet_cli.parametric_images.GraphicalAnalysisParametricImage.save_analysis"><code class="docutils literal notranslate"><span class="pre">GraphicalAnalysisParametricImage.save_analysis</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pet_cli.parametric_images.GraphicalAnalysisParametricImage.calculate_analysis_properties"><code class="docutils literal notranslate"><span class="pre">GraphicalAnalysisParametricImage.calculate_analysis_properties</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pet_cli.parametric_images.GraphicalAnalysisParametricImage.calculate_fit_properties"><code class="docutils literal notranslate"><span class="pre">GraphicalAnalysisParametricImage.calculate_fit_properties</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pet_cli.parametric_images.GraphicalAnalysisParametricImage.calculate_parametric_images_properties"><code class="docutils literal notranslate"><span class="pre">GraphicalAnalysisParametricImage.calculate_parametric_images_properties</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pet_cli.parametric_images.GraphicalAnalysisParametricImage.calculate_slope_image_properties"><code class="docutils literal notranslate"><span class="pre">GraphicalAnalysisParametricImage.calculate_slope_image_properties</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pet_cli.parametric_images.GraphicalAnalysisParametricImage.calculate_intercept_image_properties"><code class="docutils literal notranslate"><span class="pre">GraphicalAnalysisParametricImage.calculate_intercept_image_properties</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pet_cli.parametric_images.GraphicalAnalysisParametricImage.calculate_parametric_images"><code class="docutils literal notranslate"><span class="pre">GraphicalAnalysisParametricImage.calculate_parametric_images</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pet_cli.parametric_images.GraphicalAnalysisParametricImage.save_parametric_images"><code class="docutils literal notranslate"><span class="pre">GraphicalAnalysisParametricImage.save_parametric_images</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pet_cli.parametric_images.GraphicalAnalysisParametricImage.save_analysis_properties"><code class="docutils literal notranslate"><span class="pre">GraphicalAnalysisParametricImage.save_analysis_properties</span></code></a></li>
+</ul>
+</li>
+</ul>
+  </nav></div>
+
+  <div class="sidebar-secondary-item">
+
+  <div class="tocsection sourcelink">
+    <a href="_sources/pet_cli.parametric_images.rst.txt">
+      <i class="fa-solid fa-file-lines"></i> Show Source
+    </a>
+  </div>
+</div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="_static/scripts/bootstrap.js?digest=8d27b9dea8ad943066ae"></script>
+<script src="_static/scripts/pydata-sphinx-theme.js?digest=8d27b9dea8ad943066ae"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2024, Furqan Dar, Bradley Judge, Noah Goldman.
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.2.6.
+    <br/>
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.15.2.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

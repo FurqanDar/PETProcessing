@@ -1,0 +1,1030 @@
+
+<!DOCTYPE html>
+
+
+<html lang="English (US)" data-content_root="./" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Index &#8212; PET Processing Module</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="_static/styles/theme.css?digest=8d27b9dea8ad943066ae" rel="stylesheet" />
+<link href="_static/styles/bootstrap.css?digest=8d27b9dea8ad943066ae" rel="stylesheet" />
+<link href="_static/styles/pydata-sphinx-theme.css?digest=8d27b9dea8ad943066ae" rel="stylesheet" />
+
+  
+  <link href="_static/vendor/fontawesome/6.5.1/css/all.min.css?digest=8d27b9dea8ad943066ae" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.1/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.1/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.1/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=a746c00c" />
+    <link rel="stylesheet" type="text/css" href="_static/plot_directive.css" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=8d27b9dea8ad943066ae" />
+<link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=8d27b9dea8ad943066ae" />
+  <script src="_static/vendor/fontawesome/6.5.1/js/all.min.js?digest=8d27b9dea8ad943066ae"></script>
+
+    <script src="_static/documentation_options.js?v=cd7df0db"></script>
+    <script src="_static/doctools.js?v=888ff710"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'genindex';</script>
+    <link rel="index" title="Index" href="#" />
+    <link rel="search" title="Search" href="search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="English (US)"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <a id="pst-skip-link" class="skip-link" href="#main-content">Skip to main content</a>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>
+    Back to top
+  </button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__primary"
+          id="__primary"/>
+  <label class="overlay overlay-primary" for="__primary"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__secondary"
+          id="__secondary"/>
+  <label class="overlay overlay-secondary" for="__secondary"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar">
+<div class="bd-header__inner bd-page-width">
+  <label class="sidebar-toggle primary-toggle" for="__primary">
+    <span class="fa-solid fa-bars"></span>
+  </label>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+
+<a class="navbar-brand logo" href="index.html">
+  
+  
+  
+  
+  
+  
+    <p class="title logo__title">PET Processing Module</p>
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav class="navbar-nav">
+  <ul class="bd-navbar-elements navbar-nav">
+    
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="modules.html">
+                        Modules
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="cli_ref.html">
+                        CLI Reference
+                      </a>
+                    </li>
+                
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+ <script>
+ document.write(`
+   <button class="btn navbar-btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<script>
+document.write(`
+  <button class="btn btn-sm navbar-btn theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="theme-switch nav-link" data-mode="light"><i class="fa-solid fa-sun fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="dark"><i class="fa-solid fa-moon fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg"></i></span>
+  </button>
+`);
+</script></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+ <script>
+ document.write(`
+   <button class="btn navbar-btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script>
+    </div>
+  
+
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+        
+      
+      <div class="bd-sidebar-primary bd-sidebar hide-on-wide">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          <div class="navbar-item">
+<nav class="navbar-nav">
+  <ul class="bd-navbar-elements navbar-nav">
+    
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="modules.html">
+                        Modules
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="cli_ref.html">
+                        CLI Reference
+                      </a>
+                    </li>
+                
+  </ul>
+</nav></div>
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<script>
+document.write(`
+  <button class="btn btn-sm navbar-btn theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="theme-switch nav-link" data-mode="light"><i class="fa-solid fa-sun fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="dark"><i class="fa-solid fa-moon fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg"></i></span>
+  </button>
+`);
+</script></div>
+        
+      </div>
+    
+  </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article"></div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+
+<h1 id="index">Index</h1>
+
+<div class="genindex-jumpbox">
+ <a href="#_"><strong>_</strong></a>
+ | <a href="#A"><strong>A</strong></a>
+ | <a href="#B"><strong>B</strong></a>
+ | <a href="#C"><strong>C</strong></a>
+ | <a href="#D"><strong>D</strong></a>
+ | <a href="#E"><strong>E</strong></a>
+ | <a href="#F"><strong>F</strong></a>
+ | <a href="#G"><strong>G</strong></a>
+ | <a href="#I"><strong>I</strong></a>
+ | <a href="#L"><strong>L</strong></a>
+ | <a href="#M"><strong>M</strong></a>
+ | <a href="#N"><strong>N</strong></a>
+ | <a href="#P"><strong>P</strong></a>
+ | <a href="#R"><strong>R</strong></a>
+ | <a href="#S"><strong>S</strong></a>
+ | <a href="#U"><strong>U</strong></a>
+ | <a href="#W"><strong>W</strong></a>
+ 
+</div>
+<h2 id="_">_</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="pet_cli.cli_preproc.html#pet_cli.cli_preproc._add_common_args">_add_common_args() (in module pet_cli.cli_preproc)</a>
+</li>
+      <li><a href="pet_cli.bids_utils.html#pet_cli.bids_utils.BidsInstance._add_subject_session_to_participants">_add_subject_session_to_participants() (BidsInstance method)</a>
+</li>
+      <li><a href="pet_cli.reference_tissue_models.html#pet_cli.reference_tissue_models._calc_frtm_params_from_kinetic_params">_calc_frtm_params_from_kinetic_params() (in module pet_cli.reference_tissue_models)</a>
+</li>
+      <li><a href="pet_cli.reference_tissue_models.html#pet_cli.reference_tissue_models._calc_simplified_frtm_tac">_calc_simplified_frtm_tac() (in module pet_cli.reference_tissue_models)</a>
+</li>
+      <li><a href="pet_cli.image_operations_4d.html#pet_cli.image_operations_4d.ImageOps4d._check_method_props_exist">_check_method_props_exist() (ImageOps4d method)</a>
+</li>
+      <li><a href="pet_cli.cli_preproc.html#pet_cli.cli_preproc._check_ref">_check_ref() (in module pet_cli.cli_preproc)</a>
+</li>
+      <li><a href="pet_cli.bids_utils.html#pet_cli.bids_utils.BidsInstance._compile_filepath">_compile_filepath() (BidsInstance method)</a>
+</li>
+      <li><a href="pet_cli.bids_utils.html#pet_cli.bids_utils.BidsInstance._create_bids_scaffold">_create_bids_scaffold() (BidsInstance method)</a>
+</li>
+      <li><a href="pet_cli.bids_utils.html#pet_cli.bids_utils.BidsInstance._create_update_method">_create_update_method() (BidsInstance method)</a>
+</li>
+      <li><a href="pet_cli.cli_preproc.html#pet_cli.cli_preproc._generate_args">_generate_args() (in module pet_cli.cli_preproc)</a>
+</li>
+      <li><a href="pet_cli.cli_preproc.html#pet_cli.cli_preproc._generate_image_path_and_directory">_generate_image_path_and_directory() (in module pet_cli.cli_preproc)</a>
+</li>
+      <li><a href="pet_cli.image_operations_4d.html#pet_cli.image_operations_4d.ImageOps4d._init_preproc_props">_init_preproc_props() (ImageOps4d static method)</a>
+</li>
+      <li><a href="pet_cli.graphical_analysis.html#pet_cli.graphical_analysis._line_fitting_make_rhs_matrix_from_xdata">_line_fitting_make_rhs_matrix_from_xdata() (in module pet_cli.graphical_analysis)</a>
+</li>
+      <li><a href="pet_cli.blood_input.html#pet_cli.blood_input.BloodInputFunction._linear_function">_linear_function() (BloodInputFunction static method)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="pet_cli.bids_utils.html#pet_cli.bids_utils.BidsInstance._prefixed_dictionary">_prefixed_dictionary() (BidsInstance method)</a>
+</li>
+      <li><a href="pet_cli.cli_tac_interpolation.html#pet_cli.cli_tac_interpolation._print_tac_to_screen">_print_tac_to_screen() (in module pet_cli.cli_tac_interpolation)</a>
+</li>
+      <li><a href="pet_cli.parametric_images.html#pet_cli.parametric_images._safe_load_4dpet_nifty">_safe_load_4dpet_nifty() (in module pet_cli.parametric_images)</a>
+</li>
+      <li><a href="pet_cli.cli_tac_interpolation.html#pet_cli.cli_tac_interpolation._safe_load_tac">_safe_load_tac() (in module pet_cli.cli_tac_interpolation)</a>
+
+      <ul>
+        <li><a href="pet_cli.graphical_analysis.html#pet_cli.graphical_analysis._safe_load_tac">(in module pet_cli.graphical_analysis)</a>
+</li>
+        <li><a href="pet_cli.graphical_plots.html#pet_cli.graphical_plots._safe_load_tac">(in module pet_cli.graphical_plots)</a>
+</li>
+        <li><a href="pet_cli.parametric_images.html#pet_cli.parametric_images._safe_load_tac">(in module pet_cli.parametric_images)</a>
+</li>
+      </ul></li>
+      <li><a href="pet_cli.cli_tac_interpolation.html#pet_cli.cli_tac_interpolation._safe_write_tac">_safe_write_tac() (in module pet_cli.cli_tac_interpolation)</a>
+</li>
+      <li><a href="pet_cli.graphical_plots.html#pet_cli.graphical_plots.Plot._select_fig_class_based_on_method">_select_fig_class_based_on_method() (Plot static method)</a>
+</li>
+      <li><a href="pet_cli.bids_utils.html#pet_cli.bids_utils.BidsInstance._setup_dynamic_methods">_setup_dynamic_methods() (BidsInstance method)</a>
+</li>
+      <li><a href="pet_cli.bids_utils.html#pet_cli.bids_utils.BidsInstance._update_part">_update_part() (BidsInstance method)</a>
+</li>
+      <li><a href="pet_cli.bids_utils.html#pet_cli.bids_utils.BidsInstance._update_participants">_update_participants() (BidsInstance method)</a>
+</li>
+      <li><a href="pet_cli.graphical_plots.html#pet_cli.graphical_plots.Plot._validate_directory">_validate_directory() (Plot static method)</a>
+</li>
+      <li><a href="pet_cli.graphical_plots.html#pet_cli.graphical_plots.Plot._validate_filepath">_validate_filepath() (Plot static method)</a>
+</li>
+      <li><a href="pet_cli.image_visualization.html#pet_cli.image_visualization.NiftiGifCreator._validate_view">_validate_view() (NiftiGifCreator method)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="A">A</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="pet_cli.graphical_plots.html#pet_cli.graphical_plots.GraphicalAnalysisPlot.add_data_plots">add_data_plots() (GraphicalAnalysisPlot method)</a>
+</li>
+      <li><a href="pet_cli.graphical_plots.html#pet_cli.graphical_plots.AltLoganPlot.add_figure_axes_labels_and_legend">add_figure_axes_labels_and_legend() (AltLoganPlot method)</a>
+
+      <ul>
+        <li><a href="pet_cli.graphical_plots.html#pet_cli.graphical_plots.GraphicalAnalysisPlot.add_figure_axes_labels_and_legend">(GraphicalAnalysisPlot method)</a>
+</li>
+        <li><a href="pet_cli.graphical_plots.html#pet_cli.graphical_plots.LoganPlot.add_figure_axes_labels_and_legend">(LoganPlot method)</a>
+</li>
+        <li><a href="pet_cli.graphical_plots.html#pet_cli.graphical_plots.PatlakPlot.add_figure_axes_labels_and_legend">(PatlakPlot method)</a>
+</li>
+      </ul></li>
+      <li><a href="pet_cli.graphical_plots.html#pet_cli.graphical_plots.GraphicalAnalysisPlot.add_fit_lines">add_fit_lines() (GraphicalAnalysisPlot method)</a>
+</li>
+      <li><a href="pet_cli.graphical_plots.html#pet_cli.graphical_plots.GraphicalAnalysisPlot.add_fit_points">add_fit_points() (GraphicalAnalysisPlot method)</a>
+</li>
+      <li><a href="pet_cli.graphical_plots.html#pet_cli.graphical_plots.GraphicalAnalysisPlot.add_plots">add_plots() (GraphicalAnalysisPlot method)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="pet_cli.graphical_plots.html#pet_cli.graphical_plots.GraphicalAnalysisPlot.add_shading_plots">add_shading_plots() (GraphicalAnalysisPlot method)</a>
+</li>
+      <li><a href="pet_cli.image_io.html#pet_cli.image_io.ImageIO.affine_parse">affine_parse() (ImageIO static method)</a>
+</li>
+      <li><a href="pet_cli.graphical_analysis.html#pet_cli.graphical_analysis.alternative_logan_analysis">alternative_logan_analysis() (in module pet_cli.graphical_analysis)</a>
+</li>
+      <li><a href="pet_cli.graphical_analysis.html#pet_cli.graphical_analysis.alternative_logan_analysis_with_rsquared">alternative_logan_analysis_with_rsquared() (in module pet_cli.graphical_analysis)</a>
+</li>
+      <li><a href="pet_cli.graphical_plots.html#pet_cli.graphical_plots.AltLoganPlot">AltLoganPlot (class in pet_cli.graphical_plots)</a>
+</li>
+      <li><a href="pet_cli.parametric_images.html#pet_cli.parametric_images.apply_linearized_analysis_to_all_voxels">apply_linearized_analysis_to_all_voxels() (in module pet_cli.parametric_images)</a>
+</li>
+      <li><a href="pet_cli.image_operations_4d.html#pet_cli.image_operations_4d.apply_xfm_ants">apply_xfm_ants() (in module pet_cli.image_operations_4d)</a>
+</li>
+      <li><a href="pet_cli.image_operations_4d.html#pet_cli.image_operations_4d.apply_xfm_fsl">apply_xfm_fsl() (in module pet_cli.image_operations_4d)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="B">B</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="pet_cli.bids_utils.html#pet_cli.bids_utils.BidsInstance">BidsInstance (class in pet_cli.bids_utils)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="pet_cli.blood_input.html#pet_cli.blood_input.BloodInputFunction">BloodInputFunction (class in pet_cli.blood_input)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="C">C</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="pet_cli.bids_utils.html#pet_cli.bids_utils.BidsInstance.cache_filepath">cache_filepath() (BidsInstance method)</a>
+</li>
+      <li><a href="pet_cli.blood_input.html#pet_cli.blood_input.BloodInputFunction.calc_blood_input_function">calc_blood_input_function() (BloodInputFunction method)</a>
+</li>
+      <li><a href="pet_cli.tcms_as_convolutions.html#pet_cli.tcms_as_convolutions.calc_convolution_with_check">calc_convolution_with_check() (in module pet_cli.tcms_as_convolutions)</a>
+</li>
+      <li><a href="pet_cli.reference_tissue_models.html#pet_cli.reference_tissue_models.calc_frtm_tac">calc_frtm_tac() (in module pet_cli.reference_tissue_models)</a>
+</li>
+      <li><a href="pet_cli.reference_tissue_models.html#pet_cli.reference_tissue_models.calc_srtm_tac">calc_srtm_tac() (in module pet_cli.reference_tissue_models)</a>
+</li>
+      <li><a href="pet_cli.parametric_images.html#pet_cli.parametric_images.GraphicalAnalysisParametricImage.calculate_analysis_properties">calculate_analysis_properties() (GraphicalAnalysisParametricImage method)</a>
+</li>
+      <li><a href="pet_cli.tac_interpolation.html#pet_cli.tac_interpolation.EvenlyInterpolateWithMax.calculate_dt_for_even_spacing_with_max_sampled">calculate_dt_for_even_spacing_with_max_sampled() (EvenlyInterpolateWithMax static method)</a>
+</li>
+      <li><a href="pet_cli.graphical_analysis.html#pet_cli.graphical_analysis.GraphicalAnalysis.calculate_fit">calculate_fit() (GraphicalAnalysis method)</a>
+</li>
+      <li><a href="pet_cli.graphical_plots.html#pet_cli.graphical_plots.GraphicalAnalysisPlot.calculate_fit_params">calculate_fit_params() (GraphicalAnalysisPlot method)</a>
+</li>
+      <li><a href="pet_cli.graphical_analysis.html#pet_cli.graphical_analysis.GraphicalAnalysis.calculate_fit_properties">calculate_fit_properties() (GraphicalAnalysis method)</a>
+
+      <ul>
+        <li><a href="pet_cli.parametric_images.html#pet_cli.parametric_images.GraphicalAnalysisParametricImage.calculate_fit_properties">(GraphicalAnalysisParametricImage method)</a>
+</li>
+      </ul></li>
+      <li><a href="pet_cli.parametric_images.html#pet_cli.parametric_images.GraphicalAnalysisParametricImage.calculate_intercept_image_properties">calculate_intercept_image_properties() (GraphicalAnalysisParametricImage method)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="pet_cli.parametric_images.html#pet_cli.parametric_images.GraphicalAnalysisParametricImage.calculate_parametric_images">calculate_parametric_images() (GraphicalAnalysisParametricImage method)</a>
+</li>
+      <li><a href="pet_cli.parametric_images.html#pet_cli.parametric_images.GraphicalAnalysisParametricImage.calculate_parametric_images_properties">calculate_parametric_images_properties() (GraphicalAnalysisParametricImage method)</a>
+</li>
+      <li><a href="pet_cli.graphical_analysis.html#pet_cli.graphical_analysis.calculate_patlak_x">calculate_patlak_x() (in module pet_cli.graphical_analysis)</a>
+</li>
+      <li><a href="pet_cli.parametric_images.html#pet_cli.parametric_images.GraphicalAnalysisParametricImage.calculate_slope_image_properties">calculate_slope_image_properties() (GraphicalAnalysisParametricImage method)</a>
+</li>
+      <li><a href="pet_cli.graphical_plots.html#pet_cli.graphical_plots.AltLoganPlot.calculate_valid_indicies_and_x_and_y">calculate_valid_indicies_and_x_and_y() (AltLoganPlot method)</a>
+
+      <ul>
+        <li><a href="pet_cli.graphical_plots.html#pet_cli.graphical_plots.GraphicalAnalysisPlot.calculate_valid_indicies_and_x_and_y">(GraphicalAnalysisPlot method)</a>
+</li>
+        <li><a href="pet_cli.graphical_plots.html#pet_cli.graphical_plots.LoganPlot.calculate_valid_indicies_and_x_and_y">(LoganPlot method)</a>
+</li>
+        <li><a href="pet_cli.graphical_plots.html#pet_cli.graphical_plots.PatlakPlot.calculate_valid_indicies_and_x_and_y">(PatlakPlot method)</a>
+</li>
+      </ul></li>
+      <li><a href="pet_cli.bids_utils.html#pet_cli.bids_utils.BidsInstance.change_parts">change_parts() (BidsInstance method)</a>
+</li>
+      <li><a href="pet_cli.bids_utils.html#pet_cli.bids_utils.BidsInstance.change_session">change_session() (BidsInstance method)</a>
+</li>
+      <li><a href="pet_cli.bids_utils.html#pet_cli.bids_utils.BidsInstance.create_filepath">create_filepath() (BidsInstance method)</a>
+</li>
+      <li><a href="pet_cli.bids_utils.html#pet_cli.bids_utils.create_json">create_json() (in module pet_cli.bids_utils)</a>
+</li>
+      <li><a href="pet_cli.graphical_analysis.html#pet_cli.graphical_analysis.cumulative_trapezoidal_integral">cumulative_trapezoidal_integral() (in module pet_cli.graphical_analysis)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="D">D</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="pet_cli.bids_utils.html#pet_cli.bids_utils.BidsInstance.delete_directory">delete_directory() (BidsInstance method)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="pet_cli.bids_utils.html#pet_cli.bids_utils.BidsInstance.delete_file">delete_file() (BidsInstance method)</a>
+</li>
+      <li><a href="pet_cli.image_operations_4d.html#pet_cli.image_operations_4d.determine_motion_target">determine_motion_target() (in module pet_cli.image_operations_4d)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="E">E</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="pet_cli.tac_interpolation.html#pet_cli.tac_interpolation.EvenlyInterpolate">EvenlyInterpolate (class in pet_cli.tac_interpolation)</a>
+</li>
+      <li><a href="pet_cli.tac_interpolation.html#pet_cli.tac_interpolation.EvenlyInterpolateWithMax">EvenlyInterpolateWithMax (class in pet_cli.tac_interpolation)</a>
+</li>
+      <li><a href="pet_cli.blood_input.html#pet_cli.blood_input.extract_blood_input_function_activity_from_csv">extract_blood_input_function_activity_from_csv() (in module pet_cli.blood_input)</a>
+</li>
+      <li><a href="pet_cli.blood_input.html#pet_cli.blood_input.extract_blood_input_function_from_csv">extract_blood_input_function_from_csv() (in module pet_cli.blood_input)</a>
+</li>
+      <li><a href="pet_cli.blood_input.html#pet_cli.blood_input.extract_blood_input_function_times_from_csv">extract_blood_input_function_times_from_csv() (in module pet_cli.blood_input)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="pet_cli.image_io.html#pet_cli.image_io.ImageIO.extract_header_from_nii">extract_header_from_nii() (ImageIO method)</a>
+</li>
+      <li><a href="pet_cli.image_io.html#pet_cli.image_io.ImageIO.extract_image_from_nii_as_numpy">extract_image_from_nii_as_numpy() (ImageIO method)</a>
+</li>
+      <li><a href="pet_cli.image_io.html#pet_cli.image_io.ImageIO.extract_np_to_ants">extract_np_to_ants() (ImageIO method)</a>
+</li>
+      <li><a href="pet_cli.image_io.html#pet_cli.image_io.ImageIO.extract_np_to_nibabel">extract_np_to_nibabel() (ImageIO method)</a>
+</li>
+      <li><a href="pet_cli.image_operations_4d.html#pet_cli.image_operations_4d.extract_tac_from_4dnifty_using_mask">extract_tac_from_4dnifty_using_mask() (in module pet_cli.image_operations_4d)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="F">F</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="pet_cli.reference_tissue_models.html#pet_cli.reference_tissue_models.fit_frtm_to_tac">fit_frtm_to_tac() (in module pet_cli.reference_tissue_models)</a>
+</li>
+      <li><a href="pet_cli.reference_tissue_models.html#pet_cli.reference_tissue_models.fit_frtm_to_tac_with_bounds">fit_frtm_to_tac_with_bounds() (in module pet_cli.reference_tissue_models)</a>
+</li>
+      <li><a href="pet_cli.graphical_analysis.html#pet_cli.graphical_analysis.fit_line_to_data_using_lls">fit_line_to_data_using_lls() (in module pet_cli.graphical_analysis)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="pet_cli.graphical_analysis.html#pet_cli.graphical_analysis.fit_line_to_data_using_lls_with_rsquared">fit_line_to_data_using_lls_with_rsquared() (in module pet_cli.graphical_analysis)</a>
+</li>
+      <li><a href="pet_cli.reference_tissue_models.html#pet_cli.reference_tissue_models.fit_srtm_to_tac">fit_srtm_to_tac() (in module pet_cli.reference_tissue_models)</a>
+</li>
+      <li><a href="pet_cli.reference_tissue_models.html#pet_cli.reference_tissue_models.fit_srtm_to_tac_with_bounds">fit_srtm_to_tac_with_bounds() (in module pet_cli.reference_tissue_models)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="G">G</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="pet_cli.graphical_plots.html#pet_cli.graphical_plots.GraphicalAnalysisPlot.generate_figure">generate_figure() (GraphicalAnalysisPlot method)</a>
+</li>
+      <li><a href="pet_cli.graphical_plots.html#pet_cli.graphical_plots.GraphicalAnalysisPlot.generate_figure_and_axes">generate_figure_and_axes() (GraphicalAnalysisPlot static method)</a>
+</li>
+      <li><a href="pet_cli.graphical_plots.html#pet_cli.graphical_plots.AltLoganPlot.generate_label_from_fit_params">generate_label_from_fit_params() (AltLoganPlot method)</a>
+
+      <ul>
+        <li><a href="pet_cli.graphical_plots.html#pet_cli.graphical_plots.GraphicalAnalysisPlot.generate_label_from_fit_params">(GraphicalAnalysisPlot method)</a>
+</li>
+        <li><a href="pet_cli.graphical_plots.html#pet_cli.graphical_plots.LoganPlot.generate_label_from_fit_params">(LoganPlot method)</a>
+</li>
+        <li><a href="pet_cli.graphical_plots.html#pet_cli.graphical_plots.PatlakPlot.generate_label_from_fit_params">(PatlakPlot method)</a>
+</li>
+      </ul></li>
+      <li><a href="pet_cli.parametric_images.html#pet_cli.parametric_images.generate_parametric_images_with_graphical_method">generate_parametric_images_with_graphical_method() (in module pet_cli.parametric_images)</a>
+</li>
+      <li><a href="pet_cli.tcms_as_convolutions.html#pet_cli.tcms_as_convolutions.generate_tac_1tcm_c1_from_tac">generate_tac_1tcm_c1_from_tac() (in module pet_cli.tcms_as_convolutions)</a>
+</li>
+      <li><a href="pet_cli.tcms_as_convolutions.html#pet_cli.tcms_as_convolutions.generate_tac_2tcm_with_k4zero_c1_from_tac">generate_tac_2tcm_with_k4zero_c1_from_tac() (in module pet_cli.tcms_as_convolutions)</a>
+</li>
+      <li><a href="pet_cli.tcms_as_convolutions.html#pet_cli.tcms_as_convolutions.generate_tac_2tcm_with_k4zero_c2_from_tac">generate_tac_2tcm_with_k4zero_c2_from_tac() (in module pet_cli.tcms_as_convolutions)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="pet_cli.tcms_as_convolutions.html#pet_cli.tcms_as_convolutions.generate_tac_2tcm_with_k4zero_cpet_from_tac">generate_tac_2tcm_with_k4zero_cpet_from_tac() (in module pet_cli.tcms_as_convolutions)</a>
+</li>
+      <li><a href="pet_cli.tcms_as_convolutions.html#pet_cli.tcms_as_convolutions.generate_tac_serial_2tcm_c1_from_tac">generate_tac_serial_2tcm_c1_from_tac() (in module pet_cli.tcms_as_convolutions)</a>
+</li>
+      <li><a href="pet_cli.tcms_as_convolutions.html#pet_cli.tcms_as_convolutions.generate_tac_serial_2tcm_c2_from_tac">generate_tac_serial_2tcm_c2_from_tac() (in module pet_cli.tcms_as_convolutions)</a>
+</li>
+      <li><a href="pet_cli.tcms_as_convolutions.html#pet_cli.tcms_as_convolutions.generate_tac_serial_2tcm_cpet_from_tac">generate_tac_serial_2tcm_cpet_from_tac() (in module pet_cli.tcms_as_convolutions)</a>
+</li>
+      <li><a href="pet_cli.graphical_analysis.html#pet_cli.graphical_analysis.get_graphical_analysis_method">get_graphical_analysis_method() (in module pet_cli.graphical_analysis)</a>
+</li>
+      <li><a href="pet_cli.graphical_analysis.html#pet_cli.graphical_analysis.get_graphical_analysis_method_with_rsquared">get_graphical_analysis_method_with_rsquared() (in module pet_cli.graphical_analysis)</a>
+</li>
+      <li><a href="pet_cli.graphical_analysis.html#pet_cli.graphical_analysis.get_index_from_threshold">get_index_from_threshold() (in module pet_cli.graphical_analysis)</a>
+</li>
+      <li><a href="pet_cli.tac_interpolation.html#pet_cli.tac_interpolation.EvenlyInterpolate.get_resampled_tac">get_resampled_tac() (EvenlyInterpolate method)</a>
+</li>
+      <li><a href="pet_cli.graphical_analysis.html#pet_cli.graphical_analysis.GraphicalAnalysis">GraphicalAnalysis (class in pet_cli.graphical_analysis)</a>
+</li>
+      <li><a href="pet_cli.parametric_images.html#pet_cli.parametric_images.GraphicalAnalysisParametricImage">GraphicalAnalysisParametricImage (class in pet_cli.parametric_images)</a>
+</li>
+      <li><a href="pet_cli.graphical_plots.html#pet_cli.graphical_plots.GraphicalAnalysisPlot">GraphicalAnalysisPlot (class in pet_cli.graphical_plots)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="I">I</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="pet_cli.image_io.html#pet_cli.image_io.ImageIO">ImageIO (class in pet_cli.image_io)</a>
+</li>
+      <li><a href="pet_cli.image_operations_4d.html#pet_cli.image_operations_4d.ImageOps4d">ImageOps4d (class in pet_cli.image_operations_4d)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="pet_cli.graphical_analysis.html#pet_cli.graphical_analysis.GraphicalAnalysis.init_analysis_props">init_analysis_props() (GraphicalAnalysis method)</a>
+
+      <ul>
+        <li><a href="pet_cli.parametric_images.html#pet_cli.parametric_images.GraphicalAnalysisParametricImage.init_analysis_props">(GraphicalAnalysisParametricImage method)</a>
+</li>
+      </ul></li>
+  </ul></td>
+</tr></table>
+
+<h2 id="L">L</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="pet_cli.blood_input.html#pet_cli.blood_input.BloodInputFunction.linear_fitting_func">linear_fitting_func() (BloodInputFunction static method)</a>
+</li>
+      <li><a href="pet_cli.bids_utils.html#pet_cli.bids_utils.BidsInstance.load_file">load_file() (BidsInstance method)</a>
+</li>
+      <li><a href="pet_cli.bids_utils.html#pet_cli.bids_utils.load_json">load_json() (in module pet_cli.bids_utils)</a>
+</li>
+      <li><a href="pet_cli.image_io.html#pet_cli.image_io.ImageIO.load_metadata_for_nifty_with_same_filename">load_metadata_for_nifty_with_same_filename() (ImageIO static method)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="pet_cli.image_io.html#pet_cli.image_io.ImageIO.load_nii">load_nii() (ImageIO method)</a>
+</li>
+      <li><a href="pet_cli.bids_utils.html#pet_cli.bids_utils.load_tsv_simple">load_tsv_simple() (in module pet_cli.bids_utils)</a>
+</li>
+      <li><a href="pet_cli.graphical_analysis.html#pet_cli.graphical_analysis.logan_analysis">logan_analysis() (in module pet_cli.graphical_analysis)</a>
+</li>
+      <li><a href="pet_cli.graphical_analysis.html#pet_cli.graphical_analysis.logan_analysis_with_rsquared">logan_analysis_with_rsquared() (in module pet_cli.graphical_analysis)</a>
+</li>
+      <li><a href="pet_cli.graphical_plots.html#pet_cli.graphical_plots.LoganPlot">LoganPlot (class in pet_cli.graphical_plots)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="M">M</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="pet_cli.image_visualization.html#pet_cli.image_visualization.NiftiGifCreator.make_first_frame">make_first_frame() (NiftiGifCreator method)</a>
+</li>
+      <li><a href="pet_cli.image_visualization.html#pet_cli.image_visualization.NiftiGifCreator.make_gif">make_gif() (NiftiGifCreator method)</a>
+</li>
+      <li><a href="pet_cli.bids_utils.html#pet_cli.bids_utils.BidsInstance.manual_filepath">manual_filepath() (BidsInstance method)</a>
+</li>
+      <li>
+    module
+
+      <ul>
+        <li><a href="pet_cli.bids_utils.html#module-pet_cli.bids_utils">pet_cli.bids_utils</a>
+</li>
+        <li><a href="pet_cli.blood_input.html#module-pet_cli.blood_input">pet_cli.blood_input</a>
+</li>
+        <li><a href="pet_cli.cli_bids.html#module-pet_cli.cli_bids">pet_cli.cli_bids</a>
+</li>
+        <li><a href="pet_cli.cli_graphical_analysis.html#module-pet_cli.cli_graphical_analysis">pet_cli.cli_graphical_analysis</a>
+</li>
+        <li><a href="pet_cli.cli_graphical_plots.html#module-pet_cli.cli_graphical_plots">pet_cli.cli_graphical_plots</a>
+</li>
+        <li><a href="pet_cli.cli_parametric_images.html#module-pet_cli.cli_parametric_images">pet_cli.cli_parametric_images</a>
+</li>
+        <li><a href="pet_cli.cli_preproc.html#module-pet_cli.cli_preproc">pet_cli.cli_preproc</a>
+</li>
+        <li><a href="pet_cli.cli_tac_interpolation.html#module-pet_cli.cli_tac_interpolation">pet_cli.cli_tac_interpolation</a>
+</li>
+        <li><a href="pet_cli.graphical_analysis.html#module-pet_cli.graphical_analysis">pet_cli.graphical_analysis</a>
+</li>
+        <li><a href="pet_cli.graphical_plots.html#module-pet_cli.graphical_plots">pet_cli.graphical_plots</a>
+</li>
+        <li><a href="pet_cli.image_io.html#module-pet_cli.image_io">pet_cli.image_io</a>
+</li>
+        <li><a href="pet_cli.image_operations_4d.html#module-pet_cli.image_operations_4d">pet_cli.image_operations_4d</a>
+</li>
+        <li><a href="pet_cli.image_visualization.html#module-pet_cli.image_visualization">pet_cli.image_visualization</a>
+</li>
+        <li><a href="pet_cli.math_lib.html#module-pet_cli.math_lib">pet_cli.math_lib</a>
+</li>
+        <li><a href="pet_cli.parametric_images.html#module-pet_cli.parametric_images">pet_cli.parametric_images</a>
+</li>
+        <li><a href="pet_cli.reference_tissue_models.html#module-pet_cli.reference_tissue_models">pet_cli.reference_tissue_models</a>
+</li>
+        <li><a href="pet_cli.tac_interpolation.html#module-pet_cli.tac_interpolation">pet_cli.tac_interpolation</a>
+</li>
+        <li><a href="pet_cli.tcms_as_convolutions.html#module-pet_cli.tcms_as_convolutions">pet_cli.tcms_as_convolutions</a>
+</li>
+      </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="pet_cli.image_operations_4d.html#pet_cli.image_operations_4d.motion_correction">motion_correction() (in module pet_cli.image_operations_4d)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="N">N</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="pet_cli.image_visualization.html#pet_cli.image_visualization.NiftiGifCreator">NiftiGifCreator (class in pet_cli.image_visualization)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="P">P</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="pet_cli.graphical_analysis.html#pet_cli.graphical_analysis.patlak_analysis">patlak_analysis() (in module pet_cli.graphical_analysis)</a>
+</li>
+      <li><a href="pet_cli.graphical_analysis.html#pet_cli.graphical_analysis.patlak_analysis_with_rsquared">patlak_analysis_with_rsquared() (in module pet_cli.graphical_analysis)</a>
+</li>
+      <li><a href="pet_cli.graphical_plots.html#pet_cli.graphical_plots.PatlakPlot">PatlakPlot (class in pet_cli.graphical_plots)</a>
+</li>
+      <li>
+    pet_cli.bids_utils
+
+      <ul>
+        <li><a href="pet_cli.bids_utils.html#module-pet_cli.bids_utils">module</a>
+</li>
+      </ul></li>
+      <li>
+    pet_cli.blood_input
+
+      <ul>
+        <li><a href="pet_cli.blood_input.html#module-pet_cli.blood_input">module</a>
+</li>
+      </ul></li>
+      <li>
+    pet_cli.cli_bids
+
+      <ul>
+        <li><a href="pet_cli.cli_bids.html#module-pet_cli.cli_bids">module</a>
+</li>
+      </ul></li>
+      <li>
+    pet_cli.cli_graphical_analysis
+
+      <ul>
+        <li><a href="pet_cli.cli_graphical_analysis.html#module-pet_cli.cli_graphical_analysis">module</a>
+</li>
+      </ul></li>
+      <li>
+    pet_cli.cli_graphical_plots
+
+      <ul>
+        <li><a href="pet_cli.cli_graphical_plots.html#module-pet_cli.cli_graphical_plots">module</a>
+</li>
+      </ul></li>
+      <li>
+    pet_cli.cli_parametric_images
+
+      <ul>
+        <li><a href="pet_cli.cli_parametric_images.html#module-pet_cli.cli_parametric_images">module</a>
+</li>
+      </ul></li>
+      <li>
+    pet_cli.cli_preproc
+
+      <ul>
+        <li><a href="pet_cli.cli_preproc.html#module-pet_cli.cli_preproc">module</a>
+</li>
+      </ul></li>
+      <li>
+    pet_cli.cli_tac_interpolation
+
+      <ul>
+        <li><a href="pet_cli.cli_tac_interpolation.html#module-pet_cli.cli_tac_interpolation">module</a>
+</li>
+      </ul></li>
+      <li>
+    pet_cli.graphical_analysis
+
+      <ul>
+        <li><a href="pet_cli.graphical_analysis.html#module-pet_cli.graphical_analysis">module</a>
+</li>
+      </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li>
+    pet_cli.graphical_plots
+
+      <ul>
+        <li><a href="pet_cli.graphical_plots.html#module-pet_cli.graphical_plots">module</a>
+</li>
+      </ul></li>
+      <li>
+    pet_cli.image_io
+
+      <ul>
+        <li><a href="pet_cli.image_io.html#module-pet_cli.image_io">module</a>
+</li>
+      </ul></li>
+      <li>
+    pet_cli.image_operations_4d
+
+      <ul>
+        <li><a href="pet_cli.image_operations_4d.html#module-pet_cli.image_operations_4d">module</a>
+</li>
+      </ul></li>
+      <li>
+    pet_cli.image_visualization
+
+      <ul>
+        <li><a href="pet_cli.image_visualization.html#module-pet_cli.image_visualization">module</a>
+</li>
+      </ul></li>
+      <li>
+    pet_cli.math_lib
+
+      <ul>
+        <li><a href="pet_cli.math_lib.html#module-pet_cli.math_lib">module</a>
+</li>
+      </ul></li>
+      <li>
+    pet_cli.parametric_images
+
+      <ul>
+        <li><a href="pet_cli.parametric_images.html#module-pet_cli.parametric_images">module</a>
+</li>
+      </ul></li>
+      <li>
+    pet_cli.reference_tissue_models
+
+      <ul>
+        <li><a href="pet_cli.reference_tissue_models.html#module-pet_cli.reference_tissue_models">module</a>
+</li>
+      </ul></li>
+      <li>
+    pet_cli.tac_interpolation
+
+      <ul>
+        <li><a href="pet_cli.tac_interpolation.html#module-pet_cli.tac_interpolation">module</a>
+</li>
+      </ul></li>
+      <li>
+    pet_cli.tcms_as_convolutions
+
+      <ul>
+        <li><a href="pet_cli.tcms_as_convolutions.html#module-pet_cli.tcms_as_convolutions">module</a>
+</li>
+      </ul></li>
+      <li><a href="pet_cli.graphical_plots.html#pet_cli.graphical_plots.Plot">Plot (class in pet_cli.graphical_plots)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="R">R</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="pet_cli.image_io.html#pet_cli.image_io.ImageIO.read_label_map_json">read_label_map_json() (ImageIO static method)</a>
+</li>
+      <li><a href="pet_cli.image_operations_4d.html#pet_cli.image_operations_4d.register_pet">register_pet() (in module pet_cli.image_operations_4d)</a>
+</li>
+      <li><a href="pet_cli.image_operations_4d.html#pet_cli.image_operations_4d.resample_segmentation">resample_segmentation() (in module pet_cli.image_operations_4d)</a>
+</li>
+      <li><a href="pet_cli.tcms_as_convolutions.html#pet_cli.tcms_as_convolutions.response_function_1tcm_c1">response_function_1tcm_c1() (in module pet_cli.tcms_as_convolutions)</a>
+</li>
+      <li><a href="pet_cli.tcms_as_convolutions.html#pet_cli.tcms_as_convolutions.response_function_2tcm_with_k4zero_c1">response_function_2tcm_with_k4zero_c1() (in module pet_cli.tcms_as_convolutions)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="pet_cli.tcms_as_convolutions.html#pet_cli.tcms_as_convolutions.response_function_2tcm_with_k4zero_c2">response_function_2tcm_with_k4zero_c2() (in module pet_cli.tcms_as_convolutions)</a>
+</li>
+      <li><a href="pet_cli.tcms_as_convolutions.html#pet_cli.tcms_as_convolutions.response_function_serial_2tcm_c1">response_function_serial_2tcm_c1() (in module pet_cli.tcms_as_convolutions)</a>
+</li>
+      <li><a href="pet_cli.tcms_as_convolutions.html#pet_cli.tcms_as_convolutions.response_function_serial_2tcm_c2">response_function_serial_2tcm_c2() (in module pet_cli.tcms_as_convolutions)</a>
+</li>
+      <li><a href="pet_cli.graphical_analysis.html#pet_cli.graphical_analysis.GraphicalAnalysis.run_analysis">run_analysis() (GraphicalAnalysis method)</a>
+
+      <ul>
+        <li><a href="pet_cli.parametric_images.html#pet_cli.parametric_images.GraphicalAnalysisParametricImage.run_analysis">(GraphicalAnalysisParametricImage method)</a>
+</li>
+      </ul></li>
+      <li><a href="pet_cli.image_operations_4d.html#pet_cli.image_operations_4d.ImageOps4d.run_preproc">run_preproc() (ImageOps4d method)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="S">S</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="pet_cli.graphical_analysis.html#pet_cli.graphical_analysis.GraphicalAnalysis.save_analysis">save_analysis() (GraphicalAnalysis method)</a>
+
+      <ul>
+        <li><a href="pet_cli.parametric_images.html#pet_cli.parametric_images.GraphicalAnalysisParametricImage.save_analysis">(GraphicalAnalysisParametricImage method)</a>
+</li>
+      </ul></li>
+      <li><a href="pet_cli.parametric_images.html#pet_cli.parametric_images.GraphicalAnalysisParametricImage.save_analysis_properties">save_analysis_properties() (GraphicalAnalysisParametricImage method)</a>
+</li>
+      <li><a href="pet_cli.bids_utils.html#pet_cli.bids_utils.save_array_as_tsv">save_array_as_tsv() (in module pet_cli.bids_utils)</a>
+</li>
+      <li><a href="pet_cli.graphical_plots.html#pet_cli.graphical_plots.Plot.save_figure">save_figure() (Plot method)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="pet_cli.bids_utils.html#pet_cli.bids_utils.save_json">save_json() (in module pet_cli.bids_utils)</a>
+</li>
+      <li><a href="pet_cli.image_io.html#pet_cli.image_io.ImageIO.save_nii">save_nii() (ImageIO method)</a>
+</li>
+      <li><a href="pet_cli.parametric_images.html#pet_cli.parametric_images.GraphicalAnalysisParametricImage.save_parametric_images">save_parametric_images() (GraphicalAnalysisParametricImage method)</a>
+</li>
+      <li><a href="pet_cli.bids_utils.html#pet_cli.bids_utils.save_tsv_simple">save_tsv_simple() (in module pet_cli.bids_utils)</a>
+</li>
+      <li><a href="pet_cli.image_visualization.html#pet_cli.image_visualization.NiftiGifCreator.set_figure_title_and_labels">set_figure_title_and_labels() (NiftiGifCreator method)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="U">U</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="pet_cli.image_visualization.html#pet_cli.image_visualization.NiftiGifCreator.update_frame">update_frame() (NiftiGifCreator method)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="pet_cli.bids_utils.html#pet_cli.bids_utils.update_json">update_json() (in module pet_cli.bids_utils)</a>
+</li>
+      <li><a href="pet_cli.image_operations_4d.html#pet_cli.image_operations_4d.ImageOps4d.update_props">update_props() (ImageOps4d method)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="W">W</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="pet_cli.image_operations_4d.html#pet_cli.image_operations_4d.warp_pet_atlas">warp_pet_atlas() (in module pet_cli.image_operations_4d)</a>
+</li>
+      <li><a href="pet_cli.image_operations_4d.html#pet_cli.image_operations_4d.weighted_series_sum">weighted_series_sum() (in module pet_cli.image_operations_4d)</a>
+</li>
+      <li><a href="pet_cli.math_lib.html#pet_cli.math_lib.weighted_sum_computation">weighted_sum_computation() (in module pet_cli.math_lib)</a>
+</li>
+      <li><a href="pet_cli.image_io.html#pet_cli.image_io.write_dict_to_json">write_dict_to_json() (in module pet_cli.image_io)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="pet_cli.bids_utils.html#pet_cli.bids_utils.BidsInstance.write_file">write_file() (BidsInstance method)</a>
+</li>
+      <li><a href="pet_cli.image_visualization.html#pet_cli.image_visualization.NiftiGifCreator.write_gif">write_gif() (NiftiGifCreator method)</a>
+</li>
+      <li><a href="pet_cli.bids_utils.html#pet_cli.bids_utils.BidsInstance.write_symbolic_link">write_symbolic_link() (BidsInstance method)</a>
+</li>
+      <li><a href="pet_cli.image_operations_4d.html#pet_cli.image_operations_4d.write_tacs">write_tacs() (in module pet_cli.image_operations_4d)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer">
+                  
+<div class="prev-next-area">
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="_static/scripts/bootstrap.js?digest=8d27b9dea8ad943066ae"></script>
+<script src="_static/scripts/pydata-sphinx-theme.js?digest=8d27b9dea8ad943066ae"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2024, Furqan Dar, Bradley Judge, Noah Goldman.
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.2.6.
+    <br/>
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.15.2.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

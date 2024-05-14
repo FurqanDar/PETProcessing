@@ -1,0 +1,562 @@
+
+<!DOCTYPE html>
+
+
+<html lang="English (US)" data-content_root="./" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Modules &#8212; PET Processing Module</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="_static/styles/theme.css?digest=8d27b9dea8ad943066ae" rel="stylesheet" />
+<link href="_static/styles/bootstrap.css?digest=8d27b9dea8ad943066ae" rel="stylesheet" />
+<link href="_static/styles/pydata-sphinx-theme.css?digest=8d27b9dea8ad943066ae" rel="stylesheet" />
+
+  
+  <link href="_static/vendor/fontawesome/6.5.1/css/all.min.css?digest=8d27b9dea8ad943066ae" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.1/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.1/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.1/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=a746c00c" />
+    <link rel="stylesheet" type="text/css" href="_static/plot_directive.css" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=8d27b9dea8ad943066ae" />
+<link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=8d27b9dea8ad943066ae" />
+  <script src="_static/vendor/fontawesome/6.5.1/js/all.min.js?digest=8d27b9dea8ad943066ae"></script>
+
+    <script src="_static/documentation_options.js?v=cd7df0db"></script>
+    <script src="_static/doctools.js?v=888ff710"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'modules';</script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="1. Image IO" href="pet_cli.image_io.html" />
+    <link rel="prev" title="PET Processing Module Documentation" href="index.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="English (US)"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <a id="pst-skip-link" class="skip-link" href="#main-content">Skip to main content</a>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>
+    Back to top
+  </button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__primary"
+          id="__primary"/>
+  <label class="overlay overlay-primary" for="__primary"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__secondary"
+          id="__secondary"/>
+  <label class="overlay overlay-secondary" for="__secondary"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar">
+<div class="bd-header__inner bd-page-width">
+  <label class="sidebar-toggle primary-toggle" for="__primary">
+    <span class="fa-solid fa-bars"></span>
+  </label>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+
+<a class="navbar-brand logo" href="index.html">
+  
+  
+  
+  
+  
+  
+    <p class="title logo__title">PET Processing Module</p>
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav class="navbar-nav">
+  <ul class="bd-navbar-elements navbar-nav">
+    
+                    <li class="nav-item current active">
+                      <a class="nav-link nav-internal" href="#">
+                        Modules
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="cli_ref.html">
+                        CLI Reference
+                      </a>
+                    </li>
+                
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+ <script>
+ document.write(`
+   <button class="btn navbar-btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<script>
+document.write(`
+  <button class="btn btn-sm navbar-btn theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="theme-switch nav-link" data-mode="light"><i class="fa-solid fa-sun fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="dark"><i class="fa-solid fa-moon fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg"></i></span>
+  </button>
+`);
+</script></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+ <script>
+ document.write(`
+   <button class="btn navbar-btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script>
+    </div>
+  
+
+  
+    <label class="sidebar-toggle secondary-toggle" for="__secondary" tabindex="0">
+      <span class="fa-solid fa-outdent"></span>
+    </label>
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          <div class="navbar-item">
+<nav class="navbar-nav">
+  <ul class="bd-navbar-elements navbar-nav">
+    
+                    <li class="nav-item current active">
+                      <a class="nav-link nav-internal" href="#">
+                        Modules
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="cli_ref.html">
+                        CLI Reference
+                      </a>
+                    </li>
+                
+  </ul>
+</nav></div>
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<script>
+document.write(`
+  <button class="btn btn-sm navbar-btn theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="theme-switch nav-link" data-mode="light"><i class="fa-solid fa-sun fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="dark"><i class="fa-solid fa-moon fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg"></i></span>
+  </button>
+`);
+</script></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+<nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"><ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="pet_cli.image_io.html">1. Image IO</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pet_cli.tac_interpolation.html">2. TAC Interpolation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pet_cli.tcms_as_convolutions.html">3. TCMs As Convolutions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pet_cli.graphical_analysis.html">4. Graphical Analysis Of TACs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pet_cli.reference_tissue_models.html">5. Reference Tissue Models</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pet_cli.parametric_images.html">6. Parametric Images</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pet_cli.graphical_plots.html">7. Graphical Analysis Plots</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pet_cli.image_visualization.html">8. Image Visualization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pet_cli.blood_input.html">9. Interpolation Blood Data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pet_cli.image_operations_4d.html">10. Operations On 4D Images</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pet_cli.math_lib.html">11. Mathematical Operations Library</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pet_cli.bids_utils.html">12. BIDS File Management Utilities</a></li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+
+
+<nav aria-label="Breadcrumb">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    <li class="breadcrumb-item active" aria-current="page">Modules</li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="modules">
+<h1>Modules<a class="headerlink" href="#modules" title="Link to this heading">#</a></h1>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="pet_cli.image_io.html">1. Image IO</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="pet_cli.image_io.html#pet_cli.image_io.write_dict_to_json"><code class="docutils literal notranslate"><span class="pre">write_dict_to_json</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="pet_cli.image_io.html#pet_cli.image_io.ImageIO"><code class="docutils literal notranslate"><span class="pre">ImageIO</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="pet_cli.tac_interpolation.html">2. TAC Interpolation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="pet_cli.tac_interpolation.html#pet_cli.tac_interpolation.EvenlyInterpolate"><code class="docutils literal notranslate"><span class="pre">EvenlyInterpolate</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="pet_cli.tac_interpolation.html#pet_cli.tac_interpolation.EvenlyInterpolateWithMax"><code class="docutils literal notranslate"><span class="pre">EvenlyInterpolateWithMax</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="pet_cli.tcms_as_convolutions.html">3. TCMs As Convolutions</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="pet_cli.tcms_as_convolutions.html#pet_cli.tcms_as_convolutions.calc_convolution_with_check"><code class="docutils literal notranslate"><span class="pre">calc_convolution_with_check</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="pet_cli.tcms_as_convolutions.html#pet_cli.tcms_as_convolutions.response_function_1tcm_c1"><code class="docutils literal notranslate"><span class="pre">response_function_1tcm_c1</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="pet_cli.tcms_as_convolutions.html#pet_cli.tcms_as_convolutions.response_function_2tcm_with_k4zero_c1"><code class="docutils literal notranslate"><span class="pre">response_function_2tcm_with_k4zero_c1</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="pet_cli.tcms_as_convolutions.html#pet_cli.tcms_as_convolutions.response_function_2tcm_with_k4zero_c2"><code class="docutils literal notranslate"><span class="pre">response_function_2tcm_with_k4zero_c2</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="pet_cli.tcms_as_convolutions.html#pet_cli.tcms_as_convolutions.response_function_serial_2tcm_c1"><code class="docutils literal notranslate"><span class="pre">response_function_serial_2tcm_c1</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="pet_cli.tcms_as_convolutions.html#pet_cli.tcms_as_convolutions.response_function_serial_2tcm_c2"><code class="docutils literal notranslate"><span class="pre">response_function_serial_2tcm_c2</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="pet_cli.tcms_as_convolutions.html#pet_cli.tcms_as_convolutions.generate_tac_1tcm_c1_from_tac"><code class="docutils literal notranslate"><span class="pre">generate_tac_1tcm_c1_from_tac</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="pet_cli.tcms_as_convolutions.html#pet_cli.tcms_as_convolutions.generate_tac_2tcm_with_k4zero_c1_from_tac"><code class="docutils literal notranslate"><span class="pre">generate_tac_2tcm_with_k4zero_c1_from_tac</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="pet_cli.tcms_as_convolutions.html#pet_cli.tcms_as_convolutions.generate_tac_2tcm_with_k4zero_c2_from_tac"><code class="docutils literal notranslate"><span class="pre">generate_tac_2tcm_with_k4zero_c2_from_tac</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="pet_cli.tcms_as_convolutions.html#pet_cli.tcms_as_convolutions.generate_tac_2tcm_with_k4zero_cpet_from_tac"><code class="docutils literal notranslate"><span class="pre">generate_tac_2tcm_with_k4zero_cpet_from_tac</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="pet_cli.tcms_as_convolutions.html#pet_cli.tcms_as_convolutions.generate_tac_serial_2tcm_c1_from_tac"><code class="docutils literal notranslate"><span class="pre">generate_tac_serial_2tcm_c1_from_tac</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="pet_cli.tcms_as_convolutions.html#pet_cli.tcms_as_convolutions.generate_tac_serial_2tcm_c2_from_tac"><code class="docutils literal notranslate"><span class="pre">generate_tac_serial_2tcm_c2_from_tac</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="pet_cli.tcms_as_convolutions.html#pet_cli.tcms_as_convolutions.generate_tac_serial_2tcm_cpet_from_tac"><code class="docutils literal notranslate"><span class="pre">generate_tac_serial_2tcm_cpet_from_tac</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="pet_cli.graphical_analysis.html">4. Graphical Analysis Of TACs</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="pet_cli.graphical_analysis.html#pet_cli.graphical_analysis._line_fitting_make_rhs_matrix_from_xdata"><code class="docutils literal notranslate"><span class="pre">_line_fitting_make_rhs_matrix_from_xdata</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="pet_cli.graphical_analysis.html#pet_cli.graphical_analysis.fit_line_to_data_using_lls"><code class="docutils literal notranslate"><span class="pre">fit_line_to_data_using_lls</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="pet_cli.graphical_analysis.html#pet_cli.graphical_analysis.fit_line_to_data_using_lls_with_rsquared"><code class="docutils literal notranslate"><span class="pre">fit_line_to_data_using_lls_with_rsquared</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="pet_cli.graphical_analysis.html#pet_cli.graphical_analysis.cumulative_trapezoidal_integral"><code class="docutils literal notranslate"><span class="pre">cumulative_trapezoidal_integral</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="pet_cli.graphical_analysis.html#pet_cli.graphical_analysis.calculate_patlak_x"><code class="docutils literal notranslate"><span class="pre">calculate_patlak_x</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="pet_cli.graphical_analysis.html#pet_cli.graphical_analysis.get_index_from_threshold"><code class="docutils literal notranslate"><span class="pre">get_index_from_threshold</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="pet_cli.graphical_analysis.html#pet_cli.graphical_analysis.patlak_analysis"><code class="docutils literal notranslate"><span class="pre">patlak_analysis</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="pet_cli.graphical_analysis.html#pet_cli.graphical_analysis.patlak_analysis_with_rsquared"><code class="docutils literal notranslate"><span class="pre">patlak_analysis_with_rsquared</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="pet_cli.graphical_analysis.html#pet_cli.graphical_analysis.logan_analysis"><code class="docutils literal notranslate"><span class="pre">logan_analysis</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="pet_cli.graphical_analysis.html#pet_cli.graphical_analysis.logan_analysis_with_rsquared"><code class="docutils literal notranslate"><span class="pre">logan_analysis_with_rsquared</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="pet_cli.graphical_analysis.html#pet_cli.graphical_analysis.alternative_logan_analysis"><code class="docutils literal notranslate"><span class="pre">alternative_logan_analysis</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="pet_cli.graphical_analysis.html#pet_cli.graphical_analysis.alternative_logan_analysis_with_rsquared"><code class="docutils literal notranslate"><span class="pre">alternative_logan_analysis_with_rsquared</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="pet_cli.graphical_analysis.html#pet_cli.graphical_analysis.get_graphical_analysis_method"><code class="docutils literal notranslate"><span class="pre">get_graphical_analysis_method</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="pet_cli.graphical_analysis.html#pet_cli.graphical_analysis.get_graphical_analysis_method_with_rsquared"><code class="docutils literal notranslate"><span class="pre">get_graphical_analysis_method_with_rsquared</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="pet_cli.graphical_analysis.html#pet_cli.graphical_analysis._safe_load_tac"><code class="docutils literal notranslate"><span class="pre">_safe_load_tac</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="pet_cli.graphical_analysis.html#pet_cli.graphical_analysis.GraphicalAnalysis"><code class="docutils literal notranslate"><span class="pre">GraphicalAnalysis</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="pet_cli.reference_tissue_models.html">5. Reference Tissue Models</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="pet_cli.reference_tissue_models.html#pet_cli.reference_tissue_models.calc_srtm_tac"><code class="docutils literal notranslate"><span class="pre">calc_srtm_tac</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="pet_cli.reference_tissue_models.html#pet_cli.reference_tissue_models._calc_simplified_frtm_tac"><code class="docutils literal notranslate"><span class="pre">_calc_simplified_frtm_tac</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="pet_cli.reference_tissue_models.html#pet_cli.reference_tissue_models._calc_frtm_params_from_kinetic_params"><code class="docutils literal notranslate"><span class="pre">_calc_frtm_params_from_kinetic_params</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="pet_cli.reference_tissue_models.html#pet_cli.reference_tissue_models.calc_frtm_tac"><code class="docutils literal notranslate"><span class="pre">calc_frtm_tac</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="pet_cli.reference_tissue_models.html#pet_cli.reference_tissue_models.fit_srtm_to_tac"><code class="docutils literal notranslate"><span class="pre">fit_srtm_to_tac</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="pet_cli.reference_tissue_models.html#pet_cli.reference_tissue_models.fit_srtm_to_tac_with_bounds"><code class="docutils literal notranslate"><span class="pre">fit_srtm_to_tac_with_bounds</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="pet_cli.reference_tissue_models.html#pet_cli.reference_tissue_models.fit_frtm_to_tac"><code class="docutils literal notranslate"><span class="pre">fit_frtm_to_tac</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="pet_cli.reference_tissue_models.html#pet_cli.reference_tissue_models.fit_frtm_to_tac_with_bounds"><code class="docutils literal notranslate"><span class="pre">fit_frtm_to_tac_with_bounds</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="pet_cli.parametric_images.html">6. Parametric Images</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="pet_cli.parametric_images.html#pet_cli.parametric_images.apply_linearized_analysis_to_all_voxels"><code class="docutils literal notranslate"><span class="pre">apply_linearized_analysis_to_all_voxels</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="pet_cli.parametric_images.html#pet_cli.parametric_images.generate_parametric_images_with_graphical_method"><code class="docutils literal notranslate"><span class="pre">generate_parametric_images_with_graphical_method</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="pet_cli.parametric_images.html#pet_cli.parametric_images._safe_load_tac"><code class="docutils literal notranslate"><span class="pre">_safe_load_tac</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="pet_cli.parametric_images.html#pet_cli.parametric_images._safe_load_4dpet_nifty"><code class="docutils literal notranslate"><span class="pre">_safe_load_4dpet_nifty</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="pet_cli.parametric_images.html#pet_cli.parametric_images.GraphicalAnalysisParametricImage"><code class="docutils literal notranslate"><span class="pre">GraphicalAnalysisParametricImage</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="pet_cli.graphical_plots.html">7. Graphical Analysis Plots</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="pet_cli.graphical_plots.html#pet_cli.graphical_plots.GraphicalAnalysisPlot"><code class="docutils literal notranslate"><span class="pre">GraphicalAnalysisPlot</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="pet_cli.graphical_plots.html#pet_cli.graphical_plots.PatlakPlot"><code class="docutils literal notranslate"><span class="pre">PatlakPlot</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="pet_cli.graphical_plots.html#pet_cli.graphical_plots.LoganPlot"><code class="docutils literal notranslate"><span class="pre">LoganPlot</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="pet_cli.graphical_plots.html#pet_cli.graphical_plots.AltLoganPlot"><code class="docutils literal notranslate"><span class="pre">AltLoganPlot</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="pet_cli.graphical_plots.html#pet_cli.graphical_plots._safe_load_tac"><code class="docutils literal notranslate"><span class="pre">_safe_load_tac</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="pet_cli.graphical_plots.html#pet_cli.graphical_plots.Plot"><code class="docutils literal notranslate"><span class="pre">Plot</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="pet_cli.image_visualization.html">8. Image Visualization</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="pet_cli.image_visualization.html#pet_cli.image_visualization.NiftiGifCreator"><code class="docutils literal notranslate"><span class="pre">NiftiGifCreator</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="pet_cli.blood_input.html">9. Interpolation Blood Data</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="pet_cli.blood_input.html#pet_cli.blood_input.extract_blood_input_function_from_csv"><code class="docutils literal notranslate"><span class="pre">extract_blood_input_function_from_csv</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="pet_cli.blood_input.html#pet_cli.blood_input.extract_blood_input_function_times_from_csv"><code class="docutils literal notranslate"><span class="pre">extract_blood_input_function_times_from_csv</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="pet_cli.blood_input.html#pet_cli.blood_input.extract_blood_input_function_activity_from_csv"><code class="docutils literal notranslate"><span class="pre">extract_blood_input_function_activity_from_csv</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="pet_cli.blood_input.html#pet_cli.blood_input.BloodInputFunction"><code class="docutils literal notranslate"><span class="pre">BloodInputFunction</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="pet_cli.image_operations_4d.html">10. Operations On 4D Images</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="pet_cli.image_operations_4d.html#pet_cli.image_operations_4d.weighted_series_sum"><code class="docutils literal notranslate"><span class="pre">weighted_series_sum</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="pet_cli.image_operations_4d.html#pet_cli.image_operations_4d.determine_motion_target"><code class="docutils literal notranslate"><span class="pre">determine_motion_target</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="pet_cli.image_operations_4d.html#pet_cli.image_operations_4d.motion_correction"><code class="docutils literal notranslate"><span class="pre">motion_correction</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="pet_cli.image_operations_4d.html#pet_cli.image_operations_4d.register_pet"><code class="docutils literal notranslate"><span class="pre">register_pet</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="pet_cli.image_operations_4d.html#pet_cli.image_operations_4d.warp_pet_atlas"><code class="docutils literal notranslate"><span class="pre">warp_pet_atlas</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="pet_cli.image_operations_4d.html#pet_cli.image_operations_4d.apply_xfm_ants"><code class="docutils literal notranslate"><span class="pre">apply_xfm_ants</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="pet_cli.image_operations_4d.html#pet_cli.image_operations_4d.apply_xfm_fsl"><code class="docutils literal notranslate"><span class="pre">apply_xfm_fsl</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="pet_cli.image_operations_4d.html#pet_cli.image_operations_4d.resample_segmentation"><code class="docutils literal notranslate"><span class="pre">resample_segmentation</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="pet_cli.image_operations_4d.html#pet_cli.image_operations_4d.extract_tac_from_4dnifty_using_mask"><code class="docutils literal notranslate"><span class="pre">extract_tac_from_4dnifty_using_mask</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="pet_cli.image_operations_4d.html#pet_cli.image_operations_4d.write_tacs"><code class="docutils literal notranslate"><span class="pre">write_tacs</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="pet_cli.image_operations_4d.html#pet_cli.image_operations_4d.ImageOps4d"><code class="docutils literal notranslate"><span class="pre">ImageOps4d</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="pet_cli.math_lib.html">11. Mathematical Operations Library</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="pet_cli.math_lib.html#pet_cli.math_lib.weighted_sum_computation"><code class="docutils literal notranslate"><span class="pre">weighted_sum_computation</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="pet_cli.bids_utils.html">12. BIDS File Management Utilities</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="pet_cli.bids_utils.html#pet_cli.bids_utils.BidsInstance"><code class="docutils literal notranslate"><span class="pre">BidsInstance</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="pet_cli.bids_utils.html#pet_cli.bids_utils.create_json"><code class="docutils literal notranslate"><span class="pre">create_json</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="pet_cli.bids_utils.html#pet_cli.bids_utils.update_json"><code class="docutils literal notranslate"><span class="pre">update_json</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="pet_cli.bids_utils.html#pet_cli.bids_utils.save_json"><code class="docutils literal notranslate"><span class="pre">save_json</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="pet_cli.bids_utils.html#pet_cli.bids_utils.load_json"><code class="docutils literal notranslate"><span class="pre">load_json</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="pet_cli.bids_utils.html#pet_cli.bids_utils.save_array_as_tsv"><code class="docutils literal notranslate"><span class="pre">save_array_as_tsv</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="pet_cli.bids_utils.html#pet_cli.bids_utils.save_tsv_simple"><code class="docutils literal notranslate"><span class="pre">save_tsv_simple</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="pet_cli.bids_utils.html#pet_cli.bids_utils.load_tsv_simple"><code class="docutils literal notranslate"><span class="pre">load_tsv_simple</span></code></a></li>
+</ul>
+</li>
+</ul>
+</div>
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="index.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">PET Processing Module Documentation</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="pet_cli.image_io.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title"><span class="section-number">1. </span>Image IO</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+
+  <div class="tocsection sourcelink">
+    <a href="_sources/modules.rst.txt">
+      <i class="fa-solid fa-file-lines"></i> Show Source
+    </a>
+  </div>
+</div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="_static/scripts/bootstrap.js?digest=8d27b9dea8ad943066ae"></script>
+<script src="_static/scripts/pydata-sphinx-theme.js?digest=8d27b9dea8ad943066ae"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2024, Furqan Dar, Bradley Judge, Noah Goldman.
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.2.6.
+    <br/>
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.15.2.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

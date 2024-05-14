@@ -1,0 +1,7 @@
+[console_scripts]
+pet-cli-bids = pet_cli.cli_bids:main
+pet-cli-graph-analysis = pet_cli.cli_graphical_analysis:main
+pet-cli-graph-plot = pet_cli.cli_graphical_plots:main
+pet-cli-parametric-image = pet_cli.cli_parametric_images:main
+pet-cli-preproc = pet_cli.cli_preproc:main
+pet-cli-tac-interpolate = pet_cli.cli_tac_interpolation:main

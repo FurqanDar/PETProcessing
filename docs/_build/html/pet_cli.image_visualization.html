@@ -1,0 +1,643 @@
+
+<!DOCTYPE html>
+
+
+<html lang="English (US)" data-content_root="./" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>8. Image Visualization &#8212; PET Processing Module</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="_static/styles/theme.css?digest=8d27b9dea8ad943066ae" rel="stylesheet" />
+<link href="_static/styles/bootstrap.css?digest=8d27b9dea8ad943066ae" rel="stylesheet" />
+<link href="_static/styles/pydata-sphinx-theme.css?digest=8d27b9dea8ad943066ae" rel="stylesheet" />
+
+  
+  <link href="_static/vendor/fontawesome/6.5.1/css/all.min.css?digest=8d27b9dea8ad943066ae" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.1/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.1/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.1/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=a746c00c" />
+    <link rel="stylesheet" type="text/css" href="_static/plot_directive.css" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=8d27b9dea8ad943066ae" />
+<link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=8d27b9dea8ad943066ae" />
+  <script src="_static/vendor/fontawesome/6.5.1/js/all.min.js?digest=8d27b9dea8ad943066ae"></script>
+
+    <script src="_static/documentation_options.js?v=cd7df0db"></script>
+    <script src="_static/doctools.js?v=888ff710"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'pet_cli.image_visualization';</script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="9. Interpolation Blood Data" href="pet_cli.blood_input.html" />
+    <link rel="prev" title="7. Graphical Analysis Plots" href="pet_cli.graphical_plots.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="English (US)"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <a id="pst-skip-link" class="skip-link" href="#main-content">Skip to main content</a>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>
+    Back to top
+  </button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__primary"
+          id="__primary"/>
+  <label class="overlay overlay-primary" for="__primary"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__secondary"
+          id="__secondary"/>
+  <label class="overlay overlay-secondary" for="__secondary"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar">
+<div class="bd-header__inner bd-page-width">
+  <label class="sidebar-toggle primary-toggle" for="__primary">
+    <span class="fa-solid fa-bars"></span>
+  </label>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+
+<a class="navbar-brand logo" href="index.html">
+  
+  
+  
+  
+  
+  
+    <p class="title logo__title">PET Processing Module</p>
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav class="navbar-nav">
+  <ul class="bd-navbar-elements navbar-nav">
+    
+                    <li class="nav-item current active">
+                      <a class="nav-link nav-internal" href="modules.html">
+                        Modules
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="cli_ref.html">
+                        CLI Reference
+                      </a>
+                    </li>
+                
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+ <script>
+ document.write(`
+   <button class="btn navbar-btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<script>
+document.write(`
+  <button class="btn btn-sm navbar-btn theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="theme-switch nav-link" data-mode="light"><i class="fa-solid fa-sun fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="dark"><i class="fa-solid fa-moon fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg"></i></span>
+  </button>
+`);
+</script></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+ <script>
+ document.write(`
+   <button class="btn navbar-btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script>
+    </div>
+  
+
+  
+    <label class="sidebar-toggle secondary-toggle" for="__secondary" tabindex="0">
+      <span class="fa-solid fa-outdent"></span>
+    </label>
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          <div class="navbar-item">
+<nav class="navbar-nav">
+  <ul class="bd-navbar-elements navbar-nav">
+    
+                    <li class="nav-item current active">
+                      <a class="nav-link nav-internal" href="modules.html">
+                        Modules
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="cli_ref.html">
+                        CLI Reference
+                      </a>
+                    </li>
+                
+  </ul>
+</nav></div>
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<script>
+document.write(`
+  <button class="btn btn-sm navbar-btn theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="theme-switch nav-link" data-mode="light"><i class="fa-solid fa-sun fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="dark"><i class="fa-solid fa-moon fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg"></i></span>
+  </button>
+`);
+</script></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+<nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="pet_cli.image_io.html">1. Image IO</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pet_cli.tac_interpolation.html">2. TAC Interpolation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pet_cli.tcms_as_convolutions.html">3. TCMs As Convolutions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pet_cli.graphical_analysis.html">4. Graphical Analysis Of TACs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pet_cli.reference_tissue_models.html">5. Reference Tissue Models</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pet_cli.parametric_images.html">6. Parametric Images</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pet_cli.graphical_plots.html">7. Graphical Analysis Plots</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">8. Image Visualization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pet_cli.blood_input.html">9. Interpolation Blood Data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pet_cli.image_operations_4d.html">10. Operations On 4D Images</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pet_cli.math_lib.html">11. Mathematical Operations Library</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pet_cli.bids_utils.html">12. BIDS File Management Utilities</a></li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+
+
+<nav aria-label="Breadcrumb">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="modules.html" class="nav-link">Modules</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page"><span...</li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="module-pet_cli.image_visualization">
+<span id="image-visualization"></span><h1><span class="section-number">8. </span>Image Visualization<a class="headerlink" href="#module-pet_cli.image_visualization" title="Link to this heading">#</a></h1>
+<p>Provides a class for creating a GIF from a NIfTI image which iterates through its slices based
+on a specified view ('coronal', 'sagittal', or 'axial').</p>
+<dl class="simple">
+<dt>Classes defined in the module:</dt><dd><ul class="simple">
+<li><p><a class="reference internal" href="#pet_cli.image_visualization.NiftiGifCreator" title="pet_cli.image_visualization.NiftiGifCreator"><code class="xref py py-class docutils literal notranslate"><span class="pre">NiftiGifCreator</span></code></a>: This class creates a GIF from a NIfTI image by iterating through its slices based on
+a specified view ('coronal', 'sagittal', or 'axial'). The GIF is then written to the
+specified output directory with a filename prefix specified by the user.</p></li>
+</ul>
+</dd>
+</dl>
+<div class="admonition-todo admonition" id="id1">
+<p class="admonition-title">Todo</p>
+<ul class="simple">
+<li><p>Add functionality to quickly generate slices of images.</p></li>
+<li><p>Add flexibility in <a class="reference internal" href="#pet_cli.image_visualization.NiftiGifCreator" title="pet_cli.image_visualization.NiftiGifCreator"><code class="xref py py-class docutils literal notranslate"><span class="pre">NiftiGifCreator</span></code></a> to accept a NumPy array or a file-path. This could also be added
+to the image slice class.</p></li>
+</ul>
+</div>
+<dl class="py class">
+<dt class="sig sig-object py" id="pet_cli.image_visualization.NiftiGifCreator">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">NiftiGifCreator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path_to_image</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">view</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_directory</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_filename_prefix</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fig_title</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'Patlak-$K_i$</span> <span class="pre">Parametric</span> <span class="pre">Image'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cbar_label</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'$K_i$</span> <span class="pre">(Infusion</span> <span class="pre">Rate)'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pet_cli.image_visualization.NiftiGifCreator" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>This class is designed to create a GIF from a NIfTI image by iterating through its slices based on a specified view
+('coronal', 'sagittal', or 'axial' (or 'transverse'). The GIF is then written to the specified output directory
+with a filename prefix specified by the user.</p>
+<div class="admonition important">
+<p class="admonition-title">Important</p>
+<p>Makes a GIF of the image in the space defined by the nifty file.</p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Variables<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>path_to_image</strong> (<em>str</em>) -- Path to the NIfTI image file.</p></li>
+<li><p><strong>view</strong> (<em>str</em>) -- Specifies on which plane the NIfTI image is sliced.</p></li>
+<li><p><strong>output_directory</strong> (<em>str</em>) -- Directory where the GIF should be written.</p></li>
+<li><p><strong>prefix</strong> (<em>str</em>) -- Filename prefix for the GIF.</p></li>
+<li><p><strong>fig</strong> (<a class="reference external" href="https://matplotlib.org/stable/api/figure_api.html#matplotlib.figure.Figure" title="(in Matplotlib v3.8.4)"><em>matplotlib.figure.Figure</em></a>) -- Matplotlib figure object for the GIF.</p></li>
+<li><p><strong>ax</strong> (<a class="reference external" href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.html#matplotlib.axes.Axes" title="(in Matplotlib v3.8.4)"><em>matplotlib.axes.Axes</em></a>) -- Matplotlib axes object for the GIF.</p></li>
+<li><p><strong>im_kw</strong> (<em>dict</em>) -- Dictionary of arguments passed to Axes.imshow for the GIF.</p></li>
+<li><p><strong>image</strong> (<a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.26)"><em>numpy.ndarray</em></a>) -- 3D numpy array representing the NIfTI image.</p></li>
+<li><p><strong>vmax</strong> (<em>float</em>) -- Maximum value for the plot's color limit.</p></li>
+<li><p><strong>ani_image</strong> (<a class="reference external" href="https://matplotlib.org/stable/api/image_api.html#matplotlib.image.AxesImage" title="(in Matplotlib v3.8.4)"><em>matplotlib.image.AxesImage</em></a>) -- An animated image rendered in the figure.</p></li>
+<li><p><strong>cbar</strong> (<em>matplotlib.colorbar</em>) -- Colorbar associated with ani_image.</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Example</p>
+<p>An example of how to initialize and use the NiftiGifCreator class:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">pet_cli.image_visualization</span> <span class="k">as</span> <span class="nn">pet_vis</span>
+
+<span class="n">gif_creator</span> <span class="o">=</span> <span class="n">pet_vis</span><span class="o">.</span><span class="n">NiftiGifCreator</span><span class="p">(</span><span class="n">path_to_image</span><span class="o">=</span><span class="s2">&quot;./input.nii.gz&quot;</span><span class="p">,</span>
+                                      <span class="n">view</span><span class="o">=</span><span class="s2">&quot;axial&quot;</span><span class="p">,</span>
+                                      <span class="n">output_directory</span><span class="o">=</span><span class="s2">&quot;./output&quot;</span><span class="p">,</span>
+                                      <span class="n">output_filename_prefix</span><span class="o">=</span><span class="s2">&quot;test&quot;</span><span class="p">)</span>
+<span class="n">gif_creator</span><span class="o">.</span><span class="n">make_gif</span><span class="p">()</span>
+<span class="n">gif_creator</span><span class="o">.</span><span class="n">write_gif</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>Initialize the <a class="reference internal" href="#pet_cli.image_visualization.NiftiGifCreator" title="pet_cli.image_visualization.NiftiGifCreator"><code class="xref py py-class docutils literal notranslate"><span class="pre">NiftiGifCreator</span></code></a>. Assigns instance variables and sets up figure for animation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>path_to_image</strong> (<em>str</em>) -- absolute path to the image file.</p></li>
+<li><p><strong>view</strong> (<em>str</em>) -- desired view for the gif. Can be 'coronal', 'sagittal', 'axial'.</p></li>
+<li><p><strong>output_directory</strong> (<em>str</em>) -- absolute path to the directory where gif is to be stored.</p></li>
+<li><p><strong>output_filename_prefix</strong> (<em>str</em><em>, </em><em>optional</em>) -- a string to be prepended to the filename of the gif.</p></li>
+<li><p><strong>fig_title</strong> (<em>str</em><em>, </em><em>optional</em>) -- Title of the figure where the images will be plotted.</p></li>
+<li><p><strong>cbar_label</strong> (<em>str</em><em>, </em><em>optional</em>) -- Label for the colorbar of the figure.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>ValueError</strong> -- If <cite>view</cite> is not 'coronal', 'sagittal' or 'axial'</p>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="pet_cli.image_visualization.NiftiGifCreator._validate_view">
+<span class="sig-name descname"><span class="pre">_validate_view</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pet_cli.image_visualization.NiftiGifCreator._validate_view" title="Link to this definition">#</a></dt>
+<dd><p>Validate the value of <code class="docutils literal notranslate"><span class="pre">view</span></code>. It must be one of ['coronal', 'sagittal', 'axial', 'x', 'y', 'z'].</p>
+<dl class="field-list simple">
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>ValueError</strong> -- If <code class="docutils literal notranslate"><span class="pre">view</span></code> is not 'coronal', 'sagittal', 'axial', 'x', 'y', 'z'</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pet_cli.image_visualization.NiftiGifCreator.make_first_frame">
+<span class="sig-name descname"><span class="pre">make_first_frame</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pet_cli.image_visualization.NiftiGifCreator.make_first_frame" title="Link to this definition">#</a></dt>
+<dd><p>Makes the first frame of the animation by plotting an image on <code class="docutils literal notranslate"><span class="pre">ax</span></code> according to <code class="docutils literal notranslate"><span class="pre">view</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Image plotted in the first frame.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>im (<a class="reference external" href="https://matplotlib.org/stable/api/image_api.html#matplotlib.image.AxesImage" title="(in Matplotlib v3.8.4)">matplotlib.image.AxesImage</a>)</p>
+</dd>
+</dl>
+<dl class="simple">
+<dt>Side Effects:</dt><dd><p>Modifies <code class="docutils literal notranslate"><span class="pre">ani_image</span></code> by creating the first frame of the GIF</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pet_cli.image_visualization.NiftiGifCreator.set_figure_title_and_labels">
+<span class="sig-name descname"><span class="pre">set_figure_title_and_labels</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">title</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cbar_label</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pet_cli.image_visualization.NiftiGifCreator.set_figure_title_and_labels" title="Link to this definition">#</a></dt>
+<dd><p>Sets the title of the figure and labels of the color bar.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>title</strong> (<em>str</em>) -- Title to be set for the figure.</p></li>
+<li><p><strong>cbar_label</strong> (<em>str</em>) -- Label to be set for the color bar.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="simple">
+<dt>Side Effects:</dt><dd><ul class="simple">
+<li><p>Modifies <code class="docutils literal notranslate"><span class="pre">cbar</span></code> with a new colorbar</p></li>
+<li><p>Changes the title of <code class="docutils literal notranslate"><span class="pre">fig</span></code></p></li>
+<li><p>Modifies the x and y axes of <code class="docutils literal notranslate"><span class="pre">ani_image</span></code></p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pet_cli.image_visualization.NiftiGifCreator.update_frame">
+<span class="sig-name descname"><span class="pre">update_frame</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">i</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pet_cli.image_visualization.NiftiGifCreator.update_frame" title="Link to this definition">#</a></dt>
+<dd><p>Update function for matplotlib.animation.FuncAnimation. Updates the plotted image on the current axes.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>i</strong> (<em>int</em>) -- Index of the current frame</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Tuple containing <code class="docutils literal notranslate"><span class="pre">im</span></code> (matplotlib.image.AxesImage), which is updated to the i-th frame according to
+<code class="docutils literal notranslate"><span class="pre">view</span></code>.</p>
+</dd>
+</dl>
+<dl class="simple">
+<dt>Side Effects:</dt><dd><p>Modifies <code class="docutils literal notranslate"><span class="pre">ani_image</span></code> by updating its frame data</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pet_cli.image_visualization.NiftiGifCreator.make_gif">
+<span class="sig-name descname"><span class="pre">make_gif</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">frames</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Iterable</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pet_cli.image_visualization.NiftiGifCreator.make_gif" title="Link to this definition">#</a></dt>
+<dd><p>Makes the GIF using FuncAnimation from matplotlib.animation module.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>frames</strong> (<em>Iterable</em><em>, </em><em>optional</em>) -- Iterable of frame indices to be included in the GIF. If not provided, all
+frames will be used.</p>
+</dd>
+</dl>
+<dl class="simple">
+<dt>Side Effects:</dt><dd><p>Modifies <code class="docutils literal notranslate"><span class="pre">ani</span></code> by creating a new <a class="reference external" href="https://matplotlib.org/stable/api/_as_gen/matplotlib.animation.FuncAnimation.html#matplotlib.animation.FuncAnimation" title="(in Matplotlib v3.8.4)"><code class="xref py py-class docutils literal notranslate"><span class="pre">matplotlib.animation.FuncAnimation</span></code></a> object</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pet_cli.image_visualization.NiftiGifCreator.write_gif">
+<span class="sig-name descname"><span class="pre">write_gif</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fps</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">15</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pet_cli.image_visualization.NiftiGifCreator.write_gif" title="Link to this definition">#</a></dt>
+<dd><p>Writes the GIF to the output directory with filename <code class="docutils literal notranslate"><span class="pre">{prefix}_view-{view}.gif</span></code>.</p>
+<dl class="simple">
+<dt>Side Effects:</dt><dd><ul class="simple">
+<li><p>Creates a GIF file at the path specified by <code class="docutils literal notranslate"><span class="pre">output_directory</span></code> and <code class="docutils literal notranslate"><span class="pre">prefix</span></code></p></li>
+<li><p>Closes the <code class="docutils literal notranslate"><span class="pre">fig</span></code> matplotlib figure</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="pet_cli.graphical_plots.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title"><span class="section-number">7. </span>Graphical Analysis Plots</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="pet_cli.blood_input.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title"><span class="section-number">9. </span>Interpolation Blood Data</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#pet_cli.image_visualization.NiftiGifCreator"><code class="docutils literal notranslate"><span class="pre">NiftiGifCreator</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pet_cli.image_visualization.NiftiGifCreator._validate_view"><code class="docutils literal notranslate"><span class="pre">NiftiGifCreator._validate_view</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pet_cli.image_visualization.NiftiGifCreator.make_first_frame"><code class="docutils literal notranslate"><span class="pre">NiftiGifCreator.make_first_frame</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pet_cli.image_visualization.NiftiGifCreator.set_figure_title_and_labels"><code class="docutils literal notranslate"><span class="pre">NiftiGifCreator.set_figure_title_and_labels</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pet_cli.image_visualization.NiftiGifCreator.update_frame"><code class="docutils literal notranslate"><span class="pre">NiftiGifCreator.update_frame</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pet_cli.image_visualization.NiftiGifCreator.make_gif"><code class="docutils literal notranslate"><span class="pre">NiftiGifCreator.make_gif</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pet_cli.image_visualization.NiftiGifCreator.write_gif"><code class="docutils literal notranslate"><span class="pre">NiftiGifCreator.write_gif</span></code></a></li>
+</ul>
+</li>
+</ul>
+  </nav></div>
+
+  <div class="sidebar-secondary-item">
+
+  <div class="tocsection sourcelink">
+    <a href="_sources/pet_cli.image_visualization.rst.txt">
+      <i class="fa-solid fa-file-lines"></i> Show Source
+    </a>
+  </div>
+</div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="_static/scripts/bootstrap.js?digest=8d27b9dea8ad943066ae"></script>
+<script src="_static/scripts/pydata-sphinx-theme.js?digest=8d27b9dea8ad943066ae"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2024, Furqan Dar, Bradley Judge, Noah Goldman.
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.2.6.
+    <br/>
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.15.2.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>
