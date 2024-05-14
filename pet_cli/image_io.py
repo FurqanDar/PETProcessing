@@ -65,7 +65,7 @@ class ImageIO():
     Attributes:
         verbose (bool): Set to `True` to output processing information.
     """
-    
+
     def __init__(self, verbose: bool = True, ):
         """
         Initializes :class:`ImageIO` and sets verbose.
@@ -74,7 +74,7 @@ class ImageIO():
             verbose (bool): Set to True to print debugging info to shell. Defaults to True.
         """
         self.verbose = verbose
-    
+
     def load_nii(self, image_path: str) -> FileBasedImage:
         """
         Wrapper to load nifti from image_path.
@@ -99,9 +99,9 @@ class ImageIO():
         
         if self.verbose:
             print(f"(ImageIO): {image_path} loaded")
-        
+
         return image
-    
+
     def save_nii(self, image: nibabel.nifti1.Nifti1Image, out_file: str):
         """
         Wrapper to save nifti to file.
@@ -113,7 +113,7 @@ class ImageIO():
         nibabel.save(image, out_file)
         if self.verbose:
             print(f"(ImageIO): Image saved to {out_file}")
-    
+
     def extract_image_from_nii_as_numpy(self, image: nibabel.nifti1.Nifti1Image) -> np.ndarray:
         """
         Convenient wrapper to extract data from a .nii or .nii.gz file as a numpy array.
@@ -184,7 +184,7 @@ class ImageIO():
         direction = np.zeros((4, 4))
         direction[-1, -1] = 1
         direction[:3, :3] = dir_3x3
-        
+
         return spacing, origin, direction
 
     def extract_np_to_ants(self, image_array: np.ndarray, affine: np.ndarray) -> ants.ANTsImage:

@@ -608,9 +608,12 @@ def gauss_blur(input_image_path: str,
     input_image = input_nibabel.get_fdata()
     input_zooms = input_nibabel.header.get_zooms()
 
-    blur_sigma = blur_size_mm / input_zooms[:3]
+    sigma_x = blur_size_mm / input_zooms[0]
+    sigma_y = blur_size_mm / input_zooms[1]
+    sigma_z = blur_size_mm / input_zooms[2]
+
     blur_image = gaussian_filter(input=input_image,
-                                 sigma=blur_sigma,
+                                 sigma=(sigma_x,sigma_y,sigma_z),
                                  axes=(0,1,2))
 
     out_image = nibabel.nifti1.Nifti1Image(dataobj=blur_image,

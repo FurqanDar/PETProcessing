@@ -5,16 +5,16 @@ import os
 
 FULL_NAME = [
     'Background',
-    'Cortical Gray Matter',
-    'Subcortical Gray Matter',
-    'Gray Matter',
+    'CorticalGrayMatter',
+    'SubcorticalGrayMatter',
+    'GrayMatter',
     'gm',
-    'White Matter',
+    'WhiteMatter',
     'wm',
-    'Cerebrospinal Fluid',
+    'CerebrospinalFluid',
     'Bone',
-    'Soft Tissue',
-    'Non brain',
+    'SoftTissue',
+    'Nonbrain',
     'Lesion',
     'Brainstem',
     'Cerebellum'
@@ -63,12 +63,11 @@ def abbreviate_region(region_name: str):
     """
     Converts long region names to their associated abbreviations.
     """
-    name_out = region_name.replace('-',' ').replace('_',' ')
+    name_out = region_name.replace('-','').replace('_','')
     for i,_d in enumerate(FULL_NAME):
         full_name = FULL_NAME[i]
         short_name = SHORT_NAME[i]
         name_out = name_out.replace(full_name,short_name)
-    name_out = name_out.replace(' ','')
     return name_out
 
 
