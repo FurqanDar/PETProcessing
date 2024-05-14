@@ -32,6 +32,7 @@ def convert_ctab_to_dseg(ctab_path: str,
 
     Args:
         ctab_path (str): Path to FreeSurfer compatible color table.
+        dseg_path (str): Path to ``dseg.tsv`` label mapfile to save.
         column_names (list[str]): List of columns present in color table. Must
             include 'mapping' and 'name'.
     """

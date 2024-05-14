@@ -603,6 +603,9 @@ def gauss_blur(input_image_path: str,
         blur_size_mm (float): Size of the Gaussian kernal in mm.
         out_image_path (str): Path to save the blurred output image.
         verbose (bool): Set to ``True`` to output processing information.
+
+    Returns:
+        out_image (nibabel.nifti1.Nifti1Image): Blurred image in nibabel format.
     """
     input_nibabel = nibabel.load(filename=input_image_path)
     input_image = input_nibabel.get_fdata()
