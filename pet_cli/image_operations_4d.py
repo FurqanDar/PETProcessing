@@ -176,8 +176,8 @@ def resample_segmentation(input_image_4d_path: str,
         print(f'Resampled segmentation saved to {out_seg_path}')
 
 
-def extract_tac_from_nifty_using_mask(input_image_4d_numpy: str,
-                                      segmentation_image_numpy: str,
+def extract_tac_from_nifty_using_mask(input_image_4d_numpy: np.ndarray,
+                                      segmentation_image_numpy: np.ndarray,
                                       region: int,
                                       verbose: bool) -> np.ndarray:
     """
@@ -227,7 +227,7 @@ def extract_tac_from_nifty_using_mask(input_image_4d_numpy: str,
     return tac_out
 
 
-def region_merge(segmentation_numpy: str,
+def region_merge(segmentation_numpy: np.ndarray,
                  regions_list: list):
     """
     Takes a list of regions and a segmentation, and returns a mask with only the listed regions.
@@ -235,9 +235,19 @@ def region_merge(segmentation_numpy: str,
     regions_merged = np.zeros(segmentation_numpy.shape)
     for region in regions_list:
         region_mask = segmentation_numpy == region
-        region_mask_float = region_mask.astype(int)
-        regions_merged += region_mask_float
+        region_mask_int = region_mask.astype(int)
+        regions_merged += region_mask_int
     return regions_merged
+
+
+def threshold(input_image_numpy: np.ndarray,
+              lower_bound: float=-np.inf,
+              upper_bound: float=np.inf):
+    """
+    Threshold an image above and/or below a pair of values.
+    """
+    bounded_image = (input_image_numpy > lower_bound) & (input_image_numpy < upper_bound)
+    return bounded_image
 
 
 def suvr(input_image_path: str,
