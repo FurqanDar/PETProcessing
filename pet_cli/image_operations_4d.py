@@ -227,6 +227,19 @@ def extract_tac_from_nifty_using_mask(input_image_4d_numpy: str,
     return tac_out
 
 
+def region_merge(segmentation_numpy: str,
+                 regions_list: list):
+    """
+    Takes a list of regions and a segmentation, and returns a mask with only the listed regions.
+    """
+    regions_merged = np.zeros(segmentation_numpy.shape)
+    for region in regions_list:
+        region_mask = segmentation_numpy == region
+        region_mask_float = region_mask.astype(int)
+        regions_merged += region_mask_float
+    return regions_merged
+
+
 def suvr(input_image_path: str,
          segmentation_image_path: str,
          ref_region: int,
