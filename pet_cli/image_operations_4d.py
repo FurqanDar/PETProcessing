@@ -142,38 +142,6 @@ def weighted_series_sum(input_image_4d_path: str,
     return pet_sum_image
 
 
-def resample_segmentation(input_image_4d_path: str,
-                          segmentation_image_path: str,
-                          out_seg_path: str,
-                          verbose: bool):
-    """
-    Resamples a segmentation image to the resolution of a 4D PET series image. Takes the affine 
-    information stored in the PET image, and the shape of the image frame data, as well as the 
-    segmentation image, and applies NiBabel's ``resample_from_to`` to resample the segmentation to
-    the resolution of the PET image. This is used for extracting TACs from PET imaging where the 
-    PET and ROI data are registered to the same space, but have different resolutions.
-
-    Args:
-        input_image_4d_path (str): Path to a .nii or .nii.gz file containing a 4D
-            PET image, registered to anatomical space, to which the segmentation file is resampled.
-        segmentation_image_path (str): Path to a .nii or .nii.gz file containing a 3D segmentation
-            image, where integer indices label specific regions.
-        out_seg_path (str): Path to a .nii or .nii.gz file to which the resampled segmentation
-            image is written.
-        verbose (bool): Set to ``True`` to output processing information.
-    """
-    pet_image = nibabel.load(input_image_4d_path)
-    seg_image = nibabel.load(segmentation_image_path)
-    pet_series = pet_image.get_fdata()
-    image_first_frame = pet_series[:, :, :, 0]
-    seg_resampled = processing.resample_from_to(from_img=seg_image,
-                                                to_vox_map=(image_first_frame.shape, pet_image.affine),
-                                                order=0)
-    nibabel.save(seg_resampled, out_seg_path)
-    if verbose:
-        print(f'Resampled segmentation saved to {out_seg_path}')
-
-
 def extract_tac_from_nifty_using_mask(input_image_4d_numpy: np.ndarray,
                                       segmentation_image_numpy: np.ndarray,
                                       region: int,
@@ -223,19 +191,6 @@ def extract_tac_from_nifty_using_mask(input_image_4d_numpy: np.ndarray,
     masked_image = pet_image_4d[masked_voxels].reshape((-1, num_frames))
     tac_out = np.mean(masked_image, axis=0)
     return tac_out
-
-
-def region_merge(segmentation_numpy: np.ndarray,
-                 regions_list: list):
-    """
-    Takes a list of regions and a segmentation, and returns a mask with only the listed regions.
-    """
-    regions_merged = np.zeros(segmentation_numpy.shape)
-    for region in regions_list:
-        region_mask = segmentation_numpy == region
-        region_mask_int = region_mask.astype(int)
-        regions_merged += region_mask_int
-    return regions_merged
 
 
 def threshold(input_image_numpy: np.ndarray,
