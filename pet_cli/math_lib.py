@@ -2,6 +2,7 @@
 Library for math functions for use elsewhere.
 """
 import numpy as np
+from scipy.ndimage import gaussian_filter
 
 
 def weighted_sum_computation(frame_duration: np.ndarray,
@@ -40,3 +41,26 @@ def weighted_sum_computation(frame_duration: np.ndarray,
     pet_series_sum_scaled = np.sum(pet_series_scaled, axis=3)
     image_weighted_sum = pet_series_sum_scaled * total_decay / image_total_duration
     return image_weighted_sum
+
+
+def gauss_blur_computation(input_image: np.ndarray,
+                           blur_size_mm: float,
+                           input_zooms: list,
+                           use_FWHM: bool):
+    """
+    Applies a Gaussian blur to an array image. Function intended to be a
+    wrapper to be applied by other methods.
+    """
+    if use_FWHM:
+        blur_size = blur_size_mm / (2*np.sqrt(2*np.log(2)))
+    else:
+        blur_size = blur_size_mm
+
+    sigma_x = blur_size / input_zooms[0]
+    sigma_y = blur_size / input_zooms[1]
+    sigma_z = blur_size / input_zooms[2]
+
+    blur_image = gaussian_filter(input=input_image,
+                                 sigma=(sigma_x,sigma_y,sigma_z),
+                                 axes=(0,1,2))
+    return blur_image

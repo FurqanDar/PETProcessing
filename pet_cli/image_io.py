@@ -76,6 +76,53 @@ def load_tac(filename: str) -> np.ndarray:
         print(f"Couldn't read file {filename}. Error: {e}")
         raise e
 
+
+def load_metadata_for_nifty_with_same_filename(image_path) -> dict:
+    """
+    Load metadata. Assume same path as input image path.
+
+    Args:
+        image_path (str): Path to image for which a .json file of the
+            same name as the file but with different extension exists.
+
+    Returns:
+        image_meta (dict): Dictionary where keys are fields in the image
+            metadata file and values correspond to values in those fields.
+    
+    Raises:
+        FileNotFoundError: If the provided image path cannot be found in the directory. 
+        Additionally, occurs if the metadata .json file cannot be found.
+    """
+    if not os.path.exists(image_path):
+        raise FileNotFoundError(f"Image file {image_path} not found")
+    
+    meta_path = re.sub(r'\.nii\.gz$|\.nii$', '.json', image_path)
+    
+    if not os.path.exists(meta_path):
+        raise FileNotFoundError(f"Metadata file {meta_path} not found. Does it have a different path?")
+    
+    with open(meta_path, 'r', encoding='utf-8') as meta_file:
+        image_meta = json.load(meta_file)
+    return image_meta
+
+
+def safe_copy_meta(input_image_path: str,
+                   out_image_path: str):
+    """
+    Copy the metadata file from input image, to one with the same name as the
+    output file. Intended to be used in functions operating on images in order
+    to ensure a metadata file is associated with each new image.
+
+    Args:
+        input_image_path (str): Path to the input file for the function
+            generating a new image.
+        out_image_path (str): Path to the output file written by the function.
+    """
+    copy_meta_path = re.sub('.nii.gz|.nii', '.json', out_image_path)
+    meta_data_dict = load_metadata_for_nifty_with_same_filename(input_image_path)
+    write_dict_to_json(meta_data_dict=meta_data_dict, out_path=copy_meta_path)
+
+
 class ImageIO():
     """
     :class:`ImageIO` to handle reading and writing imaging data and metadata.
@@ -252,32 +299,3 @@ class ImageIO():
         label_map = pd.read_csv(label_map_file,sep='\t')
 
         return label_map
-
-    @staticmethod
-    def load_metadata_for_nifty_with_same_filename(image_path) -> dict:
-        """
-        Static method to load metadata. Assume same path as input image path.
-
-        Args:
-            image_path (str): Path to image for which a .json file of the
-                same name as the file but with different extension exists.
-
-        Returns:
-            image_meta (dict): Dictionary where keys are fields in the image
-                metadata file and values correspond to values in those fields.
-        
-        Raises:
-            FileNotFoundError: If the provided image path cannot be found in the directory. 
-            Additionally, occurs if the metadata .json file cannot be found.
-        """
-        if not os.path.exists(image_path):
-            raise FileNotFoundError(f"Image file {image_path} not found")
-        
-        meta_path = re.sub(r'\.nii\.gz$|\.nii$', '.json', image_path)
-        
-        if not os.path.exists(meta_path):
-            raise FileNotFoundError(f"Metadata file {meta_path} not found. Does it have a different path?")
-        
-        with open(meta_path, 'r', encoding='utf-8') as meta_file:
-            image_meta = json.load(meta_file)
-        return image_meta

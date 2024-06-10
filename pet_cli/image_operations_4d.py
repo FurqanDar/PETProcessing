@@ -19,7 +19,6 @@ TODOs:
 import os
 import re
 from scipy.interpolate import interp1d
-from scipy.ndimage import gaussian_filter
 import nibabel
 from nibabel import processing
 import numpy as np
@@ -137,9 +136,8 @@ def weighted_series_sum(input_image_4d_path: str,
     if verbose:
         print(f"(ImageOps4d): weighted sum image saved to {out_image_path}")
 
-    copy_meta_path = re.sub('.nii.gz|.nii', '.json', out_image_path)
-    meta_data_dict = image_io.ImageIO.load_metadata_for_nifty_with_same_filename(input_image_4d_path)
-    image_io.write_dict_to_json(meta_data_dict=meta_data_dict, out_path=copy_meta_path)
+    image_io.safe_copy_meta(input_image_path=input_image_4d_path,
+                            out_image_path=out_image_path)
 
     return pet_sum_image
 
@@ -246,7 +244,9 @@ def threshold(input_image_numpy: np.ndarray,
     """
     Threshold an image above and/or below a pair of values.
     """
-    bounded_image = (input_image_numpy > lower_bound) & (input_image_numpy < upper_bound)
+    bounded_image = np.zeros(input_image_numpy.shape)
+    bounded_image_where = (input_image_numpy > lower_bound) & (input_image_numpy < upper_bound)
+    bounded_image[bounded_image_where] = input_image_numpy[bounded_image_where]
     return bounded_image
 
 
@@ -291,9 +291,8 @@ def suvr(input_image_path: str,
                                            header=pet_nibabel.header)
     nibabel.save(img=out_image,filename=out_image_path)
 
-    copy_meta_path = re.sub('.nii.gz|.nii', '.json', out_image_path)
-    meta_data_dict = image_io.ImageIO.load_metadata_for_nifty_with_same_filename(input_image_path)
-    image_io.write_dict_to_json(meta_data_dict=meta_data_dict, out_path=copy_meta_path)
+    image_io.safe_copy_meta(input_image_path=input_image_path,
+                            out_image_path=out_image_path)
 
     return out_image
 
@@ -301,15 +300,21 @@ def suvr(input_image_path: str,
 def gauss_blur(input_image_path: str,
                blur_size_mm: float,
                out_image_path: str,
-               verbose: bool):
+               verbose: bool,
+               use_FWHM: bool=True):
     """
-    Blur an image with a 3D Gaussian kernal of a provided size in mm.
-
+    Blur an image with a 3D Gaussian kernal of a provided size in mm. Extracts
+    Gaussian sigma from provided blur size, and voxel sizes in the image
+    header. :py:func:`scipy.ndimage.gaussian_filter` is used to apply blurring.
+    Uses wrapper around :meth:`gauss_blur_computation`.
+    
     Args:
         input_image_path (str): Path to 3D or 4D input image to be blurred.
-        blur_size_mm (float): Size of the Gaussian kernal in mm.
+        blur_size_mm (float): Sigma of the Gaussian kernal in mm.
         out_image_path (str): Path to save the blurred output image.
         verbose (bool): Set to ``True`` to output processing information.
+        use_FWHM (bool): If ``True``, ``blur_size_mm`` is interpreted as the
+            FWHM of the Gaussian kernal, rather than the standard deviation.
 
     Returns:
         out_image (nibabel.nifti1.Nifti1Image): Blurred image in nibabel format.
@@ -318,13 +323,10 @@ def gauss_blur(input_image_path: str,
     input_image = input_nibabel.get_fdata()
     input_zooms = input_nibabel.header.get_zooms()
 
-    sigma_x = blur_size_mm / input_zooms[0]
-    sigma_y = blur_size_mm / input_zooms[1]
-    sigma_z = blur_size_mm / input_zooms[2]
-
-    blur_image = gaussian_filter(input=input_image,
-                                 sigma=(sigma_x,sigma_y,sigma_z),
-                                 axes=(0,1,2))
+    blur_image = math_lib.gauss_blur_computation(input_image=input_image,
+                                                 blur_size_mm=blur_size_mm,
+                                                 input_zooms=input_zooms,
+                                                 use_FWHM=use_FWHM)
 
     out_image = nibabel.nifti1.Nifti1Image(dataobj=blur_image,
                                            affine=input_nibabel.affine,
