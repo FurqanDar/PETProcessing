@@ -26,7 +26,8 @@ def region_merge(segmentation_numpy: np.ndarray,
     regions_merged = np.zeros(segmentation_numpy.shape)
     for region in regions_list:
         region_mask = segmentation_numpy == region
-        regions_merged[region_mask] = region
+        region_mask_int = region_mask.astype(int)
+        regions_merged += region_mask_int
     return regions_merged
 
 
@@ -39,6 +40,49 @@ def binarize(segmentation_numpy: np.ndarray,
     bin_mask = np.zeros(segmentation_numpy.shape)
     bin_mask[nonzero_voxels] = out_val
     return bin_mask
+
+
+def parcellate_right_left(segmentation_numpy: np.ndarray,
+                          region: int,
+                          new_right_region: int,
+                          new_left_region: int) -> np.ndarray:
+    """
+    Divide a region within a segmentation image into right and left values.
+    Assumes left and right sides are neatly subdivided by the image midplane,
+    with right values below the mean value of the x-axis (zeroth axis) and left
+    values above the mean value of the x-axis (zeroth axis).
+
+    Intended to work with FreeSurfer segmentations on images loaded with
+    nibabel. Use outside of these assumptions at your own risk.
+
+    Args:
+        segmentation_numpy (np.ndarray): Segmentation image array loaded with Nibabel, RAS+ orientation
+        region (int): Region index in segmentation image to be split into left and right.
+        new_right_region (int): Region on the right side assigned to previous region.
+        new_left_region (int): Region on the left side assined to previous region.
+
+    Returns:
+        split_segmentation (np.ndarray): Original segmentation image array with new left and right values.
+    """
+    seg_shape = segmentation_numpy.shape
+    x_mid = (seg_shape[0] - 1) // 2
+
+    seg_region = np.where(segmentation_numpy==region)
+    right_region = seg_region[0] <= x_mid
+    seg_region_right = tuple((seg_region[0][right_region],
+                              seg_region[1][right_region],
+                              seg_region[2][right_region]))
+
+    left_region = seg_region[0] > x_mid
+    seg_region_left = tuple((seg_region[0][left_region],
+                             seg_region[1][left_region],
+                             seg_region[2][left_region]))
+    
+    split_segmentation = segmentation_numpy
+    split_segmentation[seg_region_right] = new_right_region
+    split_segmentation[seg_region_left] = new_left_region
+
+    return split_segmentation
 
 
 def resample_segmentation(input_image_4d_path: str,
