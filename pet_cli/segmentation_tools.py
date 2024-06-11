@@ -1,11 +1,22 @@
 """
 Methods applying to segmentations.
+
+Available methods:
+* :meth:`region_merge`: Merge regions in a segmentation image into a mask with value 1
+* :meth:`resample_segmentation`: Resample a segmentation image to the affine of a 4D PET image.
+* :meth:`vat_wm_ref_region`: Compute the white matter reference region for the VAT radiotracer.
+
+TODO:
+* Create a method to set all non-zero values in an image to one.
+* Change region_merge to merge regions without setting all values to one.
+
 """
 import numpy as np
 import nibabel
 from nibabel import processing
 from . import image_operations_4d
 from . import math_lib
+
 
 def region_merge(segmentation_numpy: np.ndarray,
                  regions_list: list):
@@ -15,9 +26,19 @@ def region_merge(segmentation_numpy: np.ndarray,
     regions_merged = np.zeros(segmentation_numpy.shape)
     for region in regions_list:
         region_mask = segmentation_numpy == region
-        region_mask_int = region_mask.astype(int)
-        regions_merged += region_mask_int
+        regions_merged[region_mask] = region
     return regions_merged
+
+
+def binarize(segmentation_numpy: np.ndarray,
+             out_val: float=1):
+    """
+    Set all non-zero values to a given output, typically 1.
+    """
+    nonzero_voxels = np.where(segmentation_numpy!=0)
+    bin_mask = np.zeros(segmentation_numpy.shape)
+    bin_mask[nonzero_voxels] = out_val
+    return bin_mask
 
 
 def resample_segmentation(input_image_4d_path: str,
@@ -80,9 +101,9 @@ def vat_wm_ref_region(input_segmentation_path: str,
     seg_image = segmentation.get_fdata()
     seg_resolution = segmentation.header.get_zooms()
 
-    wm_merged = image_operations_4d.region_merge(segmentation_numpy=seg_image,
+    wm_merged = region_merge(segmentation_numpy=seg_image,
                                                  regions_list=wm_regions)
-    csf_merged = image_operations_4d.region_merge(segmentation_numpy=seg_image,
+    csf_merged = region_merge(segmentation_numpy=seg_image,
                                                   regions_list=csf_regions)
     wm_csf_merged = wm_merged + csf_merged
 
@@ -102,7 +123,6 @@ def vat_wm_ref_region(input_segmentation_path: str,
 
     wm_erode_save = nibabel.nifti1.Nifti1Image(dataobj=wm_erode,
                                                affine=segmentation.affine,
-                                               header=segmentation.header
-    )
-    nibabel.save(wm_erode_save,
+                                               header=segmentation.header)
+    nibabel.save(img=wm_erode_save,
                  filename=out_segmentation_path)
