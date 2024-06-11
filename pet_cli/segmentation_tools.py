@@ -2,13 +2,11 @@
 Methods applying to segmentations.
 
 Available methods:
-* :meth:`region_merge`: Merge regions in a segmentation image into a mask with value 1
+* :meth:`region_blend`: Merge regions in a segmentation image into a mask with value 1
 * :meth:`resample_segmentation`: Resample a segmentation image to the affine of a 4D PET image.
 * :meth:`vat_wm_ref_region`: Compute the white matter reference region for the VAT radiotracer.
 
 TODO:
-* Create a method to set all non-zero values in an image to one.
-* Change region_merge to merge regions without setting all values to one.
 
 """
 import numpy as np
@@ -18,17 +16,32 @@ from . import image_operations_4d
 from . import math_lib
 
 
-def region_merge(segmentation_numpy: np.ndarray,
+def region_blend(segmentation_numpy: np.ndarray,
                  regions_list: list):
     """
     Takes a list of regions and a segmentation, and returns a mask with only the listed regions.
     """
-    regions_merged = np.zeros(segmentation_numpy.shape)
+    regions_blend = np.zeros(segmentation_numpy.shape)
     for region in regions_list:
         region_mask = segmentation_numpy == region
         region_mask_int = region_mask.astype(int)
-        regions_merged += region_mask_int
-    return regions_merged
+        regions_blend += region_mask_int
+    return regions_blend
+
+
+def segmentations_merge(segmentation_primary: np.ndarray,
+                        segmentation_secondary: np.ndarray,
+                        regions_to_reassign: list) -> np.ndarray:
+    """
+    Merge segmentations by assigning regions to a primary segmentation image from a secondary
+    segmentation. Region indices are pulled from the secondary into the primary from a list.
+
+    Primary and secondary segmentations must have the same shape and orientation.
+    """
+    for region in regions_to_reassign:
+        region_mask = np.where(segmentation_secondary==region)
+        segmentation_primary[region_mask] = region
+    return segmentation_primary
 
 
 def binarize(segmentation_numpy: np.ndarray,
@@ -145,9 +158,9 @@ def vat_wm_ref_region(input_segmentation_path: str,
     seg_image = segmentation.get_fdata()
     seg_resolution = segmentation.header.get_zooms()
 
-    wm_merged = region_merge(segmentation_numpy=seg_image,
+    wm_merged = region_blend(segmentation_numpy=seg_image,
                                                  regions_list=wm_regions)
-    csf_merged = region_merge(segmentation_numpy=seg_image,
+    csf_merged = region_blend(segmentation_numpy=seg_image,
                                                   regions_list=csf_regions)
     wm_csf_merged = wm_merged + csf_merged
 
