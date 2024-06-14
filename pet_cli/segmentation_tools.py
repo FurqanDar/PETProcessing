@@ -7,6 +7,7 @@ Available methods:
 * :meth:`vat_wm_ref_region`: Compute the white matter reference region for the VAT radiotracer.
 
 TODO:
+ * Find a more efficient way to find the region mask in :meth:`segmentations_merge` that works for region=1
 
 """
 import numpy as np
@@ -20,6 +21,15 @@ def region_blend(segmentation_numpy: np.ndarray,
                  regions_list: list):
     """
     Takes a list of regions and a segmentation, and returns a mask with only the listed regions.
+
+    Args:
+        segmentation_numpy (np.ndarray): Segmentation image data array
+        regions_list (list): List of regions to include in the mask
+
+    Returns:
+        regions_blend (np.ndarray): Mask array with value one where
+            segmentation values are in the list of regions provided, and zero
+            elsewhere.
     """
     regions_blend = np.zeros(segmentation_numpy.shape)
     for region in regions_list:
@@ -31,26 +41,48 @@ def region_blend(segmentation_numpy: np.ndarray,
 
 def segmentations_merge(segmentation_primary: np.ndarray,
                         segmentation_secondary: np.ndarray,
-                        regions_to_reassign: list) -> np.ndarray:
+                        regions: list) -> np.ndarray:
     """
     Merge segmentations by assigning regions to a primary segmentation image from a secondary
     segmentation. Region indices are pulled from the secondary into the primary from a list.
 
     Primary and secondary segmentations must have the same shape and orientation.
+
+    Args:
+        segmentation_primary (np.ndarray): The main segmentation to which new
+            regions will be added.
+        segmentation_secondary (np.ndarray): Distinct segmentation with regions
+            to add to the primary.
+        regions (list): List of regions to pull from the secondary to add to
+            the primary.
+    
+    Returns:
+        segmentation_primary (np.ndarray): The input segmentation with new
+            regions added.
     """
-    for region in regions_to_reassign:
-        region_mask = np.where(segmentation_secondary==region)
+    for region in regions:
+        region_mask = (segmentation_secondary > region - 0.1) & (segmentation_secondary < region + 0.1)
         segmentation_primary[region_mask] = region
     return segmentation_primary
 
 
-def binarize(segmentation_numpy: np.ndarray,
+def binarize(input_image_numpy: np.ndarray,
              out_val: float=1):
     """
-    Set all non-zero values to a given output, typically 1.
+    Convert a segmentation image array into a mask by setting nonzero values
+    to a uniform output value, typically one.
+
+    Args:
+        input_image_numpy (np.ndarray): Input image to be binarized to zero and
+            another value.
+        out_val (float): Uniform value output image is set to.
+    
+    Returns:
+        bin_mask (np.ndarray): Image array of same shape as input, with values
+            only zero and ``out_val``.
     """
-    nonzero_voxels = np.where(segmentation_numpy!=0)
-    bin_mask = np.zeros(segmentation_numpy.shape)
+    nonzero_voxels = (input_image_numpy > 1e-37) & (input_image_numpy < -1e-37)
+    bin_mask = np.zeros(input_image_numpy.shape)
     bin_mask[nonzero_voxels] = out_val
     return bin_mask
 
@@ -96,6 +128,56 @@ def parcellate_right_left(segmentation_numpy: np.ndarray,
     split_segmentation[seg_region_left] = new_left_region
 
     return split_segmentation
+
+
+def replace_probabilistic_region(segmentation_numpy: np.ndarray,
+                                 segmentation_zooms: list,
+                                 blur_size_mm: float,
+                                 regions: list,
+                                 regions_to_replace: list):
+    """
+    Runs a correction on a segmentation by replacing a list of regions with
+    a set of nearby regions. This is accomplished by creating masks of the
+    nearby regions, blurring them to create probabilistic segmentation maps,
+    finding the highest probability nearby region in the region to replace,
+    and replacing values with the respective nearby region.
+
+    This is useful for protocols where there residual regions not intended to
+    be carried forward after generating new regions or merging segmentations.
+
+    Args:
+        segmentation_numpy (np.ndarray): Input segmentation array.
+        segmentation_zooms (list): X,Y,Z side length of voxels in mm.
+        blur_size_mm (float): FWHM of Gaussian kernal used to blur regions.
+        regions (list): List of region indices to replace residual regions.
+        regions_to_replace (list): List of regions to be replaced by nearby
+            regions listed in ``regions``.
+
+    Returns:
+        segmentation_numpy (np.ndarray): The input segmentation with replaced
+            regions.
+    """
+    segmentations_combined = []
+    for region in regions:
+        region_mask = region_blend(segmentation_numpy=segmentation_numpy,
+                                   regions_list=[region])
+
+        region_blur = math_lib.gauss_blur_computation(input_image=region_mask,
+                                                      blur_size_mm=blur_size_mm,
+                                                      input_zooms=segmentation_zooms,
+                                                      use_FWHM=True)
+        segmentations_combined += [region_blur]
+    
+    segmentations_combined_np = np.array(segmentations_combined)
+    probability_map = np.argmax(segmentations_combined_np,axis=0)
+    blend = region_blend(segmentation_numpy=segmentation_numpy,
+                         regions_list=regions_to_replace)
+
+    for i, region in enumerate(regions):
+        region_match = (probability_map == i) & (blend > 0)
+        segmentation_numpy[region_match] = region
+    
+    return segmentation_numpy
 
 
 def resample_segmentation(input_image_4d_path: str,
@@ -183,3 +265,54 @@ def vat_wm_ref_region(input_segmentation_path: str,
                                                header=segmentation.header)
     nibabel.save(img=wm_erode_save,
                  filename=out_segmentation_path)
+
+def vat_wm_region_merge(wmparc_segmentation_path: str,
+                        bs_segmentation_path: str,
+                        wm_ref_segmentation_path: str,
+                        out_image_path: str):
+    """
+    Merge subcortical structures into a merged segmentation image according to
+    the protocol for processing the VAT radiotracer.
+
+    Args:
+        wmparc_segmentation_path (str): Path to `wmparc` segmentation generated
+            by FreeSurfer.
+        bs_segmentation_path (str): Path to brainstem segmentation generated by
+            FreeSurfer.
+        wm_ref_segmentation_path (str): Path to eroded white matter reference
+            region generated by :meth:`vat_wm_ref_region`.
+        out_image_path (str): Path to which output fused segmentation is saved.
+    """
+    wmparc = nibabel.load(wmparc_segmentation_path)
+    bs = nibabel.load(bs_segmentation_path)
+    wm_ref = nibabel.load(wm_ref_segmentation_path)
+
+    wmparc_img = wmparc.get_fdata()
+    bs_img = bs.get_fdata()
+    wm_ref_img = wm_ref.get_fdata()
+
+    zooms = wmparc.header.get_zooms()
+
+    wmparc_split = parcellate_right_left(segmentation_numpy=wmparc_img,
+                                         region=77,
+                                         new_right_region=2,
+                                         new_left_region=41)
+
+    wmparc_bs = segmentations_merge(segmentation_primary=wmparc_split,
+                                    segmentation_secondary=bs_img,
+                                    regions=[173,174,175])
+    wmparc_bs_prob = replace_probabilistic_region(segmentation_numpy=wmparc_bs,
+                                                  segmentation_zooms=zooms,
+                                                  blur_size_mm=6,
+                                                  regions=[257,15,165],
+                                                  regions_to_replace=[16])
+
+    wmparc_bs_wmref = segmentations_merge(segmentation_primary=wmparc_bs_prob,
+                                          segmentation_secondary=wm_ref_img,
+                                          regions=[1])
+
+    out_file = nibabel.nifti1.Nifti1Image(dataobj=wmparc_bs_wmref,
+                                          header=wmparc.header,
+                                          affine=wmparc.affine)
+    nibabel.save(out_file,
+                 out_image_path)

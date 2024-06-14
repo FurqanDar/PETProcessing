@@ -95,12 +95,12 @@ def load_metadata_for_nifty_with_same_filename(image_path) -> dict:
     """
     if not os.path.exists(image_path):
         raise FileNotFoundError(f"Image file {image_path} not found")
-    
+
     meta_path = re.sub(r'\.nii\.gz$|\.nii$', '.json', image_path)
-    
+
     if not os.path.exists(meta_path):
         raise FileNotFoundError(f"Metadata file {meta_path} not found. Does it have a different path?")
-    
+
     with open(meta_path, 'r', encoding='utf-8') as meta_file:
         image_meta = json.load(meta_file)
     return image_meta

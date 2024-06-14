@@ -4,7 +4,8 @@ neuroimaging data for a PET study. Acts as a wrapper for other tools supplied
 in ``PPM``.
 
 TODO:
-    * Check if input files exist, through error if no
+    * Check if input files exist, throw error if no.
+    * Verify images have the same shape and orientation.
 
 """
 import os

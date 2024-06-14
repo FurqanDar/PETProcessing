@@ -20,7 +20,6 @@ import os
 import re
 from scipy.interpolate import interp1d
 import nibabel
-from nibabel import processing
 import numpy as np
 from . import image_io, math_lib
 
@@ -82,7 +81,7 @@ def weighted_series_sum(input_image_4d_path: str,
     """
     if half_life <= 0:
         raise ValueError('(ImageOps4d): Radioisotope half life is zero or negative.')
-    pet_meta = image_io.ImageIO.load_metadata_for_nifty_with_same_filename(input_image_4d_path)
+    pet_meta = image_io.load_metadata_for_nifty_with_same_filename(input_image_4d_path)
     pet_image = nibabel.load(input_image_4d_path)
     pet_series = pet_image.get_fdata()
     frame_start = pet_meta['FrameTimesStart']
@@ -289,7 +288,7 @@ def gauss_blur(input_image_path: str,
     nibabel.save(img=out_image,filename=out_image_path)
 
     copy_meta_path = re.sub('.nii.gz|.nii', '.json', out_image_path)
-    meta_data_dict = image_io.ImageIO.load_metadata_for_nifty_with_same_filename(input_image_path)
+    meta_data_dict = image_io.load_metadata_for_nifty_with_same_filename(input_image_path)
     image_io.write_dict_to_json(meta_data_dict=meta_data_dict, out_path=copy_meta_path)
 
     return out_image
@@ -312,7 +311,7 @@ def roi_tac(input_image_4d_path: str,
         raise ValueError("'time_frame_keyword' must be one of "
                          "'FrameReferenceTime' or 'FrameTimesStart'")
 
-    pet_meta = image_io.ImageIO.load_metadata_for_nifty_with_same_filename(input_image_4d_path)
+    pet_meta = image_io.load_metadata_for_nifty_with_same_filename(input_image_4d_path)
     tac_extraction_func = extract_tac_from_nifty_using_mask
     pet_numpy = nibabel.load(input_image_4d_path).get_fdata()
     seg_numpy = nibabel.load(roi_image_path).get_fdata()
@@ -323,7 +322,7 @@ def roi_tac(input_image_4d_path: str,
                                         region=region,
                                         verbose=verbose)
     region_tac_file = np.array([pet_meta[time_frame_keyword],extracted_tac]).T
-    header_text = f'mean_activity'
+    header_text = 'mean_activity'
     np.savetxt(out_tac_path,region_tac_file,delimiter='\t',header=header_text,comments='')
 
 
@@ -344,7 +343,7 @@ def write_tacs(input_image_4d_path: str,
         raise ValueError("'time_frame_keyword' must be one of "
                          "'FrameReferenceTime' or 'FrameTimesStart'")
 
-    pet_meta = image_io.ImageIO.load_metadata_for_nifty_with_same_filename(input_image_4d_path)
+    pet_meta = image_io.load_metadata_for_nifty_with_same_filename(input_image_4d_path)
     label_map = image_io.ImageIO.read_label_map_tsv(label_map_file=label_map_path)
     regions_abrev = label_map['abbreviation']
     regions_map = label_map['mapping']
