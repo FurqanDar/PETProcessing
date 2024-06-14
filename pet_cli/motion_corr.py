@@ -18,7 +18,7 @@ weighted_series_sum = image_operations_4d.weighted_series_sum
 
 def determine_motion_target(motion_target_option: Union[str,tuple,list],
                             input_image_4d_path: str=None,
-                            half_life: float=None):
+                            half_life: float=None) -> str:
     """
     Produce a motion target given the ``motion_target_option`` from a method
     running registrations on PET, i.e. :meth:`motion_correction` or
@@ -37,9 +37,9 @@ def determine_motion_target(motion_target_option: Union[str,tuple,list],
     same, returns the one frame closest to the entered time.
 
     Args:
-        motion_target_option (str | tuple): Determines how the method behaves,
+        motion_target_option (str | tuple | list): Determines how the method behaves,
             according to the above description. Can be a file, a method
-            ('weighted_series_sum'), or a tuple range e.g. (0,300).
+            ('weighted_series_sum'), or a tuple range e.g. (0,600).
         input_image_4d_path (str): Path to the PET image. This is intended to
             be supplied by the parent method employing this function. Default
             value None.
@@ -58,18 +58,23 @@ def determine_motion_target(motion_target_option: Union[str,tuple,list],
     if isinstance(motion_target_option,str):
         if os.path.exists(motion_target_option):
             return motion_target_option
-        elif motion_target_option=='weighted_series_sum':
+
+        elif motion_target_option=='weighted_series_sum':        
             out_image_file = tempfile.mkstemp(suffix='_wss.nii.gz')[1]
             weighted_series_sum(input_image_4d_path=input_image_4d_path,
                                 out_image_path=out_image_file,
                                 half_life=half_life,
                                 verbose=False)
             return out_image_file
+
         else:
             raise ValueError("motion_target_option did not match a file or 'weighted_series_sum'")
+
     elif isinstance(motion_target_option,tuple) or isinstance(motion_target_option,list):
+
         start_time = motion_target_option[0]
         end_time = motion_target_option[1]
+
         try:
             float(start_time)
             float(end_time)
@@ -77,6 +82,7 @@ def determine_motion_target(motion_target_option: Union[str,tuple,list],
             raise TypeError('Start time and end time of calculation must be '
                             'able to be cast into float! Provided values are '
                             f"{start_time} and {end_time}.")
+
         out_image_file = tempfile.mkstemp(suffix='_wss.nii.gz')[1]
         weighted_series_sum(input_image_4d_path=input_image_4d_path,
                             out_image_path=out_image_file,
@@ -84,7 +90,9 @@ def determine_motion_target(motion_target_option: Union[str,tuple,list],
                             verbose=False,
                             start_time=float(start_time),
                             end_time=float(end_time))
+
         return out_image_file
+
     else:
         raise ValueError('motion_target_option did not match str or tuple type.')
 
@@ -106,11 +114,6 @@ def motion_corr(input_image_4d_path: str,
             PET image to be motion corrected.
         motion_target_option (str | tuple): Target image for computing
             transformation. See :meth:`determine_motion_target`.
-        reference_image_path (str): Path to a .nii or .nii.gz file containing a
-            3D reference image in the same space as the input PET image. Can be
-            a weighted series sum, first or last frame, an average over a
-            subset of frames, or another option depending on the needs of the
-            data.
         out_image_path (str): Path to a .nii or .nii.gz file to which the
             motion corrected PET series is written.
         verbose (bool): Set to ``True`` to output processing information.
@@ -119,7 +122,8 @@ def motion_corr(input_image_4d_path: str,
             'Translation'. Any transformation type that uses >6 degrees of
             freedom is not recommended, use with caution. See 
             :py:func:`ants.registration`.
-        half_life (float): Half life of the PET radioisotope in seconds.
+        half_life (float): Half life of the PET radioisotope in seconds. Used
+            for certain settings of ``motion_target_option``.
         kwargs (keyword arguments): Additional arguments passed to
             :py:func:`ants.motion_correction`.
 

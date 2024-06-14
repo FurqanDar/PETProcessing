@@ -16,8 +16,10 @@ Modules
    pet_cli.image_visualization
    pet_cli.blood_input
    pet_cli.image_operations_4d
+   pet_cli.register
+   pet_cli.motion_corr
+   pet_cli.preproc
    pet_cli.math_lib
    pet_cli.bids_utils
-
 
 

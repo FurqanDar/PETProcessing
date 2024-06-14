@@ -83,14 +83,15 @@ class PreProc():
         -`output_filename_prefix`: Prefix appended to beginning of written
          files.
         -`preproc_props`: Properties dictionary used to set parameters for PET
-         preprocessing.
+         preprocessing. See :meth:`_init_preproc_props` for further details.
 
     Example:
 
     .. code-block:: python
+
         output_directory = '/path/to/processing'
         output_filename_prefix = 'sub-01'
-        sub_01 = pet_cli.image_operations_4d.ImageOps4d(output_directory,output_filename_prefix)
+        sub_01 = pet_cli.preproc.PreProc(output_directory,output_filename_prefix)
         params = {
             'FilePathWSSInput': '/path/to/pet.nii.gz',
             'FilePathAnat': '/path/to/mri.nii.gz',
@@ -101,7 +102,7 @@ class PreProc():
             'FilePathTACInput': '/path/to/registered/pet.nii.gz',
             'FilePathLabelMap': '/path/to/label/map.tsv',
             'FilePathSeg': '/path/to/segmentation.nii.gz',
-            'TimeFrameKeyword': 'FrameTimesStart'  # using start time or midpoint reference time
+            'TimeFrameKeyword': 'FrameTimesStart',  # using start time or midpoint reference time
             'Verbose': True,
         }
         sub_01.update_props(params)
@@ -118,6 +119,14 @@ class PreProc():
     def __init__(self,
                  output_directory: str,
                  output_filename_prefix: str) -> None:
+        """
+        Initialize PreProc class.
+
+        Args:
+            output_directory (str): Directory to which output images are saved.
+            output_filename_prefix (str): Prefix appended to beginning of saved
+                files. Typically subject ID.
+        """
         self.output_directory = os.path.abspath(output_directory)
         os.makedirs(self.output_directory,exist_ok=True)
         self.output_filename_prefix = output_filename_prefix
@@ -131,20 +140,30 @@ class PreProc():
 
         The available fields in the preproc properties dictionary are described
         as follows:
-            * FilePathWSSInput (str): Path to file on which to compute weighted series sum.
-            * FilePathMocoInp (str): Path to PET file to be motion corrected.
-            * FilePathRegInp (str): Path to PET file to be registered to anatomical data.
-            * FilePathAnat (str): Path to anatomical image to which ``FilePathRegInp`` is registered.
-            * FilePathTACInput (str): Path to PET file with which TACs are computed.
-            * FilePathSeg (str): Path to a segmentation image in anatomical space.
-            * FilePathLabelMap (str): Path to a label map file, indexing segmentation values to ROIs.
-            * MotionTarget (str | tuple): Target for transformation methods. See :meth:`determine_motion_target`.
-            * MocoPars (keyword arguments): Keyword arguments fed into the method call :meth:`ants.motion_correction`.
-            * RegPars (keyword arguments): Keyword arguments fed into the method call :meth:`ants.registration`.
-            * HalfLife (float): Half life of radioisotope.
-            * RegionExtract (int): Region index in the segmentation image to extract TAC from, if running TAC on a single ROI.
-            * TimeFrameKeyword (str): Keyword in metadata file corresponding to frame timing array to be used in analysis.
-            * Verbose (bool): Set to ``True`` to output processing information.
+        * FilePathWSSInput (str): Path to file on which to compute weighted series sum.
+        * FilePathMocoInp (str): Path to PET file to be motion corrected.
+        * FilePathRegInp (str): Path to PET file to be registered to anatomical data.
+        * FilePathAnat (str): Path to anatomical image to which ``FilePathRegInp`` is registered.
+        * FilePathTACInput (str): Path to PET file with which TACs are computed.
+        * FilePathSeg (str): Path to a segmentation image in anatomical space.
+        * FilePathLabelMap (str): Path to a label map file, indexing segmentation values to ROIs.
+        * FilePathAtlas (str): Path to atlas image, e.g. MNI152 T1 atlas.
+        * FilePathSUVRInput (str): Path to summed or parametric image on which to normalize to SUVR.
+        * FilePathBlurInput (str): Path to image to blur with a gaussian kernal.
+        * FilePathFSLPremat (str): Path to initial affine transform matrix in FSL format, used for FSL type warping.
+        * FilePathFSLPostmat (str): Path to post-warp affine transform matrix in FSL format, used for FSL type warping.
+        * FilePathWarpRef (str): Path to reference used to compute warp to atlas space. Typically anatomical scan.
+        * FilePathAntsXfm (str): Path to list of Ants transforms used to apply ANTs type warping.
+        * HalfLife (float): Half life of radioisotope. Used for a number of tools.
+        * MotionTarget (str | tuple): Target for transformation methods. See :meth:`determine_motion_target`.
+        * MocoPars (keyword arguments): Keyword arguments fed into the method call :meth:`ants.motion_correction`.
+        * RegPars (keyword arguments): Keyword arguments fed into the method call :meth:`ants.registration` while performing PET to anat registration.
+        * WarpPars (keyword arguments): Keyword arguments fed into the method call :meth:`ants.registration` while performing PET to atlas registration. 
+        * RefRegion (int): Reference region used to normalize SUVR.
+        * BlurSize (float): Size of gaussian kernal used to blur image.
+        * RegionExtract (int): Region index in the segmentation image to extract TAC from, if running TAC on a single ROI.
+        * TimeFrameKeyword (str): Keyword in metadata file corresponding to frame timing array to be used in analysis.
+        * Verbose (bool): Set to ``True`` to output processing information.
 
         """
         return _PREPROC_PROPS_
@@ -233,6 +252,16 @@ class PreProc():
     def _generate_outfile_path(self,
                                method_short: str,
                                extension: str='nii.gz'):
+        """
+        Generate the path to an output file, from the output directory,
+        filename prefix, abbreviation of the method name, and filename
+        extension.
+
+        Args:
+            method_short (str): Abbreviation of the method to generate outfile.
+            extension (str): File type extension to return. Defaults to
+                'nii.gz'.
+        """
         output_file_name = f'{self.output_filename_prefix}_{method_short}.{extension}'
         return os.path.join(self.output_directory,output_file_name)
 

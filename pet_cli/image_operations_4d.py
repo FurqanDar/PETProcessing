@@ -56,7 +56,7 @@ def weighted_series_sum(input_image_4d_path: str,
     indicates the total quantity computed over all frames, and :math:`S(f)` is the final weighted
     sum image.
 
-    
+
     Args:
         input_image_4d_path (str): Path to a .nii or .nii.gz file containing a 4D
             PET image on which the weighted sum is calculated. Assume a metadata
@@ -70,11 +70,10 @@ def weighted_series_sum(input_image_4d_path: str,
             calculation begins. Must be used with ``end_time``. Default value 0.
         end_time (float): Time, relative to scan start in seconds, at which
             calculation ends. Use value ``-1`` to use all frames in image series.
-            If equal to ``start_time`, one frame at start_time is used. Default value -1.
+            If equal to ``start_time``, one frame at start_time is used. Default value -1.
 
     Returns:
-        summed_image (np.ndarray): 3D image array, in the same space as the input,
-            with the weighted sum calculation applied.
+        np.ndarray: 3D image array, in the same space as the input, with the weighted sum calculation applied.
 
     Raises:
         ValueError: If ``half_life`` is zero or negative.
