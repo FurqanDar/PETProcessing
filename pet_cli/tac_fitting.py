@@ -918,6 +918,8 @@ class FitTCMToTAC(object):
                                             resample_num=self.tac_resample_num)
         self.fitting_obj.run_fit()
         self.fit_results = self.fitting_obj.fit_results
+        if self.bounds is None:
+            self.bounds = self.fitting_obj.bounds
     
     def _generate_pretty_params(self, results: np.ndarray) -> dict:
         r"""
@@ -943,7 +945,7 @@ class FitTCMToTAC(object):
             vb = {f'vb': results[-1]}
             return {**k_vals, **vb}
     
-    def _generate_pretty_bounds(self, bounds: np.ndarray) -> dict:
+    def _generate_pretty_bounds(self, bounds: Union[np.ndarray, None]) -> dict:
         r"""
         Transforms array of bounds into a formatted dictionary.
 
