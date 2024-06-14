@@ -10,12 +10,12 @@ TODO:
 """
 import os
 import json
-from . import qc_plots, register, image_operations_4d, motion_corr
+from . import qc_plots, register, image_operations_4d, motion_corr, segmentation_tools
 
 weighted_series_sum = image_operations_4d.weighted_series_sum
 write_tacs = image_operations_4d.write_tacs
 roi_tac = image_operations_4d.roi_tac
-resample_segmentation = image_operations_4d.resample_segmentation
+resample_segmentation = segmentation_tools.resample_segmentation
 suvr = image_operations_4d.suvr
 gauss_blur = image_operations_4d.gauss_blur
 register_pet = register.register_pet
