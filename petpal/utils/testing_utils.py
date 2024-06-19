@@ -85,7 +85,7 @@ class TACPlots(object):
             xlim (tuple): The new x-limits for the second plot. Defaults to (0.0, 10.0).
 
         """
-        self.fax[0].set(xlim=xlim, xscale='linear')
+        self.fax[1].set(xlim=xlim, xscale='linear')
 
 
 def generate_random_parameter_samples(num_samples, num_params, hi, lo):
