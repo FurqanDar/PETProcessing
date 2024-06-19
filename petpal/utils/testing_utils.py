@@ -75,6 +75,17 @@ class TACPlots(object):
         
         """
         self.fig.legend(*self.fax[0].get_legend_handles_labels(), bbox_to_anchor=(1.0, 0.5), loc='center left')
+        
+    def make_second_plot_linear(self, xlim: tuple = (0.0, 10.0)):
+        """
+        Makes the second plot's in x-scale linear, given the new x-limits. Provides an alternative way to look
+        at earlier times points of the TACs.
+        
+        Args:
+            xlim (tuple): The new x-limits for the second plot. Defaults to (0.0, 10.0).
+
+        """
+        self.fax[0].set(xlim=xlim, xscale='linear')
 
 
 def generate_random_parameter_samples(num_samples, num_params, hi, lo):
