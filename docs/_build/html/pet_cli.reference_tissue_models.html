@@ -1,0 +1,1571 @@
+
+<!DOCTYPE html>
+
+
+<html lang="English (US)" data-content_root="./" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>5. Reference Tissue Models &#8212; PET Processing Module</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="_static/styles/theme.css?digest=8d27b9dea8ad943066ae" rel="stylesheet" />
+<link href="_static/styles/bootstrap.css?digest=8d27b9dea8ad943066ae" rel="stylesheet" />
+<link href="_static/styles/pydata-sphinx-theme.css?digest=8d27b9dea8ad943066ae" rel="stylesheet" />
+
+  
+  <link href="_static/vendor/fontawesome/6.5.1/css/all.min.css?digest=8d27b9dea8ad943066ae" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.1/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.1/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.1/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=a746c00c" />
+    <link rel="stylesheet" type="text/css" href="_static/plot_directive.css" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=8d27b9dea8ad943066ae" />
+<link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=8d27b9dea8ad943066ae" />
+  <script src="_static/vendor/fontawesome/6.5.1/js/all.min.js?digest=8d27b9dea8ad943066ae"></script>
+
+    <script src="_static/documentation_options.js?v=cd7df0db"></script>
+    <script src="_static/doctools.js?v=888ff710"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'pet_cli.reference_tissue_models';</script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="6. TAC Fitting With Tissue Compartment Models" href="pet_cli.tac_fitting.html" />
+    <link rel="prev" title="4. Graphical Analysis Of TACs" href="pet_cli.graphical_analysis.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="English (US)"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <a id="pst-skip-link" class="skip-link" href="#main-content">Skip to main content</a>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>
+    Back to top
+  </button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__primary"
+          id="__primary"/>
+  <label class="overlay overlay-primary" for="__primary"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__secondary"
+          id="__secondary"/>
+  <label class="overlay overlay-secondary" for="__secondary"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar">
+<div class="bd-header__inner bd-page-width">
+  <label class="sidebar-toggle primary-toggle" for="__primary">
+    <span class="fa-solid fa-bars"></span>
+  </label>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+
+<a class="navbar-brand logo" href="index.html">
+  
+  
+  
+  
+  
+  
+    <p class="title logo__title">PET Processing Module</p>
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav class="navbar-nav">
+  <ul class="bd-navbar-elements navbar-nav">
+    
+                    <li class="nav-item current active">
+                      <a class="nav-link nav-internal" href="modules.html">
+                        Modules
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="cli_ref.html">
+                        CLI Reference
+                      </a>
+                    </li>
+                
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+ <script>
+ document.write(`
+   <button class="btn navbar-btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<script>
+document.write(`
+  <button class="btn btn-sm navbar-btn theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="theme-switch nav-link" data-mode="light"><i class="fa-solid fa-sun fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="dark"><i class="fa-solid fa-moon fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg"></i></span>
+  </button>
+`);
+</script></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+ <script>
+ document.write(`
+   <button class="btn navbar-btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script>
+    </div>
+  
+
+  
+    <label class="sidebar-toggle secondary-toggle" for="__secondary" tabindex="0">
+      <span class="fa-solid fa-outdent"></span>
+    </label>
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          <div class="navbar-item">
+<nav class="navbar-nav">
+  <ul class="bd-navbar-elements navbar-nav">
+    
+                    <li class="nav-item current active">
+                      <a class="nav-link nav-internal" href="modules.html">
+                        Modules
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="cli_ref.html">
+                        CLI Reference
+                      </a>
+                    </li>
+                
+  </ul>
+</nav></div>
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<script>
+document.write(`
+  <button class="btn btn-sm navbar-btn theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="theme-switch nav-link" data-mode="light"><i class="fa-solid fa-sun fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="dark"><i class="fa-solid fa-moon fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg"></i></span>
+  </button>
+`);
+</script></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+<nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="pet_cli.image_io.html">1. Image IO</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pet_cli.tac_interpolation.html">2. TAC Interpolation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pet_cli.tcms_as_convolutions.html">3. TCMs As Convolutions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pet_cli.graphical_analysis.html">4. Graphical Analysis Of TACs</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">5. Reference Tissue Models</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pet_cli.tac_fitting.html">6. TAC Fitting With Tissue Compartment Models</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pet_cli.parametric_images.html">7. Parametric Images</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pet_cli.graphical_plots.html">8. Graphical Analysis Plots</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pet_cli.image_visualization.html">9. Image Visualization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pet_cli.blood_input.html">10. Interpolation Blood Data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pet_cli.image_operations_4d.html">11. Special Operations on 4D Images</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pet_cli.register.html">12. Tools for Registration of PET to Anatomical and Atlas Space</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pet_cli.motion_corr.html">13. Tools to Motion Correct PET Images</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pet_cli.preproc.html">14. Python Interface for PET Preprocessing Tools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pet_cli.math_lib.html">15. Mathematical Operations Library</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pet_cli.bids_utils.html">16. BIDS File Management Utilities</a></li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+
+
+<nav aria-label="Breadcrumb">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="modules.html" class="nav-link">Modules</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page"><span...</li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="module-pet_cli.reference_tissue_models">
+<span id="reference-tissue-models"></span><h1><span class="section-number">5. </span>Reference Tissue Models<a class="headerlink" href="#module-pet_cli.reference_tissue_models" title="Link to this heading">#</a></h1>
+<div class="admonition-todo admonition" id="id1">
+<p class="admonition-title">Todo</p>
+<ul class="simple">
+<li><p>Add the Ichise paper citations.</p></li>
+<li><p>Add the SRTM and FRTM paper citations.</p></li>
+<li><p>Add implementations for the SRTM2 and FRTM2 analyses.</p></li>
+</ul>
+</div>
+<dl class="py function">
+<dt class="sig sig-object py" id="pet_cli.reference_tissue_models.calc_srtm_tac">
+<span class="sig-name descname"><span class="pre">calc_srtm_tac</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tac_times</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.26)"><span class="pre">ndarray</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">ref_tac_vals</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.26)"><span class="pre">ndarray</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">r1</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">k2</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bp</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.26)"><span class="pre">ndarray</span></a></span></span><a class="headerlink" href="#pet_cli.reference_tissue_models.calc_srtm_tac" title="Link to this definition">#</a></dt>
+<dd><p>Calculate the Time Activity Curve (TAC) using the Simplified Reference Tissue Model (SRTM) with the given reference
+TAC and kinetic parameters.</p>
+<div class="admonition important">
+<p class="admonition-title">Important</p>
+<p>This function assumes that the reference TAC is uniformly sampled with respect to time since we perform
+convolutions.</p>
+</div>
+<p>The SRTM TAC can be calculated as:</p>
+<div class="math notranslate nohighlight">
+\[C(t)=R_{1}C_\mathrm{R}(t) + \left(k_{2} - \frac{R_{1}k_{2}}{1+\mathrm{BP}}\right)C_\mathrm{R}(t)\otimes
+\exp\left(- \frac{k_{2}t}{1+\mathrm{BP}}\right),\]</div>
+<p>where <span class="math notranslate nohighlight">\(C_\mathrm{R}(t)\)</span> is the reference TAC, <span class="math notranslate nohighlight">\(R_{1}=\frac{k_1^\prime}{k_1}\)</span>, <span class="math notranslate nohighlight">\(k_{2}\)</span> is the
+rate-constant from the tissue compartment to plasma, and <span class="math notranslate nohighlight">\(\mathrm{BP}\)</span> is the binding potential.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>tac_times</strong> (<em>np.ndarray</em>) -- Times for the reference TAC.</p></li>
+<li><p><strong>r1</strong> (<em>float</em>) -- The ratio of the clearance rate of tracer from plasma to the reference to the transfer rate of the
+tracer from plasma to the tissue; <span class="math notranslate nohighlight">\(R_{1}\equiv\frac{k_1^\prime}{k_1}\)</span>.</p></li>
+<li><p><strong>k2</strong> (<em>float</em>) -- The rate constant for the transfer of the tracer from tissue compartment to plasma.</p></li>
+<li><p><strong>bp</strong> (<em>float</em>) -- The binding potential of the tracer in the tissue.</p></li>
+<li><p><strong>ref_tac_vals</strong> (<em>np.ndarray</em>) -- The values of the reference TAC.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>TAC values calculated using SRTM.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>np.ndarray</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>AssertionError</strong> -- If the reference TAC and times are different dimensions.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pet_cli.reference_tissue_models._calc_simplified_frtm_tac">
+<span class="sig-name descname"><span class="pre">_calc_simplified_frtm_tac</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tac_times</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.26)"><span class="pre">ndarray</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">ref_tac_vals</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.26)"><span class="pre">ndarray</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">r1</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">a1</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">a2</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alpha_1</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alpha_2</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.26)"><span class="pre">ndarray</span></a></span></span><a class="headerlink" href="#pet_cli.reference_tissue_models._calc_simplified_frtm_tac" title="Link to this definition">#</a></dt>
+<dd><p>Calculate the Time Activity Curve (TAC) for the Full Reference Tissue Model (FRTM) given the reference TAC and
+simplified coefficients. The coefficients can be generated from kinetic constants using
+<a class="reference internal" href="#pet_cli.reference_tissue_models._calc_frtm_params_from_kinetic_params" title="pet_cli.reference_tissue_models._calc_frtm_params_from_kinetic_params"><code class="xref py py-func docutils literal notranslate"><span class="pre">_calc_frtm_params_from_kinetic_params</span></code></a></p>
+<div class="admonition important">
+<p class="admonition-title">Important</p>
+<p>This function assumes that the reference TAC is uniformly sampled with respect to time since we perform
+convolutions.</p>
+</div>
+<p>We use a more compact form for the FRTM:</p>
+<div class="math notranslate nohighlight">
+\[C(t) = R_{1}C_\mathrm{R}(t) + \left[ A_{1}e^{-\alpha_{1}t} + A_{2}e^{-\alpha_{2}t} \right] \otimes
+C_\mathrm{R}(t),\]</div>
+<p>where <span class="math notranslate nohighlight">\(R_{1}\equiv\frac{k_1^\prime}{k_1}\)</span>, and <span class="math notranslate nohighlight">\(A_{1},\,A_{2},\,\alpha_1,\,\alpha_2\)</span> can be calculated
+from the underlying kinetic constants. See <a class="reference internal" href="#pet_cli.reference_tissue_models._calc_frtm_params_from_kinetic_params" title="pet_cli.reference_tissue_models._calc_frtm_params_from_kinetic_params"><code class="xref py py-func docutils literal notranslate"><span class="pre">_calc_frtm_params_from_kinetic_params</span></code></a> for more details about
+the parameter calculation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>tac_times</strong> (<em>np.ndarray</em>) -- Times for the reference TAC.</p></li>
+<li><p><strong>r1</strong> (<em>float</em>) -- The ratio of the clearance rate of tracer from plasma to the reference to the transfer rate of the
+tracer from plasma to the tissue; <span class="math notranslate nohighlight">\(R_{1}\equiv\frac{k_1^\prime}{k_1}\)</span>.</p></li>
+<li><p><strong>a1</strong> (<em>float</em>) -- Coefficient of the first exponential term.</p></li>
+<li><p><strong>a2</strong> (<em>float</em>) -- Coefficient of the second exponential term.</p></li>
+<li><p><strong>alpha_1</strong> (<em>float</em>) -- Coefficient inside the first exponential.</p></li>
+<li><p><strong>alpha_2</strong> (<em>float</em>) -- Coefficient inside the second exponential.</p></li>
+<li><p><strong>ref_tac_vals</strong> (<em>np.ndarray</em>) -- The values of the reference TAC.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>TAC values calculated using FRTM.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>np.ndarray</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>AssertionError</strong> -- If the reference TAC and times are different dimensions.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pet_cli.reference_tissue_models._calc_frtm_params_from_kinetic_params">
+<span class="sig-name descname"><span class="pre">_calc_frtm_params_from_kinetic_params</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">r1</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">k2</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">k3</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">k4</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#pet_cli.reference_tissue_models._calc_frtm_params_from_kinetic_params" title="Link to this definition">#</a></dt>
+<dd><p>Calculates the parameters (coefficients) for the simplified FRTM function (<a class="reference internal" href="#pet_cli.reference_tissue_models._calc_simplified_frtm_tac" title="pet_cli.reference_tissue_models._calc_simplified_frtm_tac"><code class="xref py py-func docutils literal notranslate"><span class="pre">_calc_simplified_frtm_tac</span></code></a>) given
+the kinetic constants.</p>
+<p>The parameters are defined as:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\alpha_{1} &amp;= \frac{\beta - \chi}{2}\\
+\alpha_{2} &amp;= \frac{\beta + \chi}{2}\\
+A_{1} &amp;= \left(\frac{k_{3} + k_{4} -\alpha_{2}}{\chi} \right)\left( \frac{k_{2}}{R_{1}} - \alpha_{2} \right)\\
+A_{2} &amp;= \left(\frac{\alpha_{1}-k_{3} - k_{4} }{\chi} \right)\left( \frac{k_{2}}{R_{1}} - \alpha_{1} \right),\end{split}\]</div>
+<p>where additionally we have:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\alpha_{1} &amp;= \frac{k_{2} + k_{3} + k_{4} - \sqrt{\left( k_{2} + k_{3} + k_{4} \right)^2 - 4k_{2}k_{4}}}{2}\\
+\alpha_{2} &amp;= \frac{k_{2} + k_{3} + k_{4} + \sqrt{\left( k_{2} + k_{3} + k_{4} \right)^2 - 4k_{2}k_{4}}}{2}\\
+A_{1} &amp;= \left( \frac{k_{3} + k_{4} -\alpha_{2}}{\alpha_{1} - \alpha_{2}} \right)\left( \frac{k_{2}}{R_{1}}
+- \alpha_{2} \right)\\
+A_{2} &amp;= \left(  \frac{\alpha_{1}-k_{3} - k_{4} }{\alpha_{1} - \alpha_{2}} \right)\left( \frac{k_{2}}{R_{1}}
+- \alpha_{1} \right)\end{split}\]</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>r1</strong> (<em>float</em>) -- The ratio of the clearance rate of tracer from plasma to the reference to the transfer rate of the
+tracer from plasma to the tissue; <span class="math notranslate nohighlight">\(R_{1}\equiv\frac{k_1^\prime}{k_1}\)</span>.</p></li>
+<li><p><strong>k2</strong> (<em>float</em>) -- The rate of tracer transfer from the first tissue compartment to plasma.</p></li>
+<li><p><strong>k3</strong> (<em>float</em>) -- The rate of tracer transfer from the first tissue compartment to the second tissue compartment.</p></li>
+<li><p><strong>k4</strong> (<em>float</em>) -- The rate of tracer transfer from the second tissue compartment to the first tissue compartment.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>(<code class="docutils literal notranslate"><span class="pre">r1</span></code>, <code class="docutils literal notranslate"><span class="pre">a1</span></code>, <code class="docutils literal notranslate"><span class="pre">a2</span></code>, <code class="docutils literal notranslate"><span class="pre">alpha_1</span></code>, <code class="docutils literal notranslate"><span class="pre">alpha_2</span></code>) parameters for <a class="reference internal" href="#pet_cli.reference_tissue_models._calc_simplified_frtm_tac" title="pet_cli.reference_tissue_models._calc_simplified_frtm_tac"><code class="xref py py-func docutils literal notranslate"><span class="pre">_calc_simplified_frtm_tac</span></code></a>.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>tuple</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pet_cli.reference_tissue_models.calc_frtm_tac">
+<span class="sig-name descname"><span class="pre">calc_frtm_tac</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tac_times</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.26)"><span class="pre">ndarray</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">ref_tac_vals</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.26)"><span class="pre">ndarray</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">r1</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">k2</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">k3</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">k4</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.26)"><span class="pre">ndarray</span></a></span></span><a class="headerlink" href="#pet_cli.reference_tissue_models.calc_frtm_tac" title="Link to this definition">#</a></dt>
+<dd><p>Calculate the Time Activity Curve (TAC) using the Full Reference Tissue Model (SRTM) with the given reference
+TAC and kinetic parameters.</p>
+<div class="admonition important">
+<p class="admonition-title">Important</p>
+<p>This function assumes that the reference TAC is uniformly sampled with respect to time since we perform
+convolutions.</p>
+</div>
+<p>The FRTM TAC can be calculated as:</p>
+<div class="math notranslate nohighlight">
+\[C(t) = R_{1}C_\mathrm{R}(t) + \left[ A_{1}e^{-\alpha_{1}t} + A_{2}e^{-\alpha_{2}t} \right] \otimes
+C_\mathrm{R}(t),\]</div>
+<p>where additionally we have:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\alpha_{1} &amp;= \frac{k_{2} + k_{3} + k_{4} - \sqrt{\left( k_{2} + k_{3} + k_{4} \right)^2 - 4k_{2}k_{4}}}{2}\\
+\alpha_{2} &amp;= \frac{k_{2} + k_{3} + k_{4} + \sqrt{\left( k_{2} + k_{3} + k_{4} \right)^2 - 4k_{2}k_{4}}}{2}\\
+A_{1} &amp;= \left( \frac{k_{3} + k_{4} -\alpha_{2}}{\alpha_{1} - \alpha_{2}} \right)\left( \frac{k_{2}}{R_{1}}
+- \alpha_{2} \right)\\
+A_{2} &amp;= \left(  \frac{\alpha_{1}-k_{3} - k_{4} }{\alpha_{1} - \alpha_{2}} \right)\left( \frac{k_{2}}{R_{1}}
+- \alpha_{1} \right)\end{split}\]</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>tac_times</strong> (<em>np.ndarray</em>) -- Times for the reference TAC.</p></li>
+<li><p><strong>r1</strong> (<em>float</em>) -- The ratio of the clearance rate of tracer from plasma to the reference to the transfer rate of the
+tracer from plasma to the tissue; <span class="math notranslate nohighlight">\(R_{1}\equiv\frac{k_1^\prime}{k_1}\)</span>.</p></li>
+<li><p><strong>k2</strong> (<em>float</em>) -- The rate of tracer transfer from the first tissue compartment to plasma.</p></li>
+<li><p><strong>k3</strong> (<em>float</em>) -- The rate of tracer transfer from the first tissue compartment to the second tissue compartment.</p></li>
+<li><p><strong>k4</strong> (<em>float</em>) -- The rate of tracer transfer from the second tissue compartment to the first tissue compartment.</p></li>
+<li><p><strong>ref_tac_vals</strong> (<em>np.ndarray</em>) -- The values of the reference TAC.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>TAC values calculated using FRTM.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>np.ndarray</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>AssertionError</strong> -- If the reference TAC and times are different dimensions.</p>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<ul class="simple">
+<li><p><code class="xref py py-func docutils literal notranslate"><span class="pre">_calc_simplified_frtm</span></code></p></li>
+<li><p><a class="reference internal" href="#pet_cli.reference_tissue_models._calc_frtm_params_from_kinetic_params" title="pet_cli.reference_tissue_models._calc_frtm_params_from_kinetic_params"><code class="xref py py-func docutils literal notranslate"><span class="pre">_calc_frtm_params_from_kinetic_params</span></code></a></p></li>
+</ul>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pet_cli.reference_tissue_models.fit_srtm_to_tac">
+<span class="sig-name descname"><span class="pre">fit_srtm_to_tac</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tgt_tac_vals</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.26)"><span class="pre">ndarray</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">ref_tac_times</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.26)"><span class="pre">ndarray</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">ref_tac_vals</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.26)"><span class="pre">ndarray</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">r1_start</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">k2_start</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bp_start</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.5</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span></span></span><a class="headerlink" href="#pet_cli.reference_tissue_models.fit_srtm_to_tac" title="Link to this definition">#</a></dt>
+<dd><p>Fit SRTM to the provided target Time Activity Curve (TAC), given the reference TAC, times, and starting guesses for
+the kinetic parameters.</p>
+<div class="admonition important">
+<p class="admonition-title">Important</p>
+<p>This function assumes that the reference TAC is uniformly sampled with respect to time since we perform
+convolutions.</p>
+</div>
+<p>This is a simple wrapper around <a class="reference external" href="https://docs.scipy.org/doc/scipy/reference/generated/scipy.optimize.curve_fit.html#scipy.optimize.curve_fit" title="(in SciPy v1.13.1)"><code class="xref py py-func docutils literal notranslate"><span class="pre">scipy.optimize.curve_fit</span></code></a> and does not use any bounds for the different
+parameters.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>tgt_tac_vals</strong> (<em>np.ndarray</em>) -- Target TAC to fit with the SRTM.</p></li>
+<li><p><strong>ref_tac_times</strong> (<em>np.ndarray</em>) -- Reference TAC values.</p></li>
+<li><p><strong>ref_tac_vals</strong> (<em>np.ndarray</em>) -- Reference (and Target) TAC times.</p></li>
+<li><p><strong>r1_start</strong> (<em>float</em>) -- Starting guess for the <span class="math notranslate nohighlight">\(R_1\equiv\frac{k_1^\prime}{k_1}\)</span> parameter.</p></li>
+<li><p><strong>k2_start</strong> (<em>float</em>) -- Starting guess for <span class="math notranslate nohighlight">\(k_2\)</span> parameter.</p></li>
+<li><p><strong>bp_start</strong> (<em>float</em>) -- Starting guess for the binding potential.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>(<code class="docutils literal notranslate"><span class="pre">fit_parameters</span></code>, <code class="docutils literal notranslate"><span class="pre">fit_covariance</span></code>). Output from <a class="reference external" href="https://docs.scipy.org/doc/scipy/reference/generated/scipy.optimize.curve_fit.html#scipy.optimize.curve_fit" title="(in SciPy v1.13.1)"><code class="xref py py-func docutils literal notranslate"><span class="pre">scipy.optimize.curve_fit</span></code></a></p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>tuple</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>AssertionError</strong> -- If the reference TAC and times are different dimensions.</p>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="#pet_cli.reference_tissue_models.calc_srtm_tac" title="pet_cli.reference_tissue_models.calc_srtm_tac"><code class="xref py py-func docutils literal notranslate"><span class="pre">calc_srtm_tac</span></code></a></p></li>
+</ul>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pet_cli.reference_tissue_models.fit_srtm_to_tac_with_bounds">
+<span class="sig-name descname"><span class="pre">fit_srtm_to_tac_with_bounds</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tgt_tac_vals</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.26)"><span class="pre">ndarray</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">ref_tac_times</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.26)"><span class="pre">ndarray</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">ref_tac_vals</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.26)"><span class="pre">ndarray</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">r1_bounds</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.26)"><span class="pre">ndarray</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">array([0.5,</span> <span class="pre">0.,</span> <span class="pre">10.])</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">k2_bounds</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.26)"><span class="pre">ndarray</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">array([0.5,</span> <span class="pre">0.,</span> <span class="pre">10.])</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bp_bounds</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.26)"><span class="pre">ndarray</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">array([0.5,</span> <span class="pre">0.,</span> <span class="pre">10.])</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span></span></span><a class="headerlink" href="#pet_cli.reference_tissue_models.fit_srtm_to_tac_with_bounds" title="Link to this definition">#</a></dt>
+<dd><p>Fit SRTM to the provided target Time Activity Curve (TAC), given the reference TAC, times, and bounds for
+the kinetic parameters.</p>
+<div class="admonition important">
+<p class="admonition-title">Important</p>
+<p>This function assumes that the reference TAC is uniformly sampled with respect to time since we perform
+convolutions.</p>
+</div>
+<p>This function is a wrapper around <cite>scipy.optimize.curve_fit</cite> and uses parameter bounds during optimization. The
+bounds for each parameter are formatted as: <code class="docutils literal notranslate"><span class="pre">(starting_value,</span> <span class="pre">lo_bound,</span> <span class="pre">hi_bound)</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>tgt_tac_vals</strong> (<em>np.ndarray</em>) -- Target TAC to fit with the SRTM.</p></li>
+<li><p><strong>ref_tac_times</strong> (<em>np.ndarray</em>) -- Times of the reference TAC data.</p></li>
+<li><p><strong>ref_tac_vals</strong> (<em>np.ndarray</em>) -- Reference TAC values.</p></li>
+<li><p><strong>r1_bounds</strong> (<em>np.ndarray</em>) -- The bounds for the <span class="math notranslate nohighlight">\(R_1\equiv\frac{k_1^\prime}{k_1}\)</span> parameter.</p></li>
+<li><p><strong>[</strong><strong>0.5</strong> (<em>Defaults to</em>) -- </p></li>
+<li><p><strong>0.0</strong> -- </p></li>
+<li><p><strong>10.0</strong><strong>]</strong><strong>.</strong> -- </p></li>
+<li><p><strong>k2_bounds</strong> (<em>np.ndarray</em>) -- The bounds for <span class="math notranslate nohighlight">\(k_2\)</span> parameter. Defaults to [0.5, 0.0, 10.0].</p></li>
+<li><p><strong>bp_bounds</strong> (<em>np.ndarray</em>) -- The bounds for the binding potential parameter. Defaults to [0.5, 0.0, 10.0].</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>(<code class="docutils literal notranslate"><span class="pre">fit_parameters</span></code>, <code class="docutils literal notranslate"><span class="pre">fit_covariance</span></code>). Output from <cite>scipy.optimize.curve_fit</cite>.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>tuple</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>AssertionError</strong> -- If the target TAC and times are different dimensions.</p>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="#pet_cli.reference_tissue_models.calc_srtm_tac" title="pet_cli.reference_tissue_models.calc_srtm_tac"><code class="xref py py-func docutils literal notranslate"><span class="pre">calc_srtm_tac</span></code></a></p></li>
+</ul>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pet_cli.reference_tissue_models.fit_frtm_to_tac">
+<span class="sig-name descname"><span class="pre">fit_frtm_to_tac</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tgt_tac_vals</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.26)"><span class="pre">ndarray</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">ref_tac_times</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.26)"><span class="pre">ndarray</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">ref_tac_vals</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.26)"><span class="pre">ndarray</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">r1_start</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">k2_start</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">k3_start</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">k4_start</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.5</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span></span></span><a class="headerlink" href="#pet_cli.reference_tissue_models.fit_frtm_to_tac" title="Link to this definition">#</a></dt>
+<dd><p>Fit FRTM to the provided target Time Activity Curve (TAC), given the reference TAC, times, and starting guesses for
+the kinetic parameters.</p>
+<div class="admonition important">
+<p class="admonition-title">Important</p>
+<p>This function assumes that the reference TAC is uniformly sampled with respect to time since we perform
+convolutions.</p>
+</div>
+<p>This is a simple wrapper around <a class="reference external" href="https://docs.scipy.org/doc/scipy/reference/generated/scipy.optimize.curve_fit.html#scipy.optimize.curve_fit" title="(in SciPy v1.13.1)"><code class="xref py py-func docutils literal notranslate"><span class="pre">scipy.optimize.curve_fit</span></code></a> and does not use any bounds for the different
+parameters.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>tgt_tac_vals</strong> (<em>np.ndarray</em>) -- Target TAC to fit with the SRTM.</p></li>
+<li><p><strong>ref_tac_times</strong> (<em>np.ndarray</em>) -- Reference TAC values.</p></li>
+<li><p><strong>ref_tac_vals</strong> (<em>np.ndarray</em>) -- Reference (and Target) TAC times.</p></li>
+<li><p><strong>r1_start</strong> (<em>float</em>) -- Starting guess for the <span class="math notranslate nohighlight">\(R_1\equiv\frac{k_1^\prime}{k_1}\)</span> parameter.</p></li>
+<li><p><strong>k2_start</strong> (<em>float</em>) -- Starting guess for <span class="math notranslate nohighlight">\(k_2\)</span> parameter.</p></li>
+<li><p><strong>k3_start</strong> (<em>float</em>) -- Starting guess for <span class="math notranslate nohighlight">\(k_3\)</span> parameter.</p></li>
+<li><p><strong>k4_start</strong> (<em>float</em>) -- Starting guess for <span class="math notranslate nohighlight">\(k_4\)</span> parameter.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>(<code class="docutils literal notranslate"><span class="pre">fit_parameters</span></code>, <code class="docutils literal notranslate"><span class="pre">fit_covariance</span></code>). Output from <a class="reference external" href="https://docs.scipy.org/doc/scipy/reference/generated/scipy.optimize.curve_fit.html#scipy.optimize.curve_fit" title="(in SciPy v1.13.1)"><code class="xref py py-func docutils literal notranslate"><span class="pre">scipy.optimize.curve_fit</span></code></a></p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>tuple</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>AssertionError</strong> -- If the reference TAC and times are different dimensions.</p>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="#pet_cli.reference_tissue_models.calc_frtm_tac" title="pet_cli.reference_tissue_models.calc_frtm_tac"><code class="xref py py-func docutils literal notranslate"><span class="pre">calc_frtm_tac</span></code></a></p></li>
+</ul>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pet_cli.reference_tissue_models.fit_frtm_to_tac_with_bounds">
+<span class="sig-name descname"><span class="pre">fit_frtm_to_tac_with_bounds</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tgt_tac_vals</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.26)"><span class="pre">ndarray</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">ref_tac_times</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.26)"><span class="pre">ndarray</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">ref_tac_vals</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.26)"><span class="pre">ndarray</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">r1_bounds</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.26)"><span class="pre">ndarray</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">array([0.5,</span> <span class="pre">0.,</span> <span class="pre">10.])</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">k2_bounds</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.26)"><span class="pre">ndarray</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">array([0.5,</span> <span class="pre">0.,</span> <span class="pre">10.])</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">k3_bounds</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.26)"><span class="pre">ndarray</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">array([0.5,</span> <span class="pre">0.,</span> <span class="pre">10.])</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">k4_bounds</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.26)"><span class="pre">ndarray</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">array([0.5,</span> <span class="pre">0.,</span> <span class="pre">10.])</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span></span></span><a class="headerlink" href="#pet_cli.reference_tissue_models.fit_frtm_to_tac_with_bounds" title="Link to this definition">#</a></dt>
+<dd><p>Fit FRTM to the provided target Time Activity Curve (TAC), given the reference TAC, times, and bounds for
+the kinetic parameters.</p>
+<div class="admonition important">
+<p class="admonition-title">Important</p>
+<p>This function assumes that the reference TAC is uniformly sampled with respect to time since we perform
+convolutions.</p>
+</div>
+<p>This function is a wrapper around <cite>scipy.optimize.curve_fit</cite> and uses parameter bounds during optimization. The
+bounds for each parameter are formatted as: <code class="docutils literal notranslate"><span class="pre">(starting_value,</span> <span class="pre">lo_bound,</span> <span class="pre">hi_bound)</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>tgt_tac_vals</strong> (<em>np.ndarray</em>) -- Target TAC to fit with the SRTM.</p></li>
+<li><p><strong>ref_tac_times</strong> (<em>np.ndarray</em>) -- Times of the reference TAC data.</p></li>
+<li><p><strong>ref_tac_vals</strong> (<em>np.ndarray</em>) -- Reference TAC values.</p></li>
+<li><p><strong>r1_bounds</strong> (<em>np.ndarray</em>) -- The bounds for the <span class="math notranslate nohighlight">\(R_1\equiv\frac{k_1^\prime}{k_1}\)</span> parameter.</p></li>
+<li><p><strong>[</strong><strong>0.5</strong> (<em>Defaults to</em>) -- </p></li>
+<li><p><strong>0.0</strong> -- </p></li>
+<li><p><strong>10.0</strong><strong>]</strong><strong>.</strong> -- </p></li>
+<li><p><strong>k2_bounds</strong> (<em>np.ndarray</em>) -- The bounds for <span class="math notranslate nohighlight">\(k_2\)</span> parameter. Defaults to [0.5, 0.0, 10.0].</p></li>
+<li><p><strong>k3_bounds</strong> (<em>np.ndarray</em>) -- The bounds for <span class="math notranslate nohighlight">\(k_3\)</span> parameter. Defaults to [0.5, 0.0, 10.0].</p></li>
+<li><p><strong>k4_bounds</strong> (<em>np.ndarray</em>) -- The bounds for <span class="math notranslate nohighlight">\(k_4\)</span> parameter. Defaults to [0.5, 0.0, 10.0].</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>(<code class="docutils literal notranslate"><span class="pre">fit_parameters</span></code>, <code class="docutils literal notranslate"><span class="pre">fit_covariance</span></code>). Output from <cite>scipy.optimize.curve_fit</cite>.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>tuple</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>AssertionError</strong> -- If the target TAC and times are different dimensions.</p>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="#pet_cli.reference_tissue_models.calc_frtm_tac" title="pet_cli.reference_tissue_models.calc_frtm_tac"><code class="xref py py-func docutils literal notranslate"><span class="pre">calc_frtm_tac</span></code></a></p></li>
+</ul>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pet_cli.reference_tissue_models.fit_mrtm_original_to_tac">
+<span class="sig-name descname"><span class="pre">fit_mrtm_original_to_tac</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tgt_tac_vals</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.26)"><span class="pre">ndarray</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">ref_tac_times</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.26)"><span class="pre">ndarray</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">ref_tac_vals</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.26)"><span class="pre">ndarray</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">t_thresh_in_mins</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pet_cli.reference_tissue_models.fit_mrtm_original_to_tac" title="Link to this definition">#</a></dt>
+<dd><p>Fit the original (1996) Multilinear Reference Tissue Model (MRTM) to the provided target Time Activity Curve (TAC)
+values given the reference TAC, times, and threshold time (in minutes). The data are fit for all values beyond the
+threshold. We assume that the target TAC and reference TAC are sampled at the same times.</p>
+<div class="admonition important">
+<p class="admonition-title">Important</p>
+<p>This function assumes that both TACs are sampled at the same time, and that the time is in minutes.</p>
+</div>
+<p>We have the following multilinear regression:</p>
+<div class="math notranslate nohighlight">
+\[\frac{\int_{0}^{T}C(t)\mathrm{d}t}{C(T)}=\frac{V}{V^{\prime}} \frac{\int_{0}^{T}C^{\prime}(t)\mathrm{d}t}{C(T)}
+- \frac{V}{V^{\prime}k_{2}^{\prime}} \frac{C^{\prime}(T)}{C(T)} + b\]</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>tgt_tac_vals</strong> (<em>np.ndarray</em>) -- Target TAC values to fit the MRTM.</p></li>
+<li><p><strong>ref_tac_times</strong> (<em>np.ndarray</em>) -- Times of the reference TAC (in minutes).</p></li>
+<li><p><strong>ref_tac_vals</strong> (<em>np.ndarray</em>) -- Reference TAC values.</p></li>
+<li><p><strong>t_thresh_in_mins</strong> (<em>float</em>) -- Threshold time in minutes.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Array containing fit results. (<span class="math notranslate nohighlight">\(\frac{V}{V^{\prime}}\)</span>,
+<span class="math notranslate nohighlight">\(\frac{V}{V^{\prime}k_{2}^{\prime}}\)</span>, <span class="math notranslate nohighlight">\(b\)</span>)</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>np.ndarray</p>
+</dd>
+</dl>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This function is implemented with numba for improved performance.</p>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pet_cli.reference_tissue_models.fit_mrtm_2003_to_tac">
+<span class="sig-name descname"><span class="pre">fit_mrtm_2003_to_tac</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tgt_tac_vals</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.26)"><span class="pre">ndarray</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">ref_tac_times</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.26)"><span class="pre">ndarray</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">ref_tac_vals</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.26)"><span class="pre">ndarray</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">t_thresh_in_mins</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pet_cli.reference_tissue_models.fit_mrtm_2003_to_tac" title="Link to this definition">#</a></dt>
+<dd><p>Fit the 2003 Multilinear Reference Tissue Model (MRTM) to the provided target Time Activity Curve (TAC) values given
+the reference TAC, times, and threshold time (in minutes). The data are fit for all values beyond the threshold. We
+assume that the target TAC and reference TAC are sampled at the same times.</p>
+<div class="admonition important">
+<p class="admonition-title">Important</p>
+<p>This function assumes that both TACs are sampled at the same time, and that the time is in minutes.</p>
+</div>
+<p>We have the following multilinear regression:</p>
+<div class="math notranslate nohighlight">
+\[C(T)=-\frac{V}{V^{\prime}b} \int_{0}^{T}C^{\prime}(t)\mathrm{d}t + \frac{1}{b} \int_{0}^{T}C(t)\mathrm{d}t
+- \frac{V}{V^{\prime}k_{2}^{\prime}b}C^{\prime}(T)\]</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>tgt_tac_vals</strong> (<em>np.ndarray</em>) -- Target TAC values to fit the MRTM.</p></li>
+<li><p><strong>ref_tac_times</strong> (<em>np.ndarray</em>) -- Times of the reference TAC (in minutes).</p></li>
+<li><p><strong>ref_tac_vals</strong> (<em>np.ndarray</em>) -- Reference TAC values.</p></li>
+<li><p><strong>t_thresh_in_mins</strong> (<em>float</em>) -- Threshold time in minutes.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Array containing fit results. (<span class="math notranslate nohighlight">\(-\frac{V}{V^{\prime}b}\)</span>,
+<span class="math notranslate nohighlight">\(\frac{1}{b}\)</span>, <span class="math notranslate nohighlight">\(-\frac{V}{V^{\prime}k_{2}^{\prime}b}\)</span>)</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>np.ndarray</p>
+</dd>
+</dl>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This function is implemented with numba for improved performance.</p>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pet_cli.reference_tissue_models.fit_mrtm2_2003_to_tac">
+<span class="sig-name descname"><span class="pre">fit_mrtm2_2003_to_tac</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tgt_tac_vals</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.26)"><span class="pre">ndarray</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">ref_tac_times</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.26)"><span class="pre">ndarray</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">ref_tac_vals</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.26)"><span class="pre">ndarray</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">t_thresh_in_mins</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">k2_prime</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pet_cli.reference_tissue_models.fit_mrtm2_2003_to_tac" title="Link to this definition">#</a></dt>
+<dd><p>Fit the second version of Multilinear Reference Tissue Model (MRTM2) to the provided target Time Activity Curve
+(TAC) values given the reference TAC, times, threshold time (in minutes), and k2_prime. The data are fit for all
+values beyond the threshold. We assume that the target TAC and reference TAC are sampled at the same times.</p>
+<div class="admonition important">
+<p class="admonition-title">Important</p>
+<p>This function assumes that both TACs are sampled at the same time, and that the time is in minutes.</p>
+</div>
+<p>We have the following multilinear regression:</p>
+<div class="math notranslate nohighlight">
+\[C(T) = -\frac{V}{V^{\prime}b}\left(\int_{0}^{T}C^{\prime}(t)\mathrm{d}t -\frac{1}{k_{2}^{\prime}}C^{\prime}(T) \right)
++ \frac{1}{b} \int_{0}^{T}C(t)\mathrm{d}t\]</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>tgt_tac_vals</strong> (<em>np.ndarray</em>) -- Target TAC values to fit the MRTM2.</p></li>
+<li><p><strong>ref_tac_times</strong> (<em>np.ndarray</em>) -- Times of the reference TAC (in minutes).</p></li>
+<li><p><strong>ref_tac_vals</strong> (<em>np.ndarray</em>) -- Reference TAC values.</p></li>
+<li><p><strong>t_thresh_in_mins</strong> (<em>float</em>) -- Threshold time in minutes.</p></li>
+<li><p><strong>k2_prime</strong> (<em>float</em>) -- Kinetic parameter: washout rate for the reference region.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Array containing fit results. (<span class="math notranslate nohighlight">\(-\frac{V}{V^{\prime}b}\)</span>, <span class="math notranslate nohighlight">\(\frac{1}{b}\)</span>)</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>np.ndarray</p>
+</dd>
+</dl>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This function is implemented with numba for improved performance.</p>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pet_cli.reference_tissue_models.calc_BP_from_mrtm_original_fit">
+<span class="sig-name descname"><span class="pre">calc_BP_from_mrtm_original_fit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fit_vals</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.26)"><span class="pre">ndarray</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="headerlink" href="#pet_cli.reference_tissue_models.calc_BP_from_mrtm_original_fit" title="Link to this definition">#</a></dt>
+<dd><p>Given the original MRTM (<cite>Ichise et al., 1996</cite>) fit values, we calculate the binding potential (BP).</p>
+<p>The binding potential (BP) is defined as:</p>
+<div class="math notranslate nohighlight">
+\[\mathrm{BP} = \beta_0 - 1\]</div>
+<p>where <span class="math notranslate nohighlight">\(\beta_0\)</span> is the first fit coefficient.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>fit_vals</strong> (<em>np.ndarray</em>) -- The multilinear regression fit values for the original MRTM.
+Output of <a class="reference internal" href="#pet_cli.reference_tissue_models.fit_mrtm_original_to_tac" title="pet_cli.reference_tissue_models.fit_mrtm_original_to_tac"><code class="xref py py-func docutils literal notranslate"><span class="pre">fit_mrtm_original_to_tac</span></code></a>.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Binding potential (BP) value.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="#pet_cli.reference_tissue_models.fit_mrtm_original_to_tac" title="pet_cli.reference_tissue_models.fit_mrtm_original_to_tac"><code class="xref py py-func docutils literal notranslate"><span class="pre">fit_mrtm_original_to_tac</span></code></a> where the order of the regression coefficients is laid out.</p>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pet_cli.reference_tissue_models.calc_BP_from_mrtm_2003_fit">
+<span class="sig-name descname"><span class="pre">calc_BP_from_mrtm_2003_fit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fit_vals</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.26)"><span class="pre">ndarray</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="headerlink" href="#pet_cli.reference_tissue_models.calc_BP_from_mrtm_2003_fit" title="Link to this definition">#</a></dt>
+<dd><p>Given the 2003 MRTM (<cite>Ichise et al., 1996</cite>) fit values, we calculate the binding potential (BP).</p>
+<p>The binding potential (BP) is calculated as:</p>
+<div class="math notranslate nohighlight">
+\[\mathrm{BP} = -\left(\frac{\beta_0}{\beta_1} + 1\right)\]</div>
+<p>where <span class="math notranslate nohighlight">\(\beta_0\)</span> is the first fit coefficient, and <span class="math notranslate nohighlight">\(\beta_1\)</span> is the second fit coefficient.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>fit_vals</strong> (<em>np.ndarray</em>) -- The multilinear regression fit values for the 2003 MRTM.
+Output of <a class="reference internal" href="#pet_cli.reference_tissue_models.fit_mrtm_2003_to_tac" title="pet_cli.reference_tissue_models.fit_mrtm_2003_to_tac"><code class="xref py py-func docutils literal notranslate"><span class="pre">fit_mrtm_2003_to_tac</span></code></a>.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Binding potential (BP) value.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="#pet_cli.reference_tissue_models.fit_mrtm_2003_to_tac" title="pet_cli.reference_tissue_models.fit_mrtm_2003_to_tac"><code class="xref py py-func docutils literal notranslate"><span class="pre">fit_mrtm_2003_to_tac</span></code></a> where the order of the regression coefficients is laid out.</p>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pet_cli.reference_tissue_models.calc_BP_from_mrtm2_2003_fit">
+<span class="sig-name descname"><span class="pre">calc_BP_from_mrtm2_2003_fit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fit_vals</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.26)"><span class="pre">ndarray</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="headerlink" href="#pet_cli.reference_tissue_models.calc_BP_from_mrtm2_2003_fit" title="Link to this definition">#</a></dt>
+<dd><p>Given the 2003 MRTM2 (<cite>Ichise et al., 1996</cite>) fit values, we calculate the binding potential (BP).</p>
+<p>The binding potential (BP) is calculated as:</p>
+<div class="math notranslate nohighlight">
+\[\mathrm{BP} = -\left(\frac{\beta_0}{\beta_1} + 1\right)\]</div>
+<p>where <span class="math notranslate nohighlight">\(\beta_0\)</span> is the first fit coefficient, and <span class="math notranslate nohighlight">\(\beta_1\)</span> is the second fit coefficient.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>fit_vals</strong> (<em>np.ndarray</em>) -- The multilinear regression fit values for the original MRTM.
+Output of <a class="reference internal" href="#pet_cli.reference_tissue_models.fit_mrtm2_2003_to_tac" title="pet_cli.reference_tissue_models.fit_mrtm2_2003_to_tac"><code class="xref py py-func docutils literal notranslate"><span class="pre">fit_mrtm2_2003_to_tac</span></code></a>.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Binding potential (BP) value.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="#pet_cli.reference_tissue_models.fit_mrtm2_2003_to_tac" title="pet_cli.reference_tissue_models.fit_mrtm2_2003_to_tac"><code class="xref py py-func docutils literal notranslate"><span class="pre">fit_mrtm2_2003_to_tac</span></code></a> where the order of the regression coefficients is laid out.</p>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pet_cli.reference_tissue_models.calc_k2prime_from_mrtm_original_fit">
+<span class="sig-name descname"><span class="pre">calc_k2prime_from_mrtm_original_fit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fit_vals</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.26)"><span class="pre">ndarray</span></a></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pet_cli.reference_tissue_models.calc_k2prime_from_mrtm_original_fit" title="Link to this definition">#</a></dt>
+<dd><p>Given the original MRTM (<cite>Ichise et al., 1996</cite>) fit values, we calculate <span class="math notranslate nohighlight">\(k_{2}^{\prime}\)</span>.</p>
+<p>The <span class="math notranslate nohighlight">\(k_{2}^{\prime}\)</span> is calculated as:</p>
+<div class="math notranslate nohighlight">
+\[k_{2}^{\prime}= \frac{\beta_{0}}{\beta_{1}}\]</div>
+<p>where <span class="math notranslate nohighlight">\(\beta_0\)</span> is the first fit coefficient and <span class="math notranslate nohighlight">\(\beta_1\)</span> is the second fit coefficient.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>fit_vals</strong> (<em>np.ndarray</em>) -- The multilinear regression fit values for the original MRTM.
+Output of <a class="reference internal" href="#pet_cli.reference_tissue_models.fit_mrtm_original_to_tac" title="pet_cli.reference_tissue_models.fit_mrtm_original_to_tac"><code class="xref py py-func docutils literal notranslate"><span class="pre">fit_mrtm_original_to_tac</span></code></a>.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><span class="math notranslate nohighlight">\(k_2^\prime\)</span> value.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="#pet_cli.reference_tissue_models.fit_mrtm_original_to_tac" title="pet_cli.reference_tissue_models.fit_mrtm_original_to_tac"><code class="xref py py-func docutils literal notranslate"><span class="pre">fit_mrtm_original_to_tac</span></code></a> where the order of the regression coefficients is laid out.</p>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pet_cli.reference_tissue_models.calc_k2prime_from_mrtm_2003_fit">
+<span class="sig-name descname"><span class="pre">calc_k2prime_from_mrtm_2003_fit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fit_vals</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.26)"><span class="pre">ndarray</span></a></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pet_cli.reference_tissue_models.calc_k2prime_from_mrtm_2003_fit" title="Link to this definition">#</a></dt>
+<dd><p>Given the 2003 MRTM (<cite>Ichise et al., 2003</cite>) fit values, we calculate <span class="math notranslate nohighlight">\(k_{2}^{\prime}\)</span>.</p>
+<p>The <span class="math notranslate nohighlight">\(k_{2}^{\prime}\)</span> is calculated as:</p>
+<div class="math notranslate nohighlight">
+\[k_{2}^{\prime}= \frac{\beta_{0}}{\beta_{2}}\]</div>
+<p>where <span class="math notranslate nohighlight">\(\beta_0\)</span> is the first fit coefficient and <span class="math notranslate nohighlight">\(\beta_2\)</span> is the third fit coefficient.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>fit_vals</strong> (<em>np.ndarray</em>) -- The multilinear regression fit values for the original MRTM.
+Output of <a class="reference internal" href="#pet_cli.reference_tissue_models.fit_mrtm_2003_to_tac" title="pet_cli.reference_tissue_models.fit_mrtm_2003_to_tac"><code class="xref py py-func docutils literal notranslate"><span class="pre">fit_mrtm_2003_to_tac</span></code></a>.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><span class="math notranslate nohighlight">\(k_2^\prime\)</span> value.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="#pet_cli.reference_tissue_models.fit_mrtm_2003_to_tac" title="pet_cli.reference_tissue_models.fit_mrtm_2003_to_tac"><code class="xref py py-func docutils literal notranslate"><span class="pre">fit_mrtm_2003_to_tac</span></code></a> where the order of the regression coefficients is laid out.</p>
+</div>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="pet_cli.reference_tissue_models.FitTACWithRTMs">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">FitTACWithRTMs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">target_tac_vals</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.26)"><span class="pre">ndarray</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">reference_tac_times</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.26)"><span class="pre">ndarray</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">reference_tac_vals</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.26)"><span class="pre">ndarray</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'mrtm'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bounds</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">None</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.26)"><span class="pre">ndarray</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">t_thresh_in_mins</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">k2_prime</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pet_cli.reference_tissue_models.FitTACWithRTMs" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>A class used to fit a kinetic model to both a target and a reference Time Activity Curve (TAC).</p>
+<p>The <a class="reference internal" href="#pet_cli.reference_tissue_models.FitTACWithRTMs" title="pet_cli.reference_tissue_models.FitTACWithRTMs"><code class="xref py py-class docutils literal notranslate"><span class="pre">FitTACWithRTMs</span></code></a> class simplifies the process of kinetic model fitting by providing methods for validating
+input data, choosing a model to fit, and then performing the fit. It takes in raw intensity values of TAC for both
+target and reference regions as inputs, which are then used in curve fitting.</p>
+<p>This class supports various kinetic models, including but not limited to: the simplified and full reference tissue
+models (SRTM &amp; FRTM), and the multilinear reference tissue models (Orignial MRMT, MRTM &amp; MRTM2). Each model type '
+can be bounded or unbounded.</p>
+<p>The fitting result contains the estimated kinetic parameters depending on the chosen model.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Variables<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>target_tac_vals</strong> (<em>np.ndarray</em>) -- The target TAC values.</p></li>
+<li><p><strong>reference_tac_times</strong> (<em>np.ndarray</em>) -- The time points of the reference TAC.</p></li>
+<li><p><strong>reference_tac_vals</strong> (<em>np.ndarray</em>) -- The reference TAC values.</p></li>
+<li><p><strong>method</strong> (<em>str</em>) -- Optional. The kinetic model to use. Defaults to 'mrtm'.</p></li>
+<li><p><strong>bounds</strong> (<em>np.ndarray</em>) -- Optional. Parameter bounds for the specified kinetic model. Defaults to None.</p></li>
+<li><p><strong>t_thresh_in_mins</strong> (<em>float</em>) -- Optional. The times at which the reference TAC was sampled. Defaults to None.</p></li>
+<li><p><strong>k2_prime</strong> (<em>float</em>) -- Optional. The estimated efflux rate constant for the non-displaceable compartment. Defaults to
+None.</p></li>
+<li><p><strong>fit_results</strong> (<em>np.ndarray</em>) -- The result of the fit.</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Example</p>
+<p>The following example shows how to use the <a class="reference internal" href="#pet_cli.reference_tissue_models.FitTACWithRTMs" title="pet_cli.reference_tissue_models.FitTACWithRTMs"><code class="xref py py-class docutils literal notranslate"><span class="pre">FitTACWithRTMs</span></code></a> class to fit the SRTM to a target and reference
+TAC.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">pet_cli.tcms_as_convolutions</span> <span class="k">as</span> <span class="nn">pet_tcm</span>
+<span class="kn">import</span> <span class="nn">pet_cli.reference_tissue_models</span> <span class="k">as</span> <span class="nn">pet_rtms</span>
+
+<span class="c1"># loading the input tac to generate a reference region tac</span>
+<span class="n">input_tac_times</span><span class="p">,</span> <span class="n">input_tac_vals</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">loadtxt</span><span class="p">(</span><span class="s2">&quot;../../data/tcm_tacs/fdg_plasma_clamp_evenly_resampled.txt&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">T</span><span class="p">,</span>
+                                             <span class="nb">float</span><span class="p">)</span>
+
+<span class="c1"># generating a reference region tac</span>
+<span class="n">ref_tac_times</span><span class="p">,</span> <span class="n">ref_tac_vals</span> <span class="o">=</span> <span class="n">pet_tcm</span><span class="o">.</span><span class="n">generate_tac_1tcm_c1_from_tac</span><span class="p">(</span><span class="n">tac_times</span><span class="o">=</span><span class="n">input_tac_times</span><span class="p">,</span> <span class="n">tac_vals</span><span class="o">=</span><span class="n">input_tac_vals</span><span class="p">,</span>
+                                                                    <span class="n">k1</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">k2</span><span class="o">=</span><span class="mf">0.2</span><span class="p">)</span>
+
+<span class="c1"># generating an SRTM tac</span>
+<span class="n">srtm_tac_vals</span> <span class="o">=</span> <span class="n">pet_rtms</span><span class="o">.</span><span class="n">calc_srtm_tac</span><span class="p">(</span><span class="n">tac_times</span><span class="o">=</span><span class="n">ref_tac_times</span><span class="p">,</span> <span class="n">ref_tac_vals</span><span class="o">=</span><span class="n">ref_tac_vals</span><span class="p">,</span> <span class="n">r1</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">k2</span><span class="o">=</span><span class="mf">0.25</span><span class="p">,</span> <span class="n">bp</span><span class="o">=</span><span class="mf">3.0</span><span class="p">)</span>
+
+<span class="n">rtm_analysis</span> <span class="o">=</span> <span class="n">pet_rtms</span><span class="o">.</span><span class="n">FitTACWithRTMs</span><span class="p">(</span><span class="n">target_tac_vals</span><span class="o">=</span><span class="n">srtm_tac_vals</span><span class="p">,</span>
+                                    <span class="n">reference_tac_times</span><span class="o">=</span><span class="n">ref_tac_times</span><span class="p">,</span>
+                                    <span class="n">reference_tac_vals</span><span class="o">=</span><span class="n">ref_tac_vals</span><span class="p">,</span>
+                                    <span class="n">method</span><span class="o">=</span><span class="s1">&#39;srtm&#39;</span><span class="p">)</span>
+
+<span class="c1"># performing the fit</span>
+<span class="n">rtm_analysis</span><span class="o">.</span><span class="n">fit_tac_to_model</span><span class="p">()</span>
+<span class="n">fit_results</span> <span class="o">=</span> <span class="n">rtm_analysis</span><span class="o">.</span><span class="n">fit_results</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>This will give you the kinetic parameter values of the SRTM for the provided TACs.</p>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="#pet_cli.reference_tissue_models.FitTACWithRTMs.validate_bounds" title="pet_cli.reference_tissue_models.FitTACWithRTMs.validate_bounds"><code class="xref py py-meth docutils literal notranslate"><span class="pre">validate_bounds</span></code></a></p></li>
+<li><p><a class="reference internal" href="#pet_cli.reference_tissue_models.FitTACWithRTMs.validate_method_inputs" title="pet_cli.reference_tissue_models.FitTACWithRTMs.validate_method_inputs"><code class="xref py py-meth docutils literal notranslate"><span class="pre">validate_method_inputs</span></code></a></p></li>
+<li><p><a class="reference internal" href="#pet_cli.reference_tissue_models.FitTACWithRTMs.fit_tac_to_model" title="pet_cli.reference_tissue_models.FitTACWithRTMs.fit_tac_to_model"><code class="xref py py-meth docutils literal notranslate"><span class="pre">fit_tac_to_model</span></code></a></p></li>
+</ul>
+</div>
+<p>Initialize the FitTACWithRTMs object with specified parameters.</p>
+<p>This method sets up input parameters and validates them. We check if the bounds are correct for the given
+'method', and we make sure that any fitting threshold are defined for the MRTM analyses.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>target_tac_vals</strong> (<em>np.ndarray</em>) -- The array representing the target TAC values.</p></li>
+<li><p><strong>reference_tac_times</strong> (<em>np.ndarray</em>) -- The array representing time points associated with the reference TAC.</p></li>
+<li><p><strong>reference_tac_vals</strong> (<em>np.ndarray</em>) -- The array representing values of the reference TAC.</p></li>
+<li><p><strong>method</strong> (<em>str</em><em>, </em><em>optional</em>) -- The kinetics method to be used. Default is 'mrtm'.</p></li>
+<li><p><strong>bounds</strong> (<em>Union</em><em>[</em><em>None</em><em>, </em><em>np.ndarray</em><em>]</em><em>, </em><em>optional</em>) -- Bounds for kinetic parameters used in optimization. None
+represents absence of bounds. Default is None.</p></li>
+<li><p><strong>t_thresh_in_mins</strong> (<em>float</em><em>, </em><em>optional</em>) -- Threshold for time separation in minutes. Default is None.</p></li>
+<li><p><strong>k2_prime</strong> (<em>float</em><em>, </em><em>optional</em>) -- The estimated rate constant related to the flush-out rate of the reference
+compartment. Default is None.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>ValueError</strong> -- If a parameter necessary for chosen method is not provided.</p></li>
+<li><p><strong>AssertionError</strong> -- If rate constant k2_prime is non-positive.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="pet_cli.reference_tissue_models.FitTACWithRTMs.validate_method_inputs">
+<span class="sig-name descname"><span class="pre">validate_method_inputs</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pet_cli.reference_tissue_models.FitTACWithRTMs.validate_method_inputs" title="Link to this definition">#</a></dt>
+<dd><p>Validates the inputs for different methods</p>
+<p>This method validates the inputs depending on the chosen method in the object.</p>
+<ul class="simple">
+<li><p>If the method is of type 'mrtm', it checks if <cite>t_thresh_in_mins</cite> is defined and positive.</p></li>
+<li><p>If the method ends with a '2' (the reduced/modified methods), it checks if <cite>k2_prime</cite> is defined and positive.</p></li>
+</ul>
+<dl class="field-list simple">
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ValueError</strong> -- If <code class="docutils literal notranslate"><span class="pre">t_thresh_in_mins</span></code> is not defined while the method starts with 'mrtm'.</p></li>
+<li><p><strong>AssertionError</strong> -- If <code class="docutils literal notranslate"><span class="pre">t_thresh_in_mins</span></code> is not a positive number.</p></li>
+<li><p><strong>ValueError</strong> -- If <code class="docutils literal notranslate"><span class="pre">k2_prime</span></code> is not defined while the method ends with '2'.</p></li>
+<li><p><strong>AssertionError</strong> -- If <code class="docutils literal notranslate"><span class="pre">k2_prime</span></code> is not a positive number.</p></li>
+</ul>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="#pet_cli.reference_tissue_models.fit_srtm_to_tac_with_bounds" title="pet_cli.reference_tissue_models.fit_srtm_to_tac_with_bounds"><code class="xref py py-func docutils literal notranslate"><span class="pre">fit_srtm_to_tac_with_bounds</span></code></a></p></li>
+<li><p><a class="reference internal" href="#pet_cli.reference_tissue_models.fit_srtm_to_tac" title="pet_cli.reference_tissue_models.fit_srtm_to_tac"><code class="xref py py-func docutils literal notranslate"><span class="pre">fit_srtm_to_tac</span></code></a></p></li>
+<li><p><a class="reference internal" href="#pet_cli.reference_tissue_models.fit_frtm_to_tac_with_bounds" title="pet_cli.reference_tissue_models.fit_frtm_to_tac_with_bounds"><code class="xref py py-func docutils literal notranslate"><span class="pre">fit_frtm_to_tac_with_bounds</span></code></a></p></li>
+<li><p><a class="reference internal" href="#pet_cli.reference_tissue_models.fit_frtm_to_tac" title="pet_cli.reference_tissue_models.fit_frtm_to_tac"><code class="xref py py-func docutils literal notranslate"><span class="pre">fit_frtm_to_tac</span></code></a></p></li>
+<li><p><a class="reference internal" href="#pet_cli.reference_tissue_models.fit_mrtm_original_to_tac" title="pet_cli.reference_tissue_models.fit_mrtm_original_to_tac"><code class="xref py py-func docutils literal notranslate"><span class="pre">fit_mrtm_original_to_tac</span></code></a></p></li>
+<li><p><a class="reference internal" href="#pet_cli.reference_tissue_models.fit_mrtm_2003_to_tac" title="pet_cli.reference_tissue_models.fit_mrtm_2003_to_tac"><code class="xref py py-func docutils literal notranslate"><span class="pre">fit_mrtm_2003_to_tac</span></code></a></p></li>
+<li><p><a class="reference internal" href="#pet_cli.reference_tissue_models.fit_mrtm2_2003_to_tac" title="pet_cli.reference_tissue_models.fit_mrtm2_2003_to_tac"><code class="xref py py-func docutils literal notranslate"><span class="pre">fit_mrtm2_2003_to_tac</span></code></a></p></li>
+</ul>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pet_cli.reference_tissue_models.FitTACWithRTMs.validate_bounds">
+<span class="sig-name descname"><span class="pre">validate_bounds</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pet_cli.reference_tissue_models.FitTACWithRTMs.validate_bounds" title="Link to this definition">#</a></dt>
+<dd><p>Validates the bounds for different methods</p>
+<p>This method validates the shape of the bounds depending on the chosen method in the object.</p>
+<ul class="simple">
+<li><p>If the method is 'srtm', it checks that bounds shape is (3, 3).</p></li>
+<li><p>If the method is 'frtm', it checks that bounds shape is (4, 3).</p></li>
+</ul>
+<dl class="field-list simple">
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>AssertionError</strong> -- If the bounds shape for method 'srtm' is not (3, 3)</p></li>
+<li><p><strong>AssertionError</strong> -- If the bounds shape for method 'frtm' is not (4, 3).</p></li>
+<li><p><strong>ValueError</strong> -- If the method is not 'srtm' or 'frtm' while providing bounds.</p></li>
+</ul>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="#pet_cli.reference_tissue_models.fit_srtm_to_tac_with_bounds" title="pet_cli.reference_tissue_models.fit_srtm_to_tac_with_bounds"><code class="xref py py-func docutils literal notranslate"><span class="pre">fit_srtm_to_tac_with_bounds</span></code></a></p></li>
+<li><p><a class="reference internal" href="#pet_cli.reference_tissue_models.fit_srtm_to_tac" title="pet_cli.reference_tissue_models.fit_srtm_to_tac"><code class="xref py py-func docutils literal notranslate"><span class="pre">fit_srtm_to_tac</span></code></a></p></li>
+<li><p><a class="reference internal" href="#pet_cli.reference_tissue_models.fit_frtm_to_tac_with_bounds" title="pet_cli.reference_tissue_models.fit_frtm_to_tac_with_bounds"><code class="xref py py-func docutils literal notranslate"><span class="pre">fit_frtm_to_tac_with_bounds</span></code></a></p></li>
+<li><p><a class="reference internal" href="#pet_cli.reference_tissue_models.fit_frtm_to_tac" title="pet_cli.reference_tissue_models.fit_frtm_to_tac"><code class="xref py py-func docutils literal notranslate"><span class="pre">fit_frtm_to_tac</span></code></a></p></li>
+<li><p><a class="reference internal" href="#pet_cli.reference_tissue_models.fit_mrtm_original_to_tac" title="pet_cli.reference_tissue_models.fit_mrtm_original_to_tac"><code class="xref py py-func docutils literal notranslate"><span class="pre">fit_mrtm_original_to_tac</span></code></a></p></li>
+<li><p><a class="reference internal" href="#pet_cli.reference_tissue_models.fit_mrtm_2003_to_tac" title="pet_cli.reference_tissue_models.fit_mrtm_2003_to_tac"><code class="xref py py-func docutils literal notranslate"><span class="pre">fit_mrtm_2003_to_tac</span></code></a></p></li>
+<li><p><a class="reference internal" href="#pet_cli.reference_tissue_models.fit_mrtm2_2003_to_tac" title="pet_cli.reference_tissue_models.fit_mrtm2_2003_to_tac"><code class="xref py py-func docutils literal notranslate"><span class="pre">fit_mrtm2_2003_to_tac</span></code></a></p></li>
+</ul>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pet_cli.reference_tissue_models.FitTACWithRTMs.fit_tac_to_model">
+<span class="sig-name descname"><span class="pre">fit_tac_to_model</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pet_cli.reference_tissue_models.FitTACWithRTMs.fit_tac_to_model" title="Link to this definition">#</a></dt>
+<dd><p>Fits TAC vals to model</p>
+<p>This method fits the target TAC values to the model depending on the chosen method in the object.</p>
+<ul class="simple">
+<li><p>If the method is 'srtm' or 'frtm', and bounds are provided, fitting functions with bounds are used.</p></li>
+<li><p>If the method is 'srtm' or 'frtm', and bounds are not provided, fitting functions without bounds are used.</p></li>
+<li><p>If the method is 'mrtm-original', 'mrtm' or 'mrtm2', related fitting methods are utilized.</p></li>
+</ul>
+<dl class="field-list simple">
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>ValueError</strong> -- If the method name is invalid and not one of 'srtm', 'frtm', 'mrtm-original', 'mrtm' or 'mrtm2'.</p>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="#pet_cli.reference_tissue_models.fit_srtm_to_tac_with_bounds" title="pet_cli.reference_tissue_models.fit_srtm_to_tac_with_bounds"><code class="xref py py-func docutils literal notranslate"><span class="pre">fit_srtm_to_tac_with_bounds</span></code></a></p></li>
+<li><p><a class="reference internal" href="#pet_cli.reference_tissue_models.fit_srtm_to_tac" title="pet_cli.reference_tissue_models.fit_srtm_to_tac"><code class="xref py py-func docutils literal notranslate"><span class="pre">fit_srtm_to_tac</span></code></a></p></li>
+<li><p><a class="reference internal" href="#pet_cli.reference_tissue_models.fit_frtm_to_tac_with_bounds" title="pet_cli.reference_tissue_models.fit_frtm_to_tac_with_bounds"><code class="xref py py-func docutils literal notranslate"><span class="pre">fit_frtm_to_tac_with_bounds</span></code></a></p></li>
+<li><p><a class="reference internal" href="#pet_cli.reference_tissue_models.fit_frtm_to_tac" title="pet_cli.reference_tissue_models.fit_frtm_to_tac"><code class="xref py py-func docutils literal notranslate"><span class="pre">fit_frtm_to_tac</span></code></a></p></li>
+<li><p><a class="reference internal" href="#pet_cli.reference_tissue_models.fit_mrtm_original_to_tac" title="pet_cli.reference_tissue_models.fit_mrtm_original_to_tac"><code class="xref py py-func docutils literal notranslate"><span class="pre">fit_mrtm_original_to_tac</span></code></a></p></li>
+<li><p><a class="reference internal" href="#pet_cli.reference_tissue_models.fit_mrtm_2003_to_tac" title="pet_cli.reference_tissue_models.fit_mrtm_2003_to_tac"><code class="xref py py-func docutils literal notranslate"><span class="pre">fit_mrtm_2003_to_tac</span></code></a></p></li>
+<li><p><a class="reference internal" href="#pet_cli.reference_tissue_models.fit_mrtm2_2003_to_tac" title="pet_cli.reference_tissue_models.fit_mrtm2_2003_to_tac"><code class="xref py py-func docutils literal notranslate"><span class="pre">fit_mrtm2_2003_to_tac</span></code></a></p></li>
+</ul>
+</div>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pet_cli.reference_tissue_models._safe_load_tac">
+<span class="sig-name descname"><span class="pre">_safe_load_tac</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.26)"><span class="pre">ndarray</span></a></span></span><a class="headerlink" href="#pet_cli.reference_tissue_models._safe_load_tac" title="Link to this definition">#</a></dt>
+<dd><p>Loads time-activity curves (TAC) from a file.</p>
+<p>Tries to read a TAC from specified file and raises an exception if unable to do so. We assume that the file has two
+columns, the first corresponding to time and second corresponding to activity.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>filename</strong> (<em>str</em>) -- The name of the file to be loaded.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A numpy array containing the loaded TAC. The first index corresponds to the times, and the second
+corresponds to the activity.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>np.ndarray</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>Exception</strong> -- An error occurred loading the TAC.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="pet_cli.reference_tissue_models.RTMAnalysis">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">RTMAnalysis</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ref_tac_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">roi_tac_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_directory</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_filename_prefix</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pet_cli.reference_tissue_models.RTMAnalysis" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>A class designed to carry out various Reference Tissue Model (RTM) analyses on Time Activity Curves (TACs).</p>
+<p>This class eases the process of conducting RTM analysis on TACs. Paths to both reference and region-of-interest
+(ROI) TACs are taken as inputs at initialization. The class further provides multiple utility functions for
+initializing and running the RTM analysis, and also for validating the inputs based on the RTM method chosen.</p>
+<p>This class currently supports various RTM methods such as :'srtm', 'frtm', 'mrtm-original', 'mrtm', and 'mrtm2'.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Variables<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ref_tac_path</strong> (<em>str</em>) -- Absolute path for reference TAC</p></li>
+<li><p><strong>roi_tac_path</strong> (<em>str</em>) -- Absolute path for ROI TAC</p></li>
+<li><p><strong>output_directory</strong> (<em>str</em>) -- Absolute path for the output directory</p></li>
+<li><p><strong>output_filename_prefix</strong> (<em>str</em>) -- Prefix for the output filename of the result</p></li>
+<li><p><strong>method</strong> (<em>str</em>) -- RTM analysis method. Converts to lower case at initialization.</p></li>
+<li><p><strong>analysis_props</strong> (<em>dict</em>) -- Analysis properties dictionary initialized with method-specific property keys and
+default values.</p></li>
+<li><p><strong>_has_analysis_been_run</strong> (<em>bool</em>) -- Flag representing if the RTM analysis has been run to ensure correct order of
+operations.</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Example</p>
+<p>In the proceeding example, we assume that we have two tacs: a reference region tac, and a region of interest
+(ROI) tac named 'ref_tac.txt' and 'roi_tac.txt', respectively. Furthermore, we assume that both TACs are sampled
+at the same times, and are evenly sampled with respect to time.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">pet_cli.reference_tissue_models</span> <span class="k">as</span> <span class="n">pet_rtms</span>
+
+<span class="n">file_rtm</span> <span class="o">=</span> <span class="n">pet_rtms</span><span class="o">.</span><span class="n">RTMAnalysis</span><span class="p">(</span><span class="n">ref_tac_path</span><span class="o">=</span><span class="s2">&quot;ref_tac.txt&quot;</span><span class="p">,</span>
+                                <span class="n">roi_tac_path</span><span class="o">=</span><span class="s2">&quot;roi_tac.txt&quot;</span><span class="p">,</span>
+                                <span class="n">output_directory</span><span class="o">=</span><span class="s2">&quot;./&quot;</span><span class="p">,</span>
+                                <span class="n">output_filename_prefix</span><span class="o">=</span><span class="s1">&#39;pre&#39;</span><span class="p">,</span>
+                                <span class="n">method</span><span class="o">=</span><span class="s2">&quot;mrtm&quot;</span><span class="p">)</span>
+<span class="n">file_rtm</span><span class="o">.</span><span class="n">run_analysis</span><span class="p">(</span><span class="n">t_thresh_in_mins</span><span class="o">=</span><span class="mf">40.0</span><span class="p">)</span>
+<span class="n">file_rtm</span><span class="o">.</span><span class="n">save_analysis</span><span class="p">()</span>
+</pre></div>
+</div>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="#pet_cli.reference_tissue_models.FitTACWithRTMs" title="pet_cli.reference_tissue_models.FitTACWithRTMs"><code class="xref py py-class docutils literal notranslate"><span class="pre">FitTACWithRTMs</span></code></a>: a class for analyzing TACs with RTMs.</p></li>
+</ul>
+</div>
+<p>Initialize RTMAnalysis with provided arguments.</p>
+<dl class="simple">
+<dt>The init method executes the following operations:</dt><dd><ol class="arabic simple">
+<li><p>It converts the provided analysis method to lower case for consistency in internal processing.</p></li>
+<li><p>It obtains the absolute paths for reference and ROI TAC files and the output directory, to ensure
+they are consistently accessible.</p></li>
+<li><p>It initializes the analysis properties dictionary using <cite>init_analysis_props</cite> method.</p></li>
+<li><p>It initializes the <cite>_has_analysis_been_run</cite> flag to False, to indicate that the RTM analysis has not yet been run.</p></li>
+</ol>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ref_tac_path</strong> (<em>str</em>) -- Path to the file containing reference TAC.</p></li>
+<li><p><strong>roi_tac_path</strong> (<em>str</em>) -- Path to the file containing ROI TAC.</p></li>
+<li><p><strong>output_directory</strong> (<em>str</em>) -- Path to the directory where the output will be saved.</p></li>
+<li><p><strong>output_filename_prefix</strong> (<em>str</em>) -- Prefix that will be used for the output filename.</p></li>
+<li><p><strong>method</strong> (<em>str</em>) -- The RTM analysis method to be used. Could be one of 'srtm', 'frtm', 'mrtm-original',
+'mrtm' or 'mrtm2'.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="pet_cli.reference_tissue_models.RTMAnalysis.init_analysis_props">
+<span class="sig-name descname"><span class="pre">init_analysis_props</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">method</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="headerlink" href="#pet_cli.reference_tissue_models.RTMAnalysis.init_analysis_props" title="Link to this definition">#</a></dt>
+<dd><p>Initializes the analysis properties dict based on the specified RTM analysis method.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>method</strong> (<em>str</em>) -- RTM analysis method. Must be one of 'srtm', 'frtm', 'mrtm-original',
+'mrtm' or 'mrtm2'.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A dictionary containing method-specific property keys and default values.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>ValueError</strong> -- If input <cite>method</cite> is not one of the supported RTM methods.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pet_cli.reference_tissue_models.RTMAnalysis.run_analysis">
+<span class="sig-name descname"><span class="pre">run_analysis</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">bounds</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">None</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.26)"><span class="pre">ndarray</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">t_thresh_in_mins</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">k2_prime</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">tac_load_kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pet_cli.reference_tissue_models.RTMAnalysis.run_analysis" title="Link to this definition">#</a></dt>
+<dd><p>Runs the full RTM analysis process which involves validating inputs, calculation fits, and deducing fit
+properties.</p>
+<dl class="simple">
+<dt>Specifically, it executes the following sequence:</dt><dd><ol class="arabic simple">
+<li><p><a class="reference internal" href="#pet_cli.reference_tissue_models.RTMAnalysis.validate_analysis_inputs" title="pet_cli.reference_tissue_models.RTMAnalysis.validate_analysis_inputs"><code class="xref py py-meth docutils literal notranslate"><span class="pre">validate_analysis_inputs</span></code></a></p></li>
+<li><p><a class="reference internal" href="#pet_cli.reference_tissue_models.RTMAnalysis.calculate_fit" title="pet_cli.reference_tissue_models.RTMAnalysis.calculate_fit"><code class="xref py py-meth docutils literal notranslate"><span class="pre">calculate_fit</span></code></a></p></li>
+<li><p><a class="reference internal" href="#pet_cli.reference_tissue_models.RTMAnalysis.calculate_fit_properties" title="pet_cli.reference_tissue_models.RTMAnalysis.calculate_fit_properties"><code class="xref py py-meth docutils literal notranslate"><span class="pre">calculate_fit_properties</span></code></a></p></li>
+</ol>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>bounds</strong> (<em>Union</em><em>[</em><em>None</em><em>, </em><em>np.ndarray</em><em>]</em><em>, </em><em>optional</em>) -- Optional boundaries for parameters for fitting function.</p></li>
+<li><p><strong>t_thresh_in_mins</strong> (<em>float</em><em>, </em><em>optional</em>) -- Threshold time in minutes for the MRTM analyses.</p></li>
+<li><p><strong>k2_prime</strong> (<em>float</em><em>, </em><em>optional</em>) -- Input for the modified RTM (MRTM2, FRTM2, and SRTM2) analyses.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pet_cli.reference_tissue_models.RTMAnalysis.validate_analysis_inputs">
+<span class="sig-name descname"><span class="pre">validate_analysis_inputs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">k2_prime</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">t_thresh_in_mins</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pet_cli.reference_tissue_models.RTMAnalysis.validate_analysis_inputs" title="Link to this definition">#</a></dt>
+<dd><p>Validates the provided inputs for the RTM analysis.</p>
+<p>If MRTM type of analysis is being run, it ensures that <code class="docutils literal notranslate"><span class="pre">t_thresh_in_mins</span></code> is not None.
+If modified analysis is being done (MRTM2, FRTM2, SRTM2), it ensures <code class="docutils literal notranslate"><span class="pre">k2_prime</span></code> is not None.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>k2_prime</strong> (<em>float</em>) -- k2 prime value.</p></li>
+<li><p><strong>t_thresh_in_mins</strong> (<em>float</em>) -- Threshold time for MRTM analyses.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>ValueError</strong> -- If an input required for the selected method is <cite>None</cite>.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pet_cli.reference_tissue_models.RTMAnalysis.calculate_fit">
+<span class="sig-name descname"><span class="pre">calculate_fit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">bounds</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">None</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.26)"><span class="pre">ndarray</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">t_thresh_in_mins</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">k2_prime</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">tac_load_kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pet_cli.reference_tissue_models.RTMAnalysis.calculate_fit" title="Link to this definition">#</a></dt>
+<dd><p>Calculates the model fitting parameters for TACs using the chosen RTM analysis method.</p>
+<dl class="simple">
+<dt>This method executes the following sequence:</dt><dd><ol class="arabic simple">
+<li><p><a class="reference internal" href="#pet_cli.reference_tissue_models.RTMAnalysis.validate_analysis_inputs" title="pet_cli.reference_tissue_models.RTMAnalysis.validate_analysis_inputs"><code class="xref py py-meth docutils literal notranslate"><span class="pre">validate_analysis_inputs</span></code></a></p></li>
+<li><p><a class="reference internal" href="#pet_cli.reference_tissue_models._safe_load_tac" title="pet_cli.reference_tissue_models._safe_load_tac"><code class="xref py py-meth docutils literal notranslate"><span class="pre">_safe_load_tac</span></code></a> for both reference and ROI TACs</p></li>
+<li><p>Creates a <a class="reference internal" href="#pet_cli.reference_tissue_models.FitTACWithRTMs" title="pet_cli.reference_tissue_models.FitTACWithRTMs"><code class="xref py py-class docutils literal notranslate"><span class="pre">FitTACWithRTMs</span></code></a> instance and fits TAC to the model</p></li>
+</ol>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>bounds</strong> (<em>Union</em><em>[</em><em>None</em><em>, </em><em>np.ndarray</em><em>]</em>) -- Boundaries for parameters for fitting function.</p></li>
+<li><p><strong>t_thresh_in_mins</strong> (<em>float</em>) -- Threshold time for MRTM analyses.</p></li>
+<li><p><strong>k2_prime</strong> (<em>float</em>) -- k2 prime value.</p></li>
+<li><p><strong>tac_load_kwargs</strong> (<em>Any</em>) -- Additional keyword arguments for the loading TAC function.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Object containing fit results.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>FitResults</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pet_cli.reference_tissue_models.RTMAnalysis.calculate_fit_properties">
+<span class="sig-name descname"><span class="pre">calculate_fit_properties</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fit_results</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.26)"><span class="pre">ndarray</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.26)"><span class="pre">ndarray</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.26)"><span class="pre">ndarray</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">t_thresh_in_mins</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">k2_prime</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pet_cli.reference_tissue_models.RTMAnalysis.calculate_fit_properties" title="Link to this definition">#</a></dt>
+<dd><p>Calculates additional fitting properties based on the raw fit results.</p>
+<dl class="simple">
+<dt>It delegates the calculation to method-specific functions:</dt><dd><ol class="arabic simple">
+<li><p>For 'srtm' or 'frtm' methods: <a class="reference internal" href="#pet_cli.reference_tissue_models.RTMAnalysis._calc_frtm_or_srtm_fit_props" title="pet_cli.reference_tissue_models.RTMAnalysis._calc_frtm_or_srtm_fit_props"><code class="xref py py-meth docutils literal notranslate"><span class="pre">_calc_frtm_or_srtm_fit_props</span></code></a> is used.</p></li>
+<li><p>For 'mrtm' methods: <a class="reference internal" href="#pet_cli.reference_tissue_models.RTMAnalysis._calc_mrtm_fit_props" title="pet_cli.reference_tissue_models.RTMAnalysis._calc_mrtm_fit_props"><code class="xref py py-meth docutils literal notranslate"><span class="pre">_calc_mrtm_fit_props</span></code></a> is used.</p></li>
+</ol>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>fit_results</strong> (<em>Union</em><em>[</em><em>np.ndarray</em><em>, </em><em>tuple</em><em>[</em><em>np.ndarray</em><em>, </em><em>np.ndarray</em><em>]</em><em>]</em>) -- The fit results.</p></li>
+<li><p><strong>t_thresh_in_mins</strong> (<em>float</em>) -- Threshold time for MRTM analyses.</p></li>
+<li><p><strong>k2_prime</strong> (<em>float</em>) -- k2 prime value for 'mrtm' based methods.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pet_cli.reference_tissue_models.RTMAnalysis.save_analysis">
+<span class="sig-name descname"><span class="pre">save_analysis</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pet_cli.reference_tissue_models.RTMAnalysis.save_analysis" title="Link to this definition">#</a></dt>
+<dd><p>Save the analysis results in JSON format.</p>
+<p>The results are only saved if the analysis has been run (_has_analysis_been_run flag is checked).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>RuntimeError</strong> -- If the :meth:'run_analysis' method has not been called yet.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pet_cli.reference_tissue_models.RTMAnalysis._calc_mrtm_fit_props">
+<span class="sig-name descname"><span class="pre">_calc_mrtm_fit_props</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fit_results</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.26)"><span class="pre">ndarray</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">k2_prime</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">t_thresh_in_mins</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pet_cli.reference_tissue_models.RTMAnalysis._calc_mrtm_fit_props" title="Link to this definition">#</a></dt>
+<dd><p>Internal function used to calculate additional fitting properties for 'mrtm' type analyses.</p>
+<p>This method is used internally within <a class="reference internal" href="#pet_cli.reference_tissue_models.RTMAnalysis.calculate_fit_properties" title="pet_cli.reference_tissue_models.RTMAnalysis.calculate_fit_properties"><code class="xref py py-meth docutils literal notranslate"><span class="pre">calculate_fit_properties</span></code></a>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>fit_results</strong> (<em>np.ndarray</em>) -- Resulting fit parameters.</p></li>
+<li><p><strong>k2_prime</strong> (<em>float</em>) -- k2 prime value for 'mrtm' based methods.</p></li>
+<li><p><strong>t_thresh_in_mins</strong> (<em>float</em>) -- Threshold time for MRTM analyses.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pet_cli.reference_tissue_models.RTMAnalysis._calc_frtm_or_srtm_fit_props">
+<span class="sig-name descname"><span class="pre">_calc_frtm_or_srtm_fit_props</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fit_results</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.26)"><span class="pre">ndarray</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.26)"><span class="pre">ndarray</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pet_cli.reference_tissue_models.RTMAnalysis._calc_frtm_or_srtm_fit_props" title="Link to this definition">#</a></dt>
+<dd><p>Internal function used to calculate additional fitting properties for 'frtm' and 'srtm' type analyses.</p>
+<p>This method is used internally within <a class="reference internal" href="#pet_cli.reference_tissue_models.RTMAnalysis.calculate_fit_properties" title="pet_cli.reference_tissue_models.RTMAnalysis.calculate_fit_properties"><code class="xref py py-meth docutils literal notranslate"><span class="pre">calculate_fit_properties</span></code></a>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>fit_results</strong> (<em>tuple</em><em>[</em><em>np.ndarray</em><em>, </em><em>np.ndarray</em><em>]</em>) -- Tuple containing the fit parameters and their corresponding fit
+covariances.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pet_cli.reference_tissue_models.RTMAnalysis._get_pretty_srtm_fit_param_vals">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">_get_pretty_srtm_fit_param_vals</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">param_fits</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.26)"><span class="pre">ndarray</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="headerlink" href="#pet_cli.reference_tissue_models.RTMAnalysis._get_pretty_srtm_fit_param_vals" title="Link to this definition">#</a></dt>
+<dd><p>Utility function to get nicely formatted fit parameters for 'srtm' analysis.</p>
+<p>Returns a dictionary with keys: 'R1', 'k2', and 'BP' and the corresponding values from <code class="docutils literal notranslate"><span class="pre">param_fits</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>param_fits</strong> (<em>np.ndarray</em>) -- array containing the fit parameters.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Dictionary of fit parameters and their corresponding values.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pet_cli.reference_tissue_models.RTMAnalysis._get_pretty_frtm_fit_param_vals">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">_get_pretty_frtm_fit_param_vals</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">param_fits</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.26)"><span class="pre">ndarray</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="headerlink" href="#pet_cli.reference_tissue_models.RTMAnalysis._get_pretty_frtm_fit_param_vals" title="Link to this definition">#</a></dt>
+<dd><p>Utility function to get nicely formatted fit parameters for 'frtm' analysis.</p>
+<p>Returns a dictionary with keys: 'R1', 'k2', 'k3', and 'k4' and the corresponding values from <code class="docutils literal notranslate"><span class="pre">param_fits</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>param_fits</strong> (<em>np.ndarray</em>) -- array containing the fit parameters.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Dictionary of fit parameters and their corresponding values.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="pet_cli.graphical_analysis.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title"><span class="section-number">4. </span>Graphical Analysis Of TACs</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="pet_cli.tac_fitting.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title"><span class="section-number">6. </span>TAC Fitting With Tissue Compartment Models</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#pet_cli.reference_tissue_models.calc_srtm_tac"><code class="docutils literal notranslate"><span class="pre">calc_srtm_tac</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#pet_cli.reference_tissue_models._calc_simplified_frtm_tac"><code class="docutils literal notranslate"><span class="pre">_calc_simplified_frtm_tac</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#pet_cli.reference_tissue_models._calc_frtm_params_from_kinetic_params"><code class="docutils literal notranslate"><span class="pre">_calc_frtm_params_from_kinetic_params</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#pet_cli.reference_tissue_models.calc_frtm_tac"><code class="docutils literal notranslate"><span class="pre">calc_frtm_tac</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#pet_cli.reference_tissue_models.fit_srtm_to_tac"><code class="docutils literal notranslate"><span class="pre">fit_srtm_to_tac</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#pet_cli.reference_tissue_models.fit_srtm_to_tac_with_bounds"><code class="docutils literal notranslate"><span class="pre">fit_srtm_to_tac_with_bounds</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#pet_cli.reference_tissue_models.fit_frtm_to_tac"><code class="docutils literal notranslate"><span class="pre">fit_frtm_to_tac</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#pet_cli.reference_tissue_models.fit_frtm_to_tac_with_bounds"><code class="docutils literal notranslate"><span class="pre">fit_frtm_to_tac_with_bounds</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#pet_cli.reference_tissue_models.fit_mrtm_original_to_tac"><code class="docutils literal notranslate"><span class="pre">fit_mrtm_original_to_tac</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#pet_cli.reference_tissue_models.fit_mrtm_2003_to_tac"><code class="docutils literal notranslate"><span class="pre">fit_mrtm_2003_to_tac</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#pet_cli.reference_tissue_models.fit_mrtm2_2003_to_tac"><code class="docutils literal notranslate"><span class="pre">fit_mrtm2_2003_to_tac</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#pet_cli.reference_tissue_models.calc_BP_from_mrtm_original_fit"><code class="docutils literal notranslate"><span class="pre">calc_BP_from_mrtm_original_fit</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#pet_cli.reference_tissue_models.calc_BP_from_mrtm_2003_fit"><code class="docutils literal notranslate"><span class="pre">calc_BP_from_mrtm_2003_fit</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#pet_cli.reference_tissue_models.calc_BP_from_mrtm2_2003_fit"><code class="docutils literal notranslate"><span class="pre">calc_BP_from_mrtm2_2003_fit</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#pet_cli.reference_tissue_models.calc_k2prime_from_mrtm_original_fit"><code class="docutils literal notranslate"><span class="pre">calc_k2prime_from_mrtm_original_fit</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#pet_cli.reference_tissue_models.calc_k2prime_from_mrtm_2003_fit"><code class="docutils literal notranslate"><span class="pre">calc_k2prime_from_mrtm_2003_fit</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#pet_cli.reference_tissue_models.FitTACWithRTMs"><code class="docutils literal notranslate"><span class="pre">FitTACWithRTMs</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pet_cli.reference_tissue_models.FitTACWithRTMs.validate_method_inputs"><code class="docutils literal notranslate"><span class="pre">FitTACWithRTMs.validate_method_inputs</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pet_cli.reference_tissue_models.FitTACWithRTMs.validate_bounds"><code class="docutils literal notranslate"><span class="pre">FitTACWithRTMs.validate_bounds</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pet_cli.reference_tissue_models.FitTACWithRTMs.fit_tac_to_model"><code class="docutils literal notranslate"><span class="pre">FitTACWithRTMs.fit_tac_to_model</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#pet_cli.reference_tissue_models._safe_load_tac"><code class="docutils literal notranslate"><span class="pre">_safe_load_tac</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#pet_cli.reference_tissue_models.RTMAnalysis"><code class="docutils literal notranslate"><span class="pre">RTMAnalysis</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pet_cli.reference_tissue_models.RTMAnalysis.init_analysis_props"><code class="docutils literal notranslate"><span class="pre">RTMAnalysis.init_analysis_props</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pet_cli.reference_tissue_models.RTMAnalysis.run_analysis"><code class="docutils literal notranslate"><span class="pre">RTMAnalysis.run_analysis</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pet_cli.reference_tissue_models.RTMAnalysis.validate_analysis_inputs"><code class="docutils literal notranslate"><span class="pre">RTMAnalysis.validate_analysis_inputs</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pet_cli.reference_tissue_models.RTMAnalysis.calculate_fit"><code class="docutils literal notranslate"><span class="pre">RTMAnalysis.calculate_fit</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pet_cli.reference_tissue_models.RTMAnalysis.calculate_fit_properties"><code class="docutils literal notranslate"><span class="pre">RTMAnalysis.calculate_fit_properties</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pet_cli.reference_tissue_models.RTMAnalysis.save_analysis"><code class="docutils literal notranslate"><span class="pre">RTMAnalysis.save_analysis</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pet_cli.reference_tissue_models.RTMAnalysis._calc_mrtm_fit_props"><code class="docutils literal notranslate"><span class="pre">RTMAnalysis._calc_mrtm_fit_props</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pet_cli.reference_tissue_models.RTMAnalysis._calc_frtm_or_srtm_fit_props"><code class="docutils literal notranslate"><span class="pre">RTMAnalysis._calc_frtm_or_srtm_fit_props</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pet_cli.reference_tissue_models.RTMAnalysis._get_pretty_srtm_fit_param_vals"><code class="docutils literal notranslate"><span class="pre">RTMAnalysis._get_pretty_srtm_fit_param_vals</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pet_cli.reference_tissue_models.RTMAnalysis._get_pretty_frtm_fit_param_vals"><code class="docutils literal notranslate"><span class="pre">RTMAnalysis._get_pretty_frtm_fit_param_vals</span></code></a></li>
+</ul>
+</li>
+</ul>
+  </nav></div>
+
+  <div class="sidebar-secondary-item">
+
+  <div class="tocsection sourcelink">
+    <a href="_sources/pet_cli.reference_tissue_models.rst.txt">
+      <i class="fa-solid fa-file-lines"></i> Show Source
+    </a>
+  </div>
+</div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="_static/scripts/bootstrap.js?digest=8d27b9dea8ad943066ae"></script>
+<script src="_static/scripts/pydata-sphinx-theme.js?digest=8d27b9dea8ad943066ae"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2024, Furqan Dar, Bradley Judge, Noah Goldman.
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.2.6.
+    <br/>
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.15.2.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

@@ -1,0 +1,998 @@
+
+<!DOCTYPE html>
+
+
+<html lang="English (US)" data-content_root="./" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>16. BIDS File Management Utilities &#8212; PET Processing Module</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="_static/styles/theme.css?digest=8d27b9dea8ad943066ae" rel="stylesheet" />
+<link href="_static/styles/bootstrap.css?digest=8d27b9dea8ad943066ae" rel="stylesheet" />
+<link href="_static/styles/pydata-sphinx-theme.css?digest=8d27b9dea8ad943066ae" rel="stylesheet" />
+
+  
+  <link href="_static/vendor/fontawesome/6.5.1/css/all.min.css?digest=8d27b9dea8ad943066ae" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.1/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.1/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.1/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=a746c00c" />
+    <link rel="stylesheet" type="text/css" href="_static/plot_directive.css" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=8d27b9dea8ad943066ae" />
+<link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=8d27b9dea8ad943066ae" />
+  <script src="_static/vendor/fontawesome/6.5.1/js/all.min.js?digest=8d27b9dea8ad943066ae"></script>
+
+    <script src="_static/documentation_options.js?v=cd7df0db"></script>
+    <script src="_static/doctools.js?v=888ff710"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'pet_cli.bids_utils';</script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="CLI Reference" href="cli_ref.html" />
+    <link rel="prev" title="15. Mathematical Operations Library" href="pet_cli.math_lib.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="English (US)"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <a id="pst-skip-link" class="skip-link" href="#main-content">Skip to main content</a>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>
+    Back to top
+  </button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__primary"
+          id="__primary"/>
+  <label class="overlay overlay-primary" for="__primary"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__secondary"
+          id="__secondary"/>
+  <label class="overlay overlay-secondary" for="__secondary"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar">
+<div class="bd-header__inner bd-page-width">
+  <label class="sidebar-toggle primary-toggle" for="__primary">
+    <span class="fa-solid fa-bars"></span>
+  </label>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+
+<a class="navbar-brand logo" href="index.html">
+  
+  
+  
+  
+  
+  
+    <p class="title logo__title">PET Processing Module</p>
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav class="navbar-nav">
+  <ul class="bd-navbar-elements navbar-nav">
+    
+                    <li class="nav-item current active">
+                      <a class="nav-link nav-internal" href="modules.html">
+                        Modules
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="cli_ref.html">
+                        CLI Reference
+                      </a>
+                    </li>
+                
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+ <script>
+ document.write(`
+   <button class="btn navbar-btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<script>
+document.write(`
+  <button class="btn btn-sm navbar-btn theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="theme-switch nav-link" data-mode="light"><i class="fa-solid fa-sun fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="dark"><i class="fa-solid fa-moon fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg"></i></span>
+  </button>
+`);
+</script></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+ <script>
+ document.write(`
+   <button class="btn navbar-btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script>
+    </div>
+  
+
+  
+    <label class="sidebar-toggle secondary-toggle" for="__secondary" tabindex="0">
+      <span class="fa-solid fa-outdent"></span>
+    </label>
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          <div class="navbar-item">
+<nav class="navbar-nav">
+  <ul class="bd-navbar-elements navbar-nav">
+    
+                    <li class="nav-item current active">
+                      <a class="nav-link nav-internal" href="modules.html">
+                        Modules
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="cli_ref.html">
+                        CLI Reference
+                      </a>
+                    </li>
+                
+  </ul>
+</nav></div>
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<script>
+document.write(`
+  <button class="btn btn-sm navbar-btn theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="theme-switch nav-link" data-mode="light"><i class="fa-solid fa-sun fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="dark"><i class="fa-solid fa-moon fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg"></i></span>
+  </button>
+`);
+</script></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+<nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="pet_cli.image_io.html">1. Image IO</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pet_cli.tac_interpolation.html">2. TAC Interpolation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pet_cli.tcms_as_convolutions.html">3. TCMs As Convolutions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pet_cli.graphical_analysis.html">4. Graphical Analysis Of TACs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pet_cli.reference_tissue_models.html">5. Reference Tissue Models</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pet_cli.tac_fitting.html">6. TAC Fitting With Tissue Compartment Models</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pet_cli.parametric_images.html">7. Parametric Images</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pet_cli.graphical_plots.html">8. Graphical Analysis Plots</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pet_cli.image_visualization.html">9. Image Visualization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pet_cli.blood_input.html">10. Interpolation Blood Data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pet_cli.image_operations_4d.html">11. Special Operations on 4D Images</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pet_cli.register.html">12. Tools for Registration of PET to Anatomical and Atlas Space</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pet_cli.motion_corr.html">13. Tools to Motion Correct PET Images</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pet_cli.preproc.html">14. Python Interface for PET Preprocessing Tools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pet_cli.math_lib.html">15. Mathematical Operations Library</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">16. BIDS File Management Utilities</a></li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+
+
+<nav aria-label="Breadcrumb">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="modules.html" class="nav-link">Modules</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page"><span...</li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="module-pet_cli.bids_utils">
+<span id="bids-file-management-utilities"></span><h1><span class="section-number">16. </span>BIDS File Management Utilities<a class="headerlink" href="#module-pet_cli.bids_utils" title="Link to this heading">#</a></h1>
+<p>This module contains utilities for handling <a class="reference external" href="https://bids.neuroimaging.io/">Brain Imaging Data Structure (BIDS)</a> datasets. It simplifies the
+creation and management of BIDS projects, offering functions for building project scaffolds, handling file paths,
+and managing neuroimaging data files. Key features include scaffolding BIDS projects, caching file paths for efficient
+retrieval, and supporting various neuroimaging file types through integration with <cite>nibabel</cite>.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="pet_cli.bids_utils.BidsInstance">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">BidsInstance</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">project_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">subject</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pet_cli.bids_utils.BidsInstance" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Manages BIDS dataset paths and facilitates the creation and organization of a BIDS project scaffold.</p>
+<p>Provides methods for constructing compliant file paths, caching for quick access, and operations on BIDS datasets,
+including file and directory management.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Variables<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>project_path</strong> (<em>str</em>) -- The root path of the BIDS project.</p></li>
+<li><p><strong>path_cache</strong> (<em>dict</em>) -- A cache for storing and retrieving file paths.</p></li>
+<li><p><strong>parts</strong> (<em>dict</em>) -- Components of the BIDS file path.</p></li>
+<li><p><strong>filepath</strong> (<em>str</em>) -- The current file path being worked on.</p></li>
+<li><p><strong>prefixes</strong> (<em>dict</em>) -- Prefixes for various components in BIDS file naming convention.</p></li>
+<li><p><strong>directory_parts_names</strong> (<em>tuple</em>) -- Names of components used in directory paths.</p></li>
+<li><p><strong>file_parts_names</strong> (<em>tuple</em>) -- Names of components used in file naming.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="simple">
+<dt>Usage:</dt><dd><p>Initialize with a project path and subject identifier to manage dataset paths and create BIDS scaffolds.</p>
+</dd>
+</dl>
+<p>Initializes a BidsInstance object with project path and subject.</p>
+<p>Calls <a class="reference internal" href="#pet_cli.bids_utils.BidsInstance._setup_dynamic_methods" title="pet_cli.bids_utils.BidsInstance._setup_dynamic_methods"><code class="xref py py-func docutils literal notranslate"><span class="pre">_setup_dynamic_methods</span></code></a> and <a class="reference internal" href="#pet_cli.bids_utils.BidsInstance._create_bids_scaffold" title="pet_cli.bids_utils.BidsInstance._create_bids_scaffold"><code class="xref py py-func docutils literal notranslate"><span class="pre">_create_bids_scaffold</span></code></a>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>project_path</strong> (<em>str</em>) -- The root directory of the BIDS project.</p></li>
+<li><p><strong>subject</strong> (<em>str</em>) -- The subject identifier.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="pet_cli.bids_utils.BidsInstance._create_bids_scaffold">
+<span class="sig-name descname"><span class="pre">_create_bids_scaffold</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pet_cli.bids_utils.BidsInstance._create_bids_scaffold" title="Link to this definition">#</a></dt>
+<dd><p>Creates the necessary directories and files for a BIDS project scaffold.</p>
+<p>Example below</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>project/
+├── CHANGES
+├── README
+├── participants.json
+├── participants.tsv
+├── code/
+│   └── example.code
+├── derivatives/
+│   └── example.file
+├── sourcedata/
+│   └── example.file
+└── sub-001/
+    └── ses-01/
+        └── anat/
+            ├── example.nii
+            └── example.json
+</pre></div>
+</div>
+<p>This structure helps visualize the organization of a simple project.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pet_cli.bids_utils.BidsInstance._update_participants">
+<span class="sig-name descname"><span class="pre">_update_participants</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">session</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#pet_cli.bids_utils.BidsInstance._update_participants" title="Link to this definition">#</a></dt>
+<dd><p>Updates the participants.tsv file with a new session for the current subject.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>session</strong> (<em>str</em>) -- The session identifier to add for the current subject.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pet_cli.bids_utils.BidsInstance._add_subject_session_to_participants">
+<span class="sig-name descname"><span class="pre">_add_subject_session_to_participants</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">subject</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">session</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#pet_cli.bids_utils.BidsInstance._add_subject_session_to_participants" title="Link to this definition">#</a></dt>
+<dd><p>Adds a subject-session pair to the participants.tsv file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>subject</strong> (<em>str</em>) -- The subject identifier.</p></li>
+<li><p><strong>session</strong> (<em>str</em>) -- The session identifier.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pet_cli.bids_utils.BidsInstance._prefixed_dictionary">
+<span class="sig-name descname"><span class="pre">_prefixed_dictionary</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="headerlink" href="#pet_cli.bids_utils.BidsInstance._prefixed_dictionary" title="Link to this definition">#</a></dt>
+<dd><p>Prepares a dictionary with prefixed components for constructing BIDS file paths.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>A dictionary with BIDS components prefixed according to BIDS naming conventions.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pet_cli.bids_utils.BidsInstance.create_filepath">
+<span class="sig-name descname"><span class="pre">create_filepath</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">session</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">modality</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">image_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">acquisition</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">contrast_enhancing</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reconstruction</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">space</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">description</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">derivative_directory</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'main'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">extension</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">''</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#pet_cli.bids_utils.BidsInstance.create_filepath" title="Link to this definition">#</a></dt>
+<dd><p>Constructs and updates the filepath attribute based on BIDS naming conventions.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>session</strong> (<em>str</em>) -- The session identifier.</p></li>
+<li><p><strong>modality</strong> (<em>str</em>) -- The modality or type of data.</p></li>
+<li><p><strong>image_type</strong> (<em>str</em>) -- The type of image.</p></li>
+<li><p><strong>acquisition</strong> (<em>str</em><em>, </em><em>optional</em>) -- The acquisition type.</p></li>
+<li><p><strong>contrast_enhancing</strong> (<em>str</em><em>, </em><em>optional</em>) -- The contrast enhancing agent.</p></li>
+<li><p><strong>reconstruction</strong> (<em>str</em><em>, </em><em>optional</em>) -- The reconstruction algorithm.</p></li>
+<li><p><strong>space</strong> (<em>str</em><em>, </em><em>optional</em>) -- The space or coordinate system.</p></li>
+<li><p><strong>description</strong> (<em>str</em><em>, </em><em>optional</em>) -- A description of the file.</p></li>
+<li><p><strong>derivative_directory</strong> (<em>str</em><em>, </em><em>optional</em>) -- The directory for derivatives.</p></li>
+<li><p><strong>extension</strong> (<em>str</em><em>, </em><em>optional</em>) -- The file extension.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pet_cli.bids_utils.BidsInstance._compile_filepath">
+<span class="sig-name descname"><span class="pre">_compile_filepath</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#pet_cli.bids_utils.BidsInstance._compile_filepath" title="Link to this definition">#</a></dt>
+<dd><p>Compiles the full file path from the individual BIDS components stored in the object.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pet_cli.bids_utils.BidsInstance.manual_filepath">
+<span class="sig-name descname"><span class="pre">manual_filepath</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filepath</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#pet_cli.bids_utils.BidsInstance.manual_filepath" title="Link to this definition">#</a></dt>
+<dd><p>Manually sets the file path based on a provided path and updates class attributes.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>filepath</strong> (<em>str</em>) -- The file path to set.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pet_cli.bids_utils.BidsInstance.cache_filepath">
+<span class="sig-name descname"><span class="pre">cache_filepath</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#pet_cli.bids_utils.BidsInstance.cache_filepath" title="Link to this definition">#</a></dt>
+<dd><p>Caches the current file path with a given name for later retrieval.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>name</strong> (<em>str</em>) -- The name under which to cache the current file path.</p>
+</dd>
+</dl>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The filepath cache can be accessed using the names provided as keys in a dictionary: self.path_cache[&quot;name&quot;].</p>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pet_cli.bids_utils.BidsInstance.cache_sidecar_metadata">
+<span class="sig-name descname"><span class="pre">cache_sidecar_metadata</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pet_sidecar_filepath</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#pet_cli.bids_utils.BidsInstance.cache_sidecar_metadata" title="Link to this definition">#</a></dt>
+<dd><p>Loads metadata from a JSON file specified by <cite>pet_sidecar_filepath</cite>, updates the instance
+with dynamic attributes based on the <cite>required_metadata</cite>, and issues warnings for any
+required metadata keys that are missing.</p>
+<p>This method dynamically sets attributes on the instance for each key in <cite>required_metadata</cite>
+that is found in the JSON file's keys. If <cite>required_metadata</cite> contains lists of keys,
+it checks for any of those keys in the JSON file and uses the first matching key to set
+an attribute named after the first key in the list. If a key from <cite>required_metadata</cite> (whether
+a single key or any key from a list) is not found in the JSON keys, a warning is issued indicating
+its absence.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>pet_sidecar_filepath</strong> (<em>str</em>) -- The file path to the JSON file from which to load metadata. This
+file should contain a dictionary where each key-value pair corresponds to metadata that
+might be required.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>JSONDecodeError</strong> -- If the JSON file is malformed and cannot be decoded.</p></li>
+<li><p><strong>FileNotFoundError</strong> -- If the specified file does not exist.</p></li>
+<li><p><strong>Warning</strong> -- Issues a runtime warning through the <cite>warnings</cite> module if required keys are missing
+    from the JSON data.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pet_cli.bids_utils.BidsInstance.change_session">
+<span class="sig-name descname"><span class="pre">change_session</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">compile_filepath</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pet_cli.bids_utils.BidsInstance.change_session" title="Link to this definition">#</a></dt>
+<dd><p>Updates the session part of the file path and optionally recompile the path.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>value</strong> (<em>str</em>) -- The new session value to set.</p></li>
+<li><p><strong>compile_filepath</strong> (<em>bool</em><em>, </em><em>optional</em>) -- Whether to recompile the file path after updating. Defaults to True.</p></li>
+</ul>
+</dd>
+</dl>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This is the only &quot;change_&lt;element&gt;&quot; function that is not dynamically generated because session information needs to be stored in the participants.tsv file, thus needing special handling.</p>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pet_cli.bids_utils.BidsInstance._update_part">
+<span class="sig-name descname"><span class="pre">_update_part</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">compile_filepath</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pet_cli.bids_utils.BidsInstance._update_part" title="Link to this definition">#</a></dt>
+<dd><p>Updates a specified part of the file path and optionally recompile the path.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>key</strong> (<em>str</em>) -- The key of the part to update.</p></li>
+<li><p><strong>value</strong> (<em>str</em>) -- The new value for the specified part.</p></li>
+<li><p><strong>compile_filepath</strong> (<em>bool</em><em>, </em><em>optional</em>) -- Whether to recompile the file path after updating. Defaults to True.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pet_cli.bids_utils.BidsInstance._setup_dynamic_methods">
+<span class="sig-name descname"><span class="pre">_setup_dynamic_methods</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pet_cli.bids_utils.BidsInstance._setup_dynamic_methods" title="Link to this definition">#</a></dt>
+<dd><p>Dynamically creates and assigns methods for changing individual parts of the BIDS file path.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This creates callable functions to change individual elements of a filepath dynamically such that for every option (E.g. &quot;modality&quot;) there is a function &quot;change_&lt;option&gt;&quot; (E.g. &quot;change_modality&quot;).</p>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pet_cli.bids_utils.BidsInstance._create_update_method">
+<span class="sig-name descname"><span class="pre">_create_update_method</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pet_cli.bids_utils.BidsInstance._create_update_method" title="Link to this definition">#</a></dt>
+<dd><p>Creates a method for updating a specific part of the BIDS file path.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>key</strong> (<em>str</em>) -- The key of the part to create an update method for.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A function that updates the specified part.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>function</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pet_cli.bids_utils.BidsInstance.change_parts">
+<span class="sig-name descname"><span class="pre">change_parts</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">session</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">modality</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">image_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">acquisition</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">contrast_enhancing</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reconstruction</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">space</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">description</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">derivative_directory</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'main'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">extension</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#pet_cli.bids_utils.BidsInstance.change_parts" title="Link to this definition">#</a></dt>
+<dd><p>Updates multiple parts of the BIDS file path at once based on provided arguments.</p>
+<p>This function calls all the individual &quot;change_&lt;element&gt;&quot; functions that comprise the inputs and compiles them into a path at the end.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>session</strong> (<em>str</em>) -- Session identifier.</p></li>
+<li><p><strong>modality</strong> (<em>str</em><em>, </em><em>optional</em>) -- Modality or type of data.</p></li>
+<li><p><strong>image_type</strong> (<em>str</em><em>, </em><em>optional</em>) -- Type of image.</p></li>
+<li><p><strong>acquisition</strong> (<em>str</em><em>, </em><em>optional</em>) -- Acquisition type.</p></li>
+<li><p><strong>contrast_enhancing</strong> (<em>str</em><em>, </em><em>optional</em>) -- Contrast enhancing agent.</p></li>
+<li><p><strong>reconstruction</strong> (<em>str</em><em>, </em><em>optional</em>) -- Reconstruction algorithm.</p></li>
+<li><p><strong>space</strong> (<em>str</em><em>, </em><em>optional</em>) -- Space or coordinate system.</p></li>
+<li><p><strong>description</strong> (<em>str</em><em>, </em><em>optional</em>) -- Description of the file.</p></li>
+<li><p><strong>derivative_directory</strong> (<em>str</em><em>, </em><em>optional</em>) -- Directory for derivatives.</p></li>
+<li><p><strong>extension</strong> (<em>str</em><em>, </em><em>optional</em>) -- File extension.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pet_cli.bids_utils.BidsInstance.write_symbolic_link">
+<span class="sig-name descname"><span class="pre">write_symbolic_link</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_filepath</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">link_filepath</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#pet_cli.bids_utils.BidsInstance.write_symbolic_link" title="Link to this definition">#</a></dt>
+<dd><p>Creates a symbolic link to a specified input file at a given location.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>input_filepath</strong> (<em>str</em>) -- The path of the file to link to.</p></li>
+<li><p><strong>link_filepath</strong> (<em>str</em><em>, </em><em>optional</em>) -- The path where the symbolic link should be created.
+Defaults to current filepath.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pet_cli.bids_utils.BidsInstance.write_file">
+<span class="sig-name descname"><span class="pre">write_file</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file_input</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filepath</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#pet_cli.bids_utils.BidsInstance.write_file" title="Link to this definition">#</a></dt>
+<dd><p>Writes input data to a file of an appropriate format based on the file's extension.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>file_input</strong> -- The data to be written to the file. Its type determines how it's written.</p></li>
+<li><p><strong>filepath</strong> (<em>str</em><em>, </em><em>optional</em>) -- The path where the data should be written. Defaults to current filepath.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pet_cli.bids_utils.BidsInstance.load_file">
+<span class="sig-name descname"><span class="pre">load_file</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filepath</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pet_cli.bids_utils.BidsInstance.load_file" title="Link to this definition">#</a></dt>
+<dd><p>Loads a file based on its extension and returns its content.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>filepath</strong> (<em>str</em><em>, </em><em>optional</em>) -- The path of the file to load. Defaults to current filepath.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The content of the loaded file, in a format depending on the file type.</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>FileNotFoundError</strong> -- If the specified file does not exist.</p></li>
+<li><p><strong>RuntimeError</strong> -- If unable to load the file or unsupported file format.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pet_cli.bids_utils.BidsInstance.delete_file">
+<span class="sig-name descname"><span class="pre">delete_file</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filepath</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#pet_cli.bids_utils.BidsInstance.delete_file" title="Link to this definition">#</a></dt>
+<dd><p>Deletes a specified file within the project.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>filepath</strong> (<em>str</em><em>, </em><em>optional</em>) -- The path of the file to delete. If None, deletes current filepath.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pet_cli.bids_utils.BidsInstance.delete_directory">
+<span class="sig-name descname"><span class="pre">delete_directory</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">directory_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#pet_cli.bids_utils.BidsInstance.delete_directory" title="Link to this definition">#</a></dt>
+<dd><p>Deletes a specified directory within the project.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>directory_path</strong> (<em>str</em>) -- The path of the directory to delete.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pet_cli.bids_utils.create_json">
+<span class="sig-name descname"><span class="pre">create_json</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="headerlink" href="#pet_cli.bids_utils.create_json" title="Link to this definition">#</a></dt>
+<dd><p>Creates a dictionary from provided keyword arguments.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>**kwargs</strong> -- Arbitrary keyword arguments.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A dictionary constructed from the keyword arguments.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pet_cli.bids_utils.update_json">
+<span class="sig-name descname"><span class="pre">update_json</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">json_dict</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="headerlink" href="#pet_cli.bids_utils.update_json" title="Link to this definition">#</a></dt>
+<dd><p>Updates an existing JSON dictionary with additional key-value pairs.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>json_dict</strong> (<em>dict</em>) -- The original dictionary to be updated.</p></li>
+<li><p><strong>**kwargs</strong> -- Arbitrary keyword arguments to update json_dict with.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The updated dictionary.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pet_cli.bids_utils.save_json">
+<span class="sig-name descname"><span class="pre">save_json</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">json_dict</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filepath</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#pet_cli.bids_utils.save_json" title="Link to this definition">#</a></dt>
+<dd><p>Saves a dictionary as a JSON file at the specified filepath.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>json_dict</strong> (<em>dict</em>) -- The dictionary to save as JSON.</p></li>
+<li><p><strong>filepath</strong> (<em>str</em>) -- The destination file path. If the path does not end with &quot;.json&quot;, it will be appended.</p></li>
+</ul>
+</dd>
+</dl>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The JSON file is formatted with an indentation of 4 spaces for readability.</p>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pet_cli.bids_utils.load_json">
+<span class="sig-name descname"><span class="pre">load_json</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filepath</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pet_cli.bids_utils.load_json" title="Link to this definition">#</a></dt>
+<dd><p>Loads a JSON file from the specified filepath and returns its content as a dictionary.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>filepath</strong> (<em>str</em>) -- The path to the JSON file to be loaded.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The JSON file content as a dictionary.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>FileNotFoundError</strong> -- If the specified file does not exist.</p></li>
+<li><p><strong>json.JSONDecodeError</strong> -- If the file content is not valid JSON.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pet_cli.bids_utils.save_array_as_tsv">
+<span class="sig-name descname"><span class="pre">save_array_as_tsv</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">array</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">array</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filepath</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#pet_cli.bids_utils.save_array_as_tsv" title="Link to this definition">#</a></dt>
+<dd><p>Saves a NumPy array as a TSV (Tab-Separated Values) file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>array</strong> (<em>numpy.array</em>) -- The NumPy array to save.</p></li>
+<li><p><strong>filepath</strong> (<em>str</em>) -- The destination file path for the TSV file.</p></li>
+</ul>
+</dd>
+</dl>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Each row of the array is saved as a separate line in the TSV file.</p>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pet_cli.bids_utils.save_tsv_simple">
+<span class="sig-name descname"><span class="pre">save_tsv_simple</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filepath</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#pet_cli.bids_utils.save_tsv_simple" title="Link to this definition">#</a></dt>
+<dd><p>Saves a list of lists as a TSV (Tab-Separated Values) file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>filepath</strong> (<em>str</em>) -- The destination file path for the TSV file.</p></li>
+<li><p><strong>data</strong> (<em>list</em>) -- A list of lists, where each sublist represents a row in the TSV file.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pet_cli.bids_utils.load_tsv_simple">
+<span class="sig-name descname"><span class="pre">load_tsv_simple</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filepath</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span></span></span><a class="headerlink" href="#pet_cli.bids_utils.load_tsv_simple" title="Link to this definition">#</a></dt>
+<dd><p>Loads a TSV (Tab-Separated Values) file from the specified filepath and returns its content as a list of lists.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>filepath</strong> (<em>str</em>) -- The path to the TSV file to be loaded.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A list of lists, where each sublist represents a row in the TSV file, split by tabs.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pet_cli.bids_utils.validate_filepath_as_bids">
+<span class="sig-name descname"><span class="pre">validate_filepath_as_bids</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filepath</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#pet_cli.bids_utils.validate_filepath_as_bids" title="Link to this definition">#</a></dt>
+<dd><p>Validate whether a given filepath conforms to the Brain Imaging Data Structure (BIDS) standard.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>filepath</strong> (<em>str</em>) -- The path to the file to be validated.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>True if the file conforms to the BIDS standard, False otherwise.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pet_cli.bids_utils.validate_directory_as_bids">
+<span class="sig-name descname"><span class="pre">validate_directory_as_bids</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">project_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#pet_cli.bids_utils.validate_directory_as_bids" title="Link to this definition">#</a></dt>
+<dd><p>Validate whether all files in a given directory and its subdirectories (excluding specified ones)
+conform to the Brain Imaging Data Structure (BIDS) standard.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>project_path</strong> (<em>str</em>) -- The root directory of the project to validate.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>True if all files in the directory conform to the BIDS standard, False if any do not.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>FileNotFoundError</strong> -- If the provided project_path does not exist or is inaccessible.</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>Excludes directories typically not needed for BIDS validation, such as 'code', 'derivatives',
+'sourcedata', '.git', and 'stimuli'. Also skips directories starting with 'sub-' to focus on top-level structure.</p>
+</dd></dl>
+
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="pet_cli.math_lib.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title"><span class="section-number">15. </span>Mathematical Operations Library</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="cli_ref.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">CLI Reference</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#pet_cli.bids_utils.BidsInstance"><code class="docutils literal notranslate"><span class="pre">BidsInstance</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pet_cli.bids_utils.BidsInstance._create_bids_scaffold"><code class="docutils literal notranslate"><span class="pre">BidsInstance._create_bids_scaffold</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pet_cli.bids_utils.BidsInstance._update_participants"><code class="docutils literal notranslate"><span class="pre">BidsInstance._update_participants</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pet_cli.bids_utils.BidsInstance._add_subject_session_to_participants"><code class="docutils literal notranslate"><span class="pre">BidsInstance._add_subject_session_to_participants</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pet_cli.bids_utils.BidsInstance._prefixed_dictionary"><code class="docutils literal notranslate"><span class="pre">BidsInstance._prefixed_dictionary</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pet_cli.bids_utils.BidsInstance.create_filepath"><code class="docutils literal notranslate"><span class="pre">BidsInstance.create_filepath</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pet_cli.bids_utils.BidsInstance._compile_filepath"><code class="docutils literal notranslate"><span class="pre">BidsInstance._compile_filepath</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pet_cli.bids_utils.BidsInstance.manual_filepath"><code class="docutils literal notranslate"><span class="pre">BidsInstance.manual_filepath</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pet_cli.bids_utils.BidsInstance.cache_filepath"><code class="docutils literal notranslate"><span class="pre">BidsInstance.cache_filepath</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pet_cli.bids_utils.BidsInstance.cache_sidecar_metadata"><code class="docutils literal notranslate"><span class="pre">BidsInstance.cache_sidecar_metadata</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pet_cli.bids_utils.BidsInstance.change_session"><code class="docutils literal notranslate"><span class="pre">BidsInstance.change_session</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pet_cli.bids_utils.BidsInstance._update_part"><code class="docutils literal notranslate"><span class="pre">BidsInstance._update_part</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pet_cli.bids_utils.BidsInstance._setup_dynamic_methods"><code class="docutils literal notranslate"><span class="pre">BidsInstance._setup_dynamic_methods</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pet_cli.bids_utils.BidsInstance._create_update_method"><code class="docutils literal notranslate"><span class="pre">BidsInstance._create_update_method</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pet_cli.bids_utils.BidsInstance.change_parts"><code class="docutils literal notranslate"><span class="pre">BidsInstance.change_parts</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pet_cli.bids_utils.BidsInstance.write_symbolic_link"><code class="docutils literal notranslate"><span class="pre">BidsInstance.write_symbolic_link</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pet_cli.bids_utils.BidsInstance.write_file"><code class="docutils literal notranslate"><span class="pre">BidsInstance.write_file</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pet_cli.bids_utils.BidsInstance.load_file"><code class="docutils literal notranslate"><span class="pre">BidsInstance.load_file</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pet_cli.bids_utils.BidsInstance.delete_file"><code class="docutils literal notranslate"><span class="pre">BidsInstance.delete_file</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pet_cli.bids_utils.BidsInstance.delete_directory"><code class="docutils literal notranslate"><span class="pre">BidsInstance.delete_directory</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#pet_cli.bids_utils.create_json"><code class="docutils literal notranslate"><span class="pre">create_json</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#pet_cli.bids_utils.update_json"><code class="docutils literal notranslate"><span class="pre">update_json</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#pet_cli.bids_utils.save_json"><code class="docutils literal notranslate"><span class="pre">save_json</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#pet_cli.bids_utils.load_json"><code class="docutils literal notranslate"><span class="pre">load_json</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#pet_cli.bids_utils.save_array_as_tsv"><code class="docutils literal notranslate"><span class="pre">save_array_as_tsv</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#pet_cli.bids_utils.save_tsv_simple"><code class="docutils literal notranslate"><span class="pre">save_tsv_simple</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#pet_cli.bids_utils.load_tsv_simple"><code class="docutils literal notranslate"><span class="pre">load_tsv_simple</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#pet_cli.bids_utils.validate_filepath_as_bids"><code class="docutils literal notranslate"><span class="pre">validate_filepath_as_bids</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#pet_cli.bids_utils.validate_directory_as_bids"><code class="docutils literal notranslate"><span class="pre">validate_directory_as_bids</span></code></a></li>
+</ul>
+  </nav></div>
+
+  <div class="sidebar-secondary-item">
+
+  <div class="tocsection sourcelink">
+    <a href="_sources/pet_cli.bids_utils.rst.txt">
+      <i class="fa-solid fa-file-lines"></i> Show Source
+    </a>
+  </div>
+</div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="_static/scripts/bootstrap.js?digest=8d27b9dea8ad943066ae"></script>
+<script src="_static/scripts/pydata-sphinx-theme.js?digest=8d27b9dea8ad943066ae"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2024, Furqan Dar, Bradley Judge, Noah Goldman.
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.2.6.
+    <br/>
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.15.2.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

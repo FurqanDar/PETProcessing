@@ -1,0 +1,1406 @@
+
+<!DOCTYPE html>
+
+
+<html lang="English (US)" data-content_root="./" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>8. Graphical Analysis Plots &#8212; PET Processing Module</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="_static/styles/theme.css?digest=8d27b9dea8ad943066ae" rel="stylesheet" />
+<link href="_static/styles/bootstrap.css?digest=8d27b9dea8ad943066ae" rel="stylesheet" />
+<link href="_static/styles/pydata-sphinx-theme.css?digest=8d27b9dea8ad943066ae" rel="stylesheet" />
+
+  
+  <link href="_static/vendor/fontawesome/6.5.1/css/all.min.css?digest=8d27b9dea8ad943066ae" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.1/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.1/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.1/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=a746c00c" />
+    <link rel="stylesheet" type="text/css" href="_static/plot_directive.css" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=8d27b9dea8ad943066ae" />
+<link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=8d27b9dea8ad943066ae" />
+  <script src="_static/vendor/fontawesome/6.5.1/js/all.min.js?digest=8d27b9dea8ad943066ae"></script>
+
+    <script src="_static/documentation_options.js?v=cd7df0db"></script>
+    <script src="_static/doctools.js?v=888ff710"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'pet_cli.graphical_plots';</script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="9. Image Visualization" href="pet_cli.image_visualization.html" />
+    <link rel="prev" title="7. Parametric Images" href="pet_cli.parametric_images.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="English (US)"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <a id="pst-skip-link" class="skip-link" href="#main-content">Skip to main content</a>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>
+    Back to top
+  </button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__primary"
+          id="__primary"/>
+  <label class="overlay overlay-primary" for="__primary"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__secondary"
+          id="__secondary"/>
+  <label class="overlay overlay-secondary" for="__secondary"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar">
+<div class="bd-header__inner bd-page-width">
+  <label class="sidebar-toggle primary-toggle" for="__primary">
+    <span class="fa-solid fa-bars"></span>
+  </label>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+
+<a class="navbar-brand logo" href="index.html">
+  
+  
+  
+  
+  
+  
+    <p class="title logo__title">PET Processing Module</p>
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav class="navbar-nav">
+  <ul class="bd-navbar-elements navbar-nav">
+    
+                    <li class="nav-item current active">
+                      <a class="nav-link nav-internal" href="modules.html">
+                        Modules
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="cli_ref.html">
+                        CLI Reference
+                      </a>
+                    </li>
+                
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+ <script>
+ document.write(`
+   <button class="btn navbar-btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<script>
+document.write(`
+  <button class="btn btn-sm navbar-btn theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="theme-switch nav-link" data-mode="light"><i class="fa-solid fa-sun fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="dark"><i class="fa-solid fa-moon fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg"></i></span>
+  </button>
+`);
+</script></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+ <script>
+ document.write(`
+   <button class="btn navbar-btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script>
+    </div>
+  
+
+  
+    <label class="sidebar-toggle secondary-toggle" for="__secondary" tabindex="0">
+      <span class="fa-solid fa-outdent"></span>
+    </label>
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          <div class="navbar-item">
+<nav class="navbar-nav">
+  <ul class="bd-navbar-elements navbar-nav">
+    
+                    <li class="nav-item current active">
+                      <a class="nav-link nav-internal" href="modules.html">
+                        Modules
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="cli_ref.html">
+                        CLI Reference
+                      </a>
+                    </li>
+                
+  </ul>
+</nav></div>
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<script>
+document.write(`
+  <button class="btn btn-sm navbar-btn theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="theme-switch nav-link" data-mode="light"><i class="fa-solid fa-sun fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="dark"><i class="fa-solid fa-moon fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg"></i></span>
+  </button>
+`);
+</script></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+<nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="pet_cli.image_io.html">1. Image IO</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pet_cli.tac_interpolation.html">2. TAC Interpolation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pet_cli.tcms_as_convolutions.html">3. TCMs As Convolutions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pet_cli.graphical_analysis.html">4. Graphical Analysis Of TACs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pet_cli.reference_tissue_models.html">5. Reference Tissue Models</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pet_cli.tac_fitting.html">6. TAC Fitting With Tissue Compartment Models</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pet_cli.parametric_images.html">7. Parametric Images</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">8. Graphical Analysis Plots</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pet_cli.image_visualization.html">9. Image Visualization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pet_cli.blood_input.html">10. Interpolation Blood Data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pet_cli.image_operations_4d.html">11. Special Operations on 4D Images</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pet_cli.register.html">12. Tools for Registration of PET to Anatomical and Atlas Space</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pet_cli.motion_corr.html">13. Tools to Motion Correct PET Images</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pet_cli.preproc.html">14. Python Interface for PET Preprocessing Tools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pet_cli.math_lib.html">15. Mathematical Operations Library</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pet_cli.bids_utils.html">16. BIDS File Management Utilities</a></li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+
+
+<nav aria-label="Breadcrumb">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="modules.html" class="nav-link">Modules</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page"><span...</li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="module-pet_cli.graphical_plots">
+<span id="graphical-analysis-plots"></span><h1><span class="section-number">8. </span>Graphical Analysis Plots<a class="headerlink" href="#module-pet_cli.graphical_plots" title="Link to this heading">#</a></h1>
+<p>This module contains the plotting functionalities for the project. It contains various classes that handle different
+types of plots.</p>
+<dl class="simple">
+<dt>Classes defined in this module are:</dt><dd><ul class="simple">
+<li><p><a class="reference internal" href="#pet_cli.graphical_plots.GraphicalAnalysisPlot" title="pet_cli.graphical_plots.GraphicalAnalysisPlot"><code class="xref py py-class docutils literal notranslate"><span class="pre">GraphicalAnalysisPlot</span></code></a>: It handles various parameters for graphical plot analysis. Provides
+functionalities for generating figures, adding plot data, shading, and more.</p></li>
+<li><p><a class="reference internal" href="#pet_cli.graphical_plots.PatlakPlot" title="pet_cli.graphical_plots.PatlakPlot"><code class="xref py py-class docutils literal notranslate"><span class="pre">PatlakPlot</span></code></a>: This class is responsible for plotting functionalities specific to Patlak method. It includes
+methods for calculating indexes, generating labels, and more.</p></li>
+<li><p><a class="reference internal" href="#pet_cli.graphical_plots.LoganPlot" title="pet_cli.graphical_plots.LoganPlot"><code class="xref py py-class docutils literal notranslate"><span class="pre">LoganPlot</span></code></a>: This class handles plotting functionalities for the Logan method. It also includes methods for
+calculating indexes, generating labels, etc.</p></li>
+<li><p><a class="reference internal" href="#pet_cli.graphical_plots.AltLoganPlot" title="pet_cli.graphical_plots.AltLoganPlot"><code class="xref py py-class docutils literal notranslate"><span class="pre">AltLoganPlot</span></code></a>: This class is primarily for enhancing the LoganPlot with additional or alternate features.</p></li>
+<li><p><a class="reference internal" href="#pet_cli.graphical_plots.Plot" title="pet_cli.graphical_plots.Plot"><code class="xref py py-class docutils literal notranslate"><span class="pre">Plot</span></code></a>: A general plot class that handles common plot factors such as output directory, method name, ROI
+TAC paths, etc. It includes utilities for validating file path, directory and more.</p></li>
+</ul>
+</dd>
+</dl>
+<p>Functions and methods in this module use <a class="reference external" href="https://matplotlib.org/stable/index.html#module-matplotlib" title="(in Matplotlib v3.9.0)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">matplotlib</span></code></a> and <a class="reference external" href="https://numpy.org/doc/stable/reference/index.html#module-numpy" title="(in NumPy v1.26)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">numpy</span></code></a> packages for creating and manipulating
+plots.</p>
+<p>Please refer to the documentation of each class for more detailed information.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="pet_cli.graphical_plots.GraphicalAnalysisPlot">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">GraphicalAnalysisPlot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pTAC</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.26)"><span class="pre">ndarray</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">tTAC</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.26)"><span class="pre">ndarray</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">t_thresh_in_mins</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">figObj</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://matplotlib.org/stable/api/_as_gen/matplotlib.figure.Figure.html#matplotlib.figure.Figure" title="(in Matplotlib v3.9.0)"><span class="pre">Figure</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pet_cli.graphical_plots.GraphicalAnalysisPlot" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">ABC</span></code></p>
+<p>This is an abstract base class designed for creating customizable plots for graphical analysis.
+It takes Time-Activity Curves (TACs) as input and creates various plots (x vs. y, fit lines, fit area
+shading plots, and fit points) based on user input. This class also calculates fit parameters for the plotting data
+and determines relevant indices based on given thresholds.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Variables<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>pTAC</strong> (<em>np.ndarray</em>) -- The Input/Plasma TAC, an array containing time points and corresponding activity.</p></li>
+<li><p><strong>tTAC</strong> (<em>np.ndarray</em>) -- The Tissue/Region TAC, an array with time points and corresponding activity.</p></li>
+<li><p><strong>t_thresh_in_mins</strong> (<em>float</em>) -- The threshold time, in minutes, to consider in the analysis. Points are fit after this
+threshold.</p></li>
+<li><p><strong>fig</strong> (<em>plt.Figure</em>) -- A matplotlib Figure object where the plots will be drawn.</p></li>
+<li><p><strong>ax_list</strong> (<em>list</em>) -- A list of matplotlib Axes associated with <cite>fig</cite> where the plots will be drawn.</p></li>
+<li><p><strong>non_zero_idx</strong> (<em>np.ndarray</em>) -- Indexes of non-zero values in appropriate TAC (calculated in specific
+implementations).</p></li>
+<li><p><strong>t_thresh_idx</strong> (<em>int</em>) -- The index at which the time threshold is crossed in the TACs (calculated in specific
+implementations).</p></li>
+<li><p><strong>x</strong> (<em>np.ndarray</em>) -- The &quot;x&quot; valu0es for plotting (calculated in specific implementations).</p></li>
+<li><p><strong>y</strong> (<em>np.ndarray</em>) -- The &quot;y&quot; values for plotting (calculated in specific implementations).</p></li>
+<li><p><strong>fit_params</strong> (<em>dict</em>) -- The parameters fit to the data using least squares. Contains 'slope', 'intercept', and
+'r_squared' (calculated in specific implementations).</p></li>
+</ul>
+</dd>
+</dl>
+<div class="admonition important">
+<p class="admonition-title">Important</p>
+<dl class="simple">
+<dt>This is an abstract class and should be inherited by a concrete class that implements the following methods:</dt><dd><ul class="simple">
+<li><p><a class="reference internal" href="#pet_cli.graphical_plots.GraphicalAnalysisPlot.calculate_valid_indicies_and_x_and_y" title="pet_cli.graphical_plots.GraphicalAnalysisPlot.calculate_valid_indicies_and_x_and_y"><code class="xref py py-func docutils literal notranslate"><span class="pre">calculate_valid_indicies_and_x_and_y</span></code></a></p></li>
+<li><p><a class="reference internal" href="#pet_cli.graphical_plots.GraphicalAnalysisPlot.generate_label_from_fit_params" title="pet_cli.graphical_plots.GraphicalAnalysisPlot.generate_label_from_fit_params"><code class="xref py py-func docutils literal notranslate"><span class="pre">generate_label_from_fit_params</span></code></a></p></li>
+<li><p><a class="reference internal" href="#pet_cli.graphical_plots.GraphicalAnalysisPlot.add_figure_axes_labels_and_legend" title="pet_cli.graphical_plots.GraphicalAnalysisPlot.add_figure_axes_labels_and_legend"><code class="xref py py-func docutils literal notranslate"><span class="pre">add_figure_axes_labels_and_legend</span></code></a></p></li>
+</ul>
+</dd>
+</dl>
+</div>
+<p>Initialize an instance of the GraphicalAnalysisPlot class.</p>
+<p>The instance is initialized with two Time-Activity Curves (TACs), a threshold time, and an optional matplotlib
+Figure. It calculates valid indices (where the denominator is non-zero for the particular analysis), 'x' and 'y'
+values for plotting based on the TACs and the threshold time, and also analyzes the TACs to generate the fits.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>pTAC</strong> (<em>np.ndarray</em>) -- The input Time Activity Curve, an array containing time points and corresponding activity.</p></li>
+<li><p><strong>tTAC</strong> (<em>np.ndarray</em>) -- The Tissue or Region Time Activity Curve, an array with time points and corresponding
+activity.</p></li>
+<li><p><strong>t_thresh_in_mins</strong> (<em>float</em>) -- The threshold time in minutes to consider when performing calculations for the
+plots.</p></li>
+<li><p><strong>figObj</strong> (<em>plt.Figure</em><em>, </em><em>optional</em>) -- An optional matplotlib Figure object. If not provided, a new Figure object is
+created.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>matplotlib error</strong> -- Error handling for the plot generation is managed by matplotlib. Any exceptions thrown
+    during plotting are handled by the <a class="reference external" href="https://matplotlib.org/stable/index.html#module-matplotlib" title="(in Matplotlib v3.9.0)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">matplotlib</span></code></a> internally.</p>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="pet_cli.graphical_plots.GraphicalAnalysisPlot.generate_figure_and_axes">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">generate_figure_and_axes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">figObj</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://matplotlib.org/stable/api/_as_gen/matplotlib.figure.Figure.html#matplotlib.figure.Figure" title="(in Matplotlib v3.9.0)"><span class="pre">Figure</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pet_cli.graphical_plots.GraphicalAnalysisPlot.generate_figure_and_axes" title="Link to this definition">#</a></dt>
+<dd><p>Generate a matplotlib Figure and Axes for plotting.</p>
+<p>A new Figure and Axes are created if no Figure object is provided. If a Figure object is provided, the method
+retrieves the existing axes from the Figure object. In either case, the method returns the Figure and a list of
+its Axes.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>figObj</strong> (<em>plt.Figure</em><em>, </em><em>optional</em>) -- An optional matplotlib Figure object. If not provided, a new Figure object is
+created with 2 subplots arranged in 1 row, a figure size of 8x4, line width of 3.0, and edge color 'k'.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The resulting matplotlib Figure object.
+ax_list (list): A list of Axes objects associated with 'fig'.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>fig (plt.Figure)</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>None</strong> -- </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pet_cli.graphical_plots.GraphicalAnalysisPlot.add_data_plots">
+<span class="sig-name descname"><span class="pre">add_data_plots</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pl_kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pet_cli.graphical_plots.GraphicalAnalysisPlot.add_data_plots" title="Link to this definition">#</a></dt>
+<dd><p>Add data plots to the Axes in the instance's Axes list.</p>
+<p>This method plots the instance's <span class="math notranslate nohighlight">\(x\)</span> and <span class="math notranslate nohighlight">\(y\)</span> values (from the particular analysis) on each Axes in
+the instance's Axes list. The style of the plotted points can be customized by passing a dictionary of keyword
+arguments for <cite>matplotlib.pyplot.plot</cite>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>pl_kwargs</strong> (<em>dict</em><em>, </em><em>optional</em>) -- A dictionary of keyword arguments to be passed to <cite>matplotlib.pyplot.plot</cite> for
+styling the points. If not provided, the points are plotted with <code class="docutils literal notranslate"><span class="pre">linewidth=1</span></code>, <code class="docutils literal notranslate"><span class="pre">alpha=0.9</span></code>,
+<code class="docutils literal notranslate"><span class="pre">markersize=8</span></code>, <code class="docutils literal notranslate"><span class="pre">markerstyle='.'</span></code>, <code class="docutils literal notranslate"><span class="pre">zorder=1</span></code>, and <code class="docutils literal notranslate"><span class="pre">color='black'</span></code>.</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>ValueError</strong> -- If pl_kwargs contains an argument not supported by <code class="docutils literal notranslate"><span class="pre">matplotlib.pyplot.plot</span></code>.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pet_cli.graphical_plots.GraphicalAnalysisPlot.add_shading_plots">
+<span class="sig-name descname"><span class="pre">add_shading_plots</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pl_kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pet_cli.graphical_plots.GraphicalAnalysisPlot.add_shading_plots" title="Link to this definition">#</a></dt>
+<dd><p>Add shaded regions to the Axes in the instance's Axes list.</p>
+<p>This method shades a vertical span on each Axes in the instance's Axes list, from the x-value at the threshold
+index to the last x-value. The style of the shaded region can be customized by passing a dictionary of keyword
+arguments for <a class="reference external" href="https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.axvspan.html#matplotlib.pyplot.axvspan" title="(in Matplotlib v3.9.0)"><code class="xref py py-func docutils literal notranslate"><span class="pre">matplotlib.pyplot.axvspan</span></code></a>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>pl_kwargs</strong> (<em>dict</em><em>, </em><em>optional</em>) -- A dictionary of keyword arguments to be passed to <cite>matplotlib.pyplot.axvspan</cite>
+for styling the shaded region. If not provided, the region is shaded with <code class="docutils literal notranslate"><span class="pre">color='gray'</span></code>,
+<code class="docutils literal notranslate"><span class="pre">alpha=0.2</span></code>, and <code class="docutils literal notranslate"><span class="pre">zorder=0</span></code>.</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>ValueError</strong> -- If pl_kwargs contains an argument not supported by <a class="reference external" href="https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.axvspan.html#matplotlib.pyplot.axvspan" title="(in Matplotlib v3.9.0)"><code class="xref py py-func docutils literal notranslate"><span class="pre">matplotlib.pyplot.axvspan</span></code></a>.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pet_cli.graphical_plots.GraphicalAnalysisPlot.add_fit_points">
+<span class="sig-name descname"><span class="pre">add_fit_points</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pl_kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pet_cli.graphical_plots.GraphicalAnalysisPlot.add_fit_points" title="Link to this definition">#</a></dt>
+<dd><p>Add fit points to the Axes in the instance's Axes list.</p>
+<p>This method plots the instance's <span class="math notranslate nohighlight">\(x\)</span> and <span class="math notranslate nohighlight">\(y\)</span> values that were used in fitting, i.e., the points past
+the threshold index, on each Axes in the instance's Axes list. The style of the plotted points can be customized
+by passing a dictionary of keyword arguments for <a class="reference external" href="https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.plot.html#matplotlib.pyplot.plot" title="(in Matplotlib v3.9.0)"><code class="xref py py-func docutils literal notranslate"><span class="pre">matplotlib.pyplot.plot</span></code></a>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>pl_kwargs</strong> (<em>dict</em><em>, </em><em>optional</em>) -- A dictionary of keyword arguments to be passed to <a class="reference external" href="https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.plot.html#matplotlib.pyplot.plot" title="(in Matplotlib v3.9.0)"><code class="xref py py-func docutils literal notranslate"><span class="pre">matplotlib.pyplot.plot</span></code></a>
+for styling the points. If not provided, the points are plotted as blue circles with <code class="docutils literal notranslate"><span class="pre">alpha=0.9</span></code>,
+<code class="docutils literal notranslate"><span class="pre">markersize=5</span></code>, and <code class="docutils literal notranslate"><span class="pre">zorder=2</span></code>.</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>ValueError</strong> -- If pl_kwargs contains an argument not supported by <a class="reference external" href="https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.plot.html#matplotlib.pyplot.plot" title="(in Matplotlib v3.9.0)"><code class="xref py py-func docutils literal notranslate"><span class="pre">matplotlib.pyplot.plot</span></code></a>.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pet_cli.graphical_plots.GraphicalAnalysisPlot.add_fit_lines">
+<span class="sig-name descname"><span class="pre">add_fit_lines</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pl_kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pet_cli.graphical_plots.GraphicalAnalysisPlot.add_fit_lines" title="Link to this definition">#</a></dt>
+<dd><p>Add line of best fit to the Axes in the instance's Axes list.</p>
+<p>This method plots the line of best fit based on the instance's fit parameters (slope and intercept) on each
+Axes in the instance's Axes list. The style of the line can be customized by passing a dictionary of keyword
+arguments for <a class="reference external" href="https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.plot.html#matplotlib.pyplot.plot" title="(in Matplotlib v3.9.0)"><code class="xref py py-func docutils literal notranslate"><span class="pre">matplotlib.pyplot.plot</span></code></a>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>pl_kwargs</strong> (<em>dict</em><em>, </em><em>optional</em>) -- A dictionary of keyword arguments to be passed to <a class="reference external" href="https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.plot.html#matplotlib.pyplot.plot" title="(in Matplotlib v3.9.0)"><code class="xref py py-func docutils literal notranslate"><span class="pre">matplotlib.pyplot.plot</span></code></a>
+for styling of the line. If not provided, the line is plotted as an orange solid line with line
+<code class="docutils literal notranslate"><span class="pre">linewidth=2.5</span></code>, <code class="docutils literal notranslate"><span class="pre">zorder=3</span></code>, and labelled using the <a class="reference internal" href="#pet_cli.graphical_plots.GraphicalAnalysisPlot.generate_label_from_fit_params" title="pet_cli.graphical_plots.GraphicalAnalysisPlot.generate_label_from_fit_params"><code class="xref py py-meth docutils literal notranslate"><span class="pre">generate_label_from_fit_params</span></code></a> method.</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>ValueError</strong> -- If pl_kwargs contains an argument not supported by <a class="reference external" href="https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.plot.html#matplotlib.pyplot.plot" title="(in Matplotlib v3.9.0)"><code class="xref py py-func docutils literal notranslate"><span class="pre">matplotlib.pyplot.plot</span></code></a>.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pet_cli.graphical_plots.GraphicalAnalysisPlot.add_plots">
+<span class="sig-name descname"><span class="pre">add_plots</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">plot_data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plot_fit_points</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plot_fit_lines</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fit_shading</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data_kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">points_kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">line_kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shading_kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pet_cli.graphical_plots.GraphicalAnalysisPlot.add_plots" title="Link to this definition">#</a></dt>
+<dd><p>Generate and add various types of plots to the Axes in the instance's Axes list.</p>
+<p>Depending on the boolean values of <code class="docutils literal notranslate"><span class="pre">plot_data</span></code>, <code class="docutils literal notranslate"><span class="pre">plot_fit_points</span></code>, <code class="docutils literal notranslate"><span class="pre">plot_fit_lines</span></code>, and <code class="docutils literal notranslate"><span class="pre">fit_shading</span></code>,
+this method determines which types of plots to generate and include. This includes the data points plot,
+fitting points, line of best fit, and shading between the line of best fit and the x-axis.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>plot_data</strong> (<em>bool</em><em>, </em><em>optional</em>) -- Determines if the analysis <span class="math notranslate nohighlight">\(x\)</span> and <span class="math notranslate nohighlight">\(y\)</span> points should be plotted.</p></li>
+<li><p><strong>True.</strong> (<em>Defaults to</em>) -- </p></li>
+<li><p><strong>plot_fit_points</strong> (<em>bool</em><em>, </em><em>optional</em>) -- Determines if the fit points should be plotted. Defaults to True.</p></li>
+<li><p><strong>plot_fit_lines</strong> (<em>bool</em><em>, </em><em>optional</em>) -- Determines if the line of best fit should be plotted. Defaults to True.</p></li>
+<li><p><strong>fit_shading</strong> (<em>bool</em><em>, </em><em>optional</em>) -- Determines if shading should be applied to the plots. Defaults to True.</p></li>
+<li><p><strong>data_kwargs</strong> (<em>dict</em><em>, </em><em>optional</em>) -- Keyword arguments for styling the data plot.</p></li>
+<li><p><strong>points_kwargs</strong> (<em>dict</em><em>, </em><em>optional</em>) -- Keyword arguments for styling the fit points plot.</p></li>
+<li><p><strong>line_kwargs</strong> (<em>dict</em><em>, </em><em>optional</em>) -- Keyword arguments for styling the line of best fit.</p></li>
+<li><p><strong>shading_kwargs</strong> (<em>dict</em><em>, </em><em>optional</em>) -- Keyword arguments for styling the shading.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>ValueError</strong> -- If any of the keyword argument dictionaries contain unsupported arguments.</p>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="#pet_cli.graphical_plots.GraphicalAnalysisPlot.add_data_plots" title="pet_cli.graphical_plots.GraphicalAnalysisPlot.add_data_plots"><code class="xref py py-meth docutils literal notranslate"><span class="pre">add_data_plots</span></code></a>: Method used to plot the <span class="math notranslate nohighlight">\(x\)</span> and <span class="math notranslate nohighlight">\(y\)</span> data.</p></li>
+<li><p><a class="reference internal" href="#pet_cli.graphical_plots.GraphicalAnalysisPlot.add_fit_points" title="pet_cli.graphical_plots.GraphicalAnalysisPlot.add_fit_points"><code class="xref py py-meth docutils literal notranslate"><span class="pre">add_fit_points</span></code></a>: Method used to plot the fit points.</p></li>
+<li><p><a class="reference internal" href="#pet_cli.graphical_plots.GraphicalAnalysisPlot.add_fit_lines" title="pet_cli.graphical_plots.GraphicalAnalysisPlot.add_fit_lines"><code class="xref py py-meth docutils literal notranslate"><span class="pre">add_fit_lines</span></code></a>: Method used to plot the line of best fit.</p></li>
+<li><p><a class="reference internal" href="#pet_cli.graphical_plots.GraphicalAnalysisPlot.add_shading_plots" title="pet_cli.graphical_plots.GraphicalAnalysisPlot.add_shading_plots"><code class="xref py py-meth docutils literal notranslate"><span class="pre">add_shading_plots</span></code></a>: Method used to add shading to the plots.</p></li>
+</ul>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pet_cli.graphical_plots.GraphicalAnalysisPlot.generate_figure">
+<span class="sig-name descname"><span class="pre">generate_figure</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">plot_data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plot_fit_points</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plot_fit_lines</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fit_shading</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data_kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">points_kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">line_kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shading_kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pet_cli.graphical_plots.GraphicalAnalysisPlot.generate_figure" title="Link to this definition">#</a></dt>
+<dd><p>Generates the complete figure for graphical analysis.</p>
+<p>This function is the preferred way for a user to interact with this class. It sets up and adds the desired plots
+to the figure, adds the labels and legend, and sets the title and scale for the plots. By default, we generate
+a figure where each panel has the analysis <span class="math notranslate nohighlight">\(x\)</span> and <span class="math notranslate nohighlight">\(y\)</span> data, the points used for the fitting, a
+shading over the region for the fit, and the fit line.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>plot_data</strong> (<em>bool</em><em>, </em><em>optional</em>) -- Determines if the <span class="math notranslate nohighlight">\(x\)</span> and <span class="math notranslate nohighlight">\(y\)</span> data points should be plotted.</p></li>
+<li><p><strong>True.</strong> (<em>Defaults to</em>) -- </p></li>
+<li><p><strong>plot_fit_points</strong> (<em>bool</em><em>, </em><em>optional</em>) -- Determines if the fit points should be plotted. Defaults to True.</p></li>
+<li><p><strong>plot_fit_lines</strong> (<em>bool</em><em>, </em><em>optional</em>) -- Determines if the line of best fit should be plotted. Defaults to True.</p></li>
+<li><p><strong>fit_shading</strong> (<em>bool</em><em>, </em><em>optional</em>) -- Determines if shading should be applied to the plots. Defaults to True.</p></li>
+<li><p><strong>data_kwargs</strong> (<em>dict</em><em>, </em><em>optional</em>) -- Keyword arguments for styling the data plot.</p></li>
+<li><p><strong>points_kwargs</strong> (<em>dict</em><em>, </em><em>optional</em>) -- Keyword arguments for styling the fit points plot.</p></li>
+<li><p><strong>line_kwargs</strong> (<em>dict</em><em>, </em><em>optional</em>) -- Keyword arguments for styling the line of best fit.</p></li>
+<li><p><strong>shading_kwargs</strong> (<em>dict</em><em>, </em><em>optional</em>) -- Keyword arguments for styling the shading.</p></li>
+</ul>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="#pet_cli.graphical_plots.GraphicalAnalysisPlot.add_plots" title="pet_cli.graphical_plots.GraphicalAnalysisPlot.add_plots"><code class="xref py py-func docutils literal notranslate"><span class="pre">add_plots</span></code></a>: Composite function that adds different types of plots.</p></li>
+<li><p><a class="reference internal" href="#pet_cli.graphical_plots.GraphicalAnalysisPlot.add_figure_axes_labels_and_legend" title="pet_cli.graphical_plots.GraphicalAnalysisPlot.add_figure_axes_labels_and_legend"><code class="xref py py-func docutils literal notranslate"><span class="pre">add_figure_axes_labels_and_legend</span></code></a>: Adds labels and a legend to the figure.
+(To be implemented in a specific class)</p></li>
+</ul>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pet_cli.graphical_plots.GraphicalAnalysisPlot.calculate_fit_params">
+<span class="sig-name descname"><span class="pre">calculate_fit_params</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pet_cli.graphical_plots.GraphicalAnalysisPlot.calculate_fit_params" title="Link to this definition">#</a></dt>
+<dd><p>Calculates the parameters (slope, intercept, r_squared) for line fitting.</p>
+<p>This function fits a line to the <span class="math notranslate nohighlight">\(x\)</span> and <span class="math notranslate nohighlight">\(y\)</span> values that are generated, beyond the provided threshold.
+The fit line is computed using Least Square fitting with R-squared method.</p>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="#pet_cli.graphical_plots.GraphicalAnalysisPlot.calculate_valid_indicies_and_x_and_y" title="pet_cli.graphical_plots.GraphicalAnalysisPlot.calculate_valid_indicies_and_x_and_y"><code class="xref py py-func docutils literal notranslate"><span class="pre">calculate_valid_indicies_and_x_and_y</span></code></a>: Method used to generate the x and y values.</p></li>
+<li><p><a class="reference internal" href="pet_cli.graphical_analysis.html#pet_cli.graphical_analysis.fit_line_to_data_using_lls_with_rsquared" title="pet_cli.graphical_analysis.fit_line_to_data_using_lls_with_rsquared"><code class="xref py py-func docutils literal notranslate"><span class="pre">pet_cli.graphical_analysis.fit_line_to_data_using_lls_with_rsquared</span></code></a>: Method used to fit a line to
+data points using Least Square fitting with R-squared value.</p></li>
+</ul>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pet_cli.graphical_plots.GraphicalAnalysisPlot.calculate_valid_indicies_and_x_and_y">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">calculate_valid_indicies_and_x_and_y</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#pet_cli.graphical_plots.GraphicalAnalysisPlot.calculate_valid_indicies_and_x_and_y" title="Link to this definition">#</a></dt>
+<dd><p>Abstract method for calculating the <span class="math notranslate nohighlight">\(x\)</span> and <span class="math notranslate nohighlight">\(y\)</span> values given a particular analysis in a concrete
+class, valid indices where the denominator is 0, and the index corresponding to the provided threshold.</p>
+<p>This is a two-fold method:
+1. Calculates valid x and y values derived from the analysis where each concrete class represents a different
+method. Valid points are those where the denominator (which varies by analysis type) is non-zero.
+2. Saves the indices of the non-zero valid values and the indices that correspond to the given t_thresh_in_mins.</p>
+<div class="admonition important">
+<p class="admonition-title">Important</p>
+<p>This abstract method must be implemented in each subclass representing a different analysis method.</p>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The implementation of this function in subclasses MUST calculate and assign values to <code class="docutils literal notranslate"><span class="pre">x</span></code>, <code class="docutils literal notranslate"><span class="pre">y</span></code>,
+<code class="docutils literal notranslate"><span class="pre">t_thresh_idx</span></code>, and <code class="docutils literal notranslate"><span class="pre">non_zero_idx</span></code> attributes.</p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>NotImplementedError</strong> -- This method needs to be implemented in a subclass.</p>
+</dd>
+</dl>
+<dl class="simple">
+<dt>Example Implementation:</dt><dd><p><a class="reference internal" href="#pet_cli.graphical_plots.PatlakPlot.calculate_valid_indicies_and_x_and_y" title="pet_cli.graphical_plots.PatlakPlot.calculate_valid_indicies_and_x_and_y"><code class="xref py py-meth docutils literal notranslate"><span class="pre">PatlakPlot.calculate_valid_indicies_and_x_and_y</span></code></a>: This class provides an example implementation of
+this method in a concrete subclass.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pet_cli.graphical_plots.GraphicalAnalysisPlot.generate_label_from_fit_params">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">generate_label_from_fit_params</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#pet_cli.graphical_plots.GraphicalAnalysisPlot.generate_label_from_fit_params" title="Link to this definition">#</a></dt>
+<dd><p>Abstract method to generate a label string from fitting parameters.</p>
+<p>This function reads the fitting parameters 'slope', 'intercept', and 'r_squared' from the class attribute
+'fit_params', and formats them into a string that can be used as a label on plots or reports.</p>
+<div class="admonition important">
+<p class="admonition-title">Important</p>
+<p>This abstract method must be implemented in each subclass representing a different analysis method.</p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>NotImplementedError</strong> -- This method needs to be implemented in a subclass.</p>
+</dd>
+</dl>
+<dl class="simple">
+<dt>Example Implementation:</dt><dd><p><a class="reference internal" href="#pet_cli.graphical_plots.PatlakPlot.generate_label_from_fit_params" title="pet_cli.graphical_plots.PatlakPlot.generate_label_from_fit_params"><code class="xref py py-meth docutils literal notranslate"><span class="pre">PatlakPlot.generate_label_from_fit_params</span></code></a>: This method provides an example implementation of this
+abstract method in a concrete subclass. Similarly, <a class="reference internal" href="#pet_cli.graphical_plots.LoganPlot.generate_label_from_fit_params" title="pet_cli.graphical_plots.LoganPlot.generate_label_from_fit_params"><code class="xref py py-meth docutils literal notranslate"><span class="pre">LoganPlot.generate_label_from_fit_params</span></code></a>.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pet_cli.graphical_plots.GraphicalAnalysisPlot.add_figure_axes_labels_and_legend">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">add_figure_axes_labels_and_legend</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pet_cli.graphical_plots.GraphicalAnalysisPlot.add_figure_axes_labels_and_legend" title="Link to this definition">#</a></dt>
+<dd><p>Abstract method for adding analysis specific titles, axes labels and a legend to the figure.</p>
+<div class="admonition important">
+<p class="admonition-title">Important</p>
+<p>This abstract method must be implemented in each subclass representing a different analysis method.</p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>NotImplementedError</strong> -- This method must be implemented in each subclass.</p>
+</dd>
+</dl>
+<dl class="simple">
+<dt>Example Implementation:</dt><dd><p>For an example of implementing this method, see <a class="reference internal" href="#pet_cli.graphical_plots.PatlakPlot.add_figure_axes_labels_and_legend" title="pet_cli.graphical_plots.PatlakPlot.add_figure_axes_labels_and_legend"><code class="xref py py-meth docutils literal notranslate"><span class="pre">PatlakPlot.add_figure_axes_labels_and_legend</span></code></a>,
+or <a class="reference internal" href="#pet_cli.graphical_plots.LoganPlot.add_figure_axes_labels_and_legend" title="pet_cli.graphical_plots.LoganPlot.add_figure_axes_labels_and_legend"><code class="xref py py-meth docutils literal notranslate"><span class="pre">LoganPlot.add_figure_axes_labels_and_legend</span></code></a>.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="pet_cli.graphical_plots.PatlakPlot">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">PatlakPlot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pTAC</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.26)"><span class="pre">ndarray</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">tTAC</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.26)"><span class="pre">ndarray</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">t_thresh_in_mins</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">figObj</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://matplotlib.org/stable/api/_as_gen/matplotlib.figure.Figure.html#matplotlib.figure.Figure" title="(in Matplotlib v3.9.0)"><span class="pre">Figure</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pet_cli.graphical_plots.PatlakPlot" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#pet_cli.graphical_plots.GraphicalAnalysisPlot" title="pet_cli.graphical_plots.GraphicalAnalysisPlot"><code class="xref py py-class docutils literal notranslate"><span class="pre">GraphicalAnalysisPlot</span></code></a></p>
+<p>This class handles generation of Patlak plots for PET analysis.</p>
+<p>The <a class="reference internal" href="#pet_cli.graphical_plots.PatlakPlot" title="pet_cli.graphical_plots.PatlakPlot"><code class="xref py py-class docutils literal notranslate"><span class="pre">PatlakPlot</span></code></a> class is designed to process PET data and display it in the form of Patlak plots. The class
+handles data processing including computation of valid indices and calculation of plot-specific parameters, setting
+of plot labels and legends, as well as the actual plotting of data.</p>
+<p>The processing steps involve computations such as handling of non-zero indices in the plasma time-activity curve
+(pTAC), calculation of x and y coordinates for the Patlak plot, and generation of plot labeling information.</p>
+<p>The class also provides a capability to add labels, legends and title to the figure  to present the data in a
+meaningful way.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The class inherits from the <a class="reference internal" href="#pet_cli.graphical_plots.GraphicalAnalysisPlot" title="pet_cli.graphical_plots.GraphicalAnalysisPlot"><code class="xref py py-class docutils literal notranslate"><span class="pre">GraphicalAnalysisPlot</span></code></a> abstract base class.</p>
+</div>
+<p class="rubric">Example</p>
+<p>In the proceeding examples, <code class="docutils literal notranslate"><span class="pre">pTAC</span></code> represent the plasma TAC (or input TAC) and <code class="docutils literal notranslate"><span class="pre">tTAC</span></code> represents the tissue TAC.</p>
+<p>For the quickest way to generate the Patlak Plot, we just instantiate the class and run the <code class="xref py py-meth docutils literal notranslate"><span class="pre">generate_figure</span></code>
+method. This will generate 2 plots in a row. The first one having a linear-linear scale, and the second one
+having a log-log scale.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">pet_cli.graphical_plots</span> <span class="kn">import</span> <span class="n">PatlakPlot</span>
+<span class="n">patlak_plot</span> <span class="o">=</span> <span class="n">PatlakPlot</span><span class="p">(</span><span class="n">tTAC</span><span class="o">=</span><span class="n">tTAC</span><span class="p">,</span> <span class="n">pTAC</span><span class="o">=</span><span class="n">pTAC</span><span class="p">,</span> <span class="n">t_thresh_in_mins</span><span class="o">=</span><span class="mf">45.0</span><span class="p">)</span>
+<span class="n">patlak_plot</span><span class="o">.</span><span class="n">generate_figure</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span> <span class="c1"># Or use plt.savefig() to save the figure.</span>
+</pre></div>
+</div>
+<p>If the default styling needs to be changed, we can pass keyword arguments to each of the plotting methods:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">pet_cli.graphical_plots</span> <span class="kn">import</span> <span class="n">PatlakPlot</span>
+<span class="n">patlak_plot</span> <span class="o">=</span> <span class="n">PatlakPlot</span><span class="p">(</span><span class="n">tTAC</span><span class="o">=</span><span class="n">tTAC</span><span class="p">,</span> <span class="n">pTAC</span><span class="o">=</span><span class="n">pTAC</span><span class="p">,</span> <span class="n">t_thresh_in_mins</span><span class="o">=</span><span class="mf">45.0</span><span class="p">)</span>
+<span class="n">patlak_plot</span><span class="o">.</span><span class="n">generate_figure</span><span class="p">(</span><span class="n">line_kwargs</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">lw</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.95</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;red&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="n">patlak_plot</span><span class="o">.</span><span class="n">generate_label_from_fit_params</span><span class="p">()),</span>
+                            <span class="n">shading_kwargs</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">color</span><span class="o">=</span><span class="s1">&#39;palegreen&#39;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.2</span><span class="p">),</span>
+                            <span class="n">data_kwargs</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">alpha</span><span class="o">=</span><span class="mf">0.85</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;k&#39;</span><span class="p">,</span> <span class="n">marker</span><span class="o">=</span><span class="s1">&#39;.&#39;</span><span class="p">))</span>
+</pre></div>
+</div>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="#pet_cli.graphical_plots.LoganPlot" title="pet_cli.graphical_plots.LoganPlot"><code class="xref py py-class docutils literal notranslate"><span class="pre">LoganPlot</span></code></a></p></li>
+<li><p><a class="reference internal" href="#pet_cli.graphical_plots.AltLoganPlot" title="pet_cli.graphical_plots.AltLoganPlot"><code class="xref py py-class docutils literal notranslate"><span class="pre">AltLoganPlot</span></code></a></p></li>
+</ul>
+</div>
+<p>Initialize an instance of the GraphicalAnalysisPlot class.</p>
+<p>The instance is initialized with two Time-Activity Curves (TACs), a threshold time, and an optional matplotlib
+Figure. It calculates valid indices (where the denominator is non-zero for the particular analysis), 'x' and 'y'
+values for plotting based on the TACs and the threshold time, and also analyzes the TACs to generate the fits.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>pTAC</strong> (<em>np.ndarray</em>) -- The input Time Activity Curve, an array containing time points and corresponding activity.</p></li>
+<li><p><strong>tTAC</strong> (<em>np.ndarray</em>) -- The Tissue or Region Time Activity Curve, an array with time points and corresponding
+activity.</p></li>
+<li><p><strong>t_thresh_in_mins</strong> (<em>float</em>) -- The threshold time in minutes to consider when performing calculations for the
+plots.</p></li>
+<li><p><strong>figObj</strong> (<em>plt.Figure</em><em>, </em><em>optional</em>) -- An optional matplotlib Figure object. If not provided, a new Figure object is
+created.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>matplotlib error</strong> -- Error handling for the plot generation is managed by matplotlib. Any exceptions thrown
+    during plotting are handled by the <a class="reference external" href="https://matplotlib.org/stable/index.html#module-matplotlib" title="(in Matplotlib v3.9.0)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">matplotlib</span></code></a> internally.</p>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="pet_cli.graphical_plots.PatlakPlot.calculate_valid_indicies_and_x_and_y">
+<span class="sig-name descname"><span class="pre">calculate_valid_indicies_and_x_and_y</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#pet_cli.graphical_plots.PatlakPlot.calculate_valid_indicies_and_x_and_y" title="Link to this definition">#</a></dt>
+<dd><p>Calculates the valid indices along with <span class="math notranslate nohighlight">\(x\)</span> and <span class="math notranslate nohighlight">\(y\)</span> for Patlak plot analysis.</p>
+<p>This method performs the computation for the non-zero indices in the provided plasma time-activity curve (pTAC).
+It further calculates the values of <span class="math notranslate nohighlight">\(x\)</span> and <span class="math notranslate nohighlight">\(y\)</span> used in Patlak analysis based on these non-zero
+indices. This is done to avoid singularities caused by zero denominators. The Patlak <span class="math notranslate nohighlight">\(x\)</span> and <span class="math notranslate nohighlight">\(y\)</span>
+values are:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}y&amp;= \frac{R(t)}{C_\mathrm{P}(t)}\\
+x&amp;= \frac{\int_{0}^{t}C_\mathrm{P}(s)\mathrm{d}s}{C_\mathrm{P}(t)},\end{split}\]</div>
+<p>where <span class="math notranslate nohighlight">\(C_\mathrm{P}\)</span> is the input function and <span class="math notranslate nohighlight">\(R(t)\)</span> is PET activity in the particular region of
+interest.</p>
+<p>The method updates the instance variables <code class="docutils literal notranslate"><span class="pre">x</span></code>, <code class="docutils literal notranslate"><span class="pre">y</span></code>, <code class="docutils literal notranslate"><span class="pre">non_zero_idx</span></code>, and <code class="docutils literal notranslate"><span class="pre">t_thresh_idx</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pet_cli.graphical_plots.PatlakPlot.generate_label_from_fit_params">
+<span class="sig-name descname"><span class="pre">generate_label_from_fit_params</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#pet_cli.graphical_plots.PatlakPlot.generate_label_from_fit_params" title="Link to this definition">#</a></dt>
+<dd><p>Creates a label string from the fit parameters for graphical presentation.</p>
+<p>This method retrieves slope, intercept, and R-squared values from the instance's
+fit parameters, and then formats these values into a string that is LaTeX compatible
+for later rendering inside a plot's label. For example:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}K_{1}&amp;=0.1\\
+V_{\mathrm{T}}&amp;=0.2\\
+R^{2}&amp;=0.95\end{split}\]</div>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The created label. Each parameter is formatted as a separate line.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pet_cli.graphical_plots.PatlakPlot.add_figure_axes_labels_and_legend">
+<span class="sig-name descname"><span class="pre">add_figure_axes_labels_and_legend</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pet_cli.graphical_plots.PatlakPlot.add_figure_axes_labels_and_legend" title="Link to this definition">#</a></dt>
+<dd><p>Adds labels and a legend to the axes of the figure.</p>
+<p>This method sets the <cite>x_label</cite> and <cite>y_label</cite> for all axes on the figure. It also adds a legend to the figure,
+which is anchored to the upper left corner. Lastly, we also give a title to the figure: Patlak Plots.</p>
+<p>The labels are set to:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{align*}
+y&amp;= \frac{R(t)}{C_\mathrm{P}(t)}\\
+x&amp;= \frac{\int_{0}^{t}C_\mathrm{P}(s)\mathrm{d}s}{C_\mathrm{P}(t)},
+\end{align*}\end{split}\]</div>
+<p>where <span class="math notranslate nohighlight">\(C_\mathrm{P}\)</span> is the input function and <span class="math notranslate nohighlight">\(R(t)\)</span> is PET activity in the particular region of
+interest.</p>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="#pet_cli.graphical_plots.PatlakPlot.calculate_valid_indicies_and_x_and_y" title="pet_cli.graphical_plots.PatlakPlot.calculate_valid_indicies_and_x_and_y"><code class="xref py py-meth docutils literal notranslate"><span class="pre">calculate_valid_indicies_and_x_and_y</span></code></a> for the calculation implementation.</p></li>
+</ul>
+</div>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="pet_cli.graphical_plots.LoganPlot">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">LoganPlot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pTAC</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.26)"><span class="pre">ndarray</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">tTAC</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.26)"><span class="pre">ndarray</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">t_thresh_in_mins</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">figObj</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://matplotlib.org/stable/api/_as_gen/matplotlib.figure.Figure.html#matplotlib.figure.Figure" title="(in Matplotlib v3.9.0)"><span class="pre">Figure</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pet_cli.graphical_plots.LoganPlot" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#pet_cli.graphical_plots.GraphicalAnalysisPlot" title="pet_cli.graphical_plots.GraphicalAnalysisPlot"><code class="xref py py-class docutils literal notranslate"><span class="pre">GraphicalAnalysisPlot</span></code></a></p>
+<p>This class handles generation of Logan plots for PET analysis.</p>
+<p>The <a class="reference internal" href="#pet_cli.graphical_plots.LoganPlot" title="pet_cli.graphical_plots.LoganPlot"><code class="xref py py-class docutils literal notranslate"><span class="pre">LoganPlot</span></code></a> class is designed to process PET data and display it in the form of Logan plots.
+The class handles data processing including computation of valid indices and calculation of plot-specific
+parameters, setting of plot labels and legends, as well as the actual plotting of data.</p>
+<p>The processing steps involve computations such as handling of non-zero indices in the plasma time-activity curve
+(pTAC), calculation of x and y coordinates for the Logan plot, and generation of plot labeling information.</p>
+<p>The class also provides a capability to add labels, legends and title to the figure to present the data in a
+meaningful way.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The class inherits from the <a class="reference internal" href="#pet_cli.graphical_plots.GraphicalAnalysisPlot" title="pet_cli.graphical_plots.GraphicalAnalysisPlot"><code class="xref py py-class docutils literal notranslate"><span class="pre">GraphicalAnalysisPlot</span></code></a> abstract base class.</p>
+</div>
+<p class="rubric">Example</p>
+<p>In the proceeding examples, <code class="docutils literal notranslate"><span class="pre">pTAC</span></code> represent the plasma TAC (or input TAC) and <code class="docutils literal notranslate"><span class="pre">tTAC</span></code> represents the tissue
+TAC.</p>
+<p>For the quickest way to generate the Logan Plot, we just instantiate the class and run the <code class="xref py py-meth docutils literal notranslate"><span class="pre">generate_figure</span></code>
+method. This will generate 2 plots in a row. The first one having a linear-linear scale, and the second one
+having a log-log scale.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">pet_cli.graphical_plots</span> <span class="kn">import</span> <span class="n">LoganPlot</span>
+<span class="n">logan_plot</span> <span class="o">=</span> <span class="n">LoganPlot</span><span class="p">(</span><span class="n">tTAC</span><span class="o">=</span><span class="n">tTAC</span><span class="p">,</span> <span class="n">pTAC</span><span class="o">=</span><span class="n">pTAC</span><span class="p">,</span> <span class="n">t_thresh_in_mins</span><span class="o">=</span><span class="mf">45.0</span><span class="p">)</span>
+<span class="n">logan_plot</span><span class="o">.</span><span class="n">generate_figure</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span> <span class="c1"># Or use plt.savefig() to save the figure.</span>
+</pre></div>
+</div>
+<p>If the default styling needs to be changed, we can pass keyword arguments to each of the plotting methods:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">pet_cli.graphical_plots</span> <span class="kn">import</span> <span class="n">LoganPlot</span>
+<span class="n">logan_plot</span> <span class="o">=</span> <span class="n">LoganPlot</span><span class="p">(</span><span class="n">tTAC</span><span class="o">=</span><span class="n">tTAC</span><span class="p">,</span> <span class="n">pTAC</span><span class="o">=</span><span class="n">pTAC</span><span class="p">,</span> <span class="n">t_thresh_in_mins</span><span class="o">=</span><span class="mf">45.0</span><span class="p">)</span>
+<span class="n">logan_plot</span><span class="o">.</span><span class="n">generate_figure</span><span class="p">(</span><span class="n">line_kwargs</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">lw</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.95</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;red&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="n">patlak_plot</span><span class="o">.</span><span class="n">generate_label_from_fit_params</span><span class="p">()),</span>
+                            <span class="n">shading_kwargs</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">color</span><span class="o">=</span><span class="s1">&#39;palegreen&#39;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.2</span><span class="p">),</span>
+                            <span class="n">data_kwargs</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">alpha</span><span class="o">=</span><span class="mf">0.85</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;k&#39;</span><span class="p">,</span> <span class="n">marker</span><span class="o">=</span><span class="s1">&#39;.&#39;</span><span class="p">))</span>
+</pre></div>
+</div>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="#pet_cli.graphical_plots.PatlakPlot" title="pet_cli.graphical_plots.PatlakPlot"><code class="xref py py-class docutils literal notranslate"><span class="pre">PatlakPlot</span></code></a></p></li>
+<li><p><a class="reference internal" href="#pet_cli.graphical_plots.AltLoganPlot" title="pet_cli.graphical_plots.AltLoganPlot"><code class="xref py py-class docutils literal notranslate"><span class="pre">AltLoganPlot</span></code></a></p></li>
+</ul>
+</div>
+<p>Initialize an instance of the GraphicalAnalysisPlot class.</p>
+<p>The instance is initialized with two Time-Activity Curves (TACs), a threshold time, and an optional matplotlib
+Figure. It calculates valid indices (where the denominator is non-zero for the particular analysis), 'x' and 'y'
+values for plotting based on the TACs and the threshold time, and also analyzes the TACs to generate the fits.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>pTAC</strong> (<em>np.ndarray</em>) -- The input Time Activity Curve, an array containing time points and corresponding activity.</p></li>
+<li><p><strong>tTAC</strong> (<em>np.ndarray</em>) -- The Tissue or Region Time Activity Curve, an array with time points and corresponding
+activity.</p></li>
+<li><p><strong>t_thresh_in_mins</strong> (<em>float</em>) -- The threshold time in minutes to consider when performing calculations for the
+plots.</p></li>
+<li><p><strong>figObj</strong> (<em>plt.Figure</em><em>, </em><em>optional</em>) -- An optional matplotlib Figure object. If not provided, a new Figure object is
+created.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>matplotlib error</strong> -- Error handling for the plot generation is managed by matplotlib. Any exceptions thrown
+    during plotting are handled by the <a class="reference external" href="https://matplotlib.org/stable/index.html#module-matplotlib" title="(in Matplotlib v3.9.0)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">matplotlib</span></code></a> internally.</p>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="pet_cli.graphical_plots.LoganPlot.calculate_valid_indicies_and_x_and_y">
+<span class="sig-name descname"><span class="pre">calculate_valid_indicies_and_x_and_y</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#pet_cli.graphical_plots.LoganPlot.calculate_valid_indicies_and_x_and_y" title="Link to this definition">#</a></dt>
+<dd><p>Calculates the valid indices along with <span class="math notranslate nohighlight">\(x\)</span> and <span class="math notranslate nohighlight">\(y\)</span> for Logan plot analysis.</p>
+<p>This method performs the computation for the non-zero indices in the provided region time-activity curve (tTAC).
+It further calculates the values of <span class="math notranslate nohighlight">\(x\)</span> and <span class="math notranslate nohighlight">\(y\)</span> used in Logan analysis based on these non-zero
+indices. This is done to avoid singularities caused by zero denominators. The Logan <span class="math notranslate nohighlight">\(x\)</span> and <span class="math notranslate nohighlight">\(y\)</span>
+values are:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}y&amp;= \frac{\int_{0}^{t}R(s)\mathrm{d}s}{R(t)}\\
+x&amp;= \frac{\int_{0}^{t}C_\mathrm{P}(s)\mathrm{d}s}{R(t)},\end{split}\]</div>
+<p>where <span class="math notranslate nohighlight">\(C_\mathrm{P}\)</span> is the input function and <span class="math notranslate nohighlight">\(R(t)\)</span> is PET activity in the particular region of
+interest.</p>
+<p>The method updates the instance variables <code class="docutils literal notranslate"><span class="pre">x</span></code>, <code class="docutils literal notranslate"><span class="pre">y</span></code>, <code class="docutils literal notranslate"><span class="pre">non_zero_idx</span></code>, and <code class="docutils literal notranslate"><span class="pre">t_thresh_idx</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pet_cli.graphical_plots.LoganPlot.generate_label_from_fit_params">
+<span class="sig-name descname"><span class="pre">generate_label_from_fit_params</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#pet_cli.graphical_plots.LoganPlot.generate_label_from_fit_params" title="Link to this definition">#</a></dt>
+<dd><p>Creates a label string from the fit parameters for graphical presentation.</p>
+<p>This method retrieves slope, intercept, and R-squared values from the instance's fit parameters, and then
+formats these values into a string that is LaTeX compatible for later rendering inside a plot's label.
+For example:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}V_\mathrm{T}&amp;=0.1\\
+b&amp;=0.2\\
+R^{2}&amp;=0.95\end{split}\]</div>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The created label. Each parameter is formatted as a separate line.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pet_cli.graphical_plots.LoganPlot.add_figure_axes_labels_and_legend">
+<span class="sig-name descname"><span class="pre">add_figure_axes_labels_and_legend</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pet_cli.graphical_plots.LoganPlot.add_figure_axes_labels_and_legend" title="Link to this definition">#</a></dt>
+<dd><p>Adds labels and a legend to the axes of the figure.</p>
+<p>This method sets the <cite>x_label</cite> and <cite>y_label</cite> for all axes on the figure. It also adds a legend to the figure,
+which is anchored to the upper left corner. Lastly, we also give a title to the figure: Logan Plots.</p>
+<p>The labels are set to:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}y&amp;= \frac{\int_{0}^{t}R(s)\mathrm{d}s}{R(t)}\\
+x&amp;= \frac{\int_{0}^{t}C_\mathrm{P}(s)\mathrm{d}s}{R(t)},\end{split}\]</div>
+<p>where <span class="math notranslate nohighlight">\(C_\mathrm{P}\)</span> is the input function and <span class="math notranslate nohighlight">\(R(t)\)</span> is PET activity in the particular region of
+interest.</p>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="#pet_cli.graphical_plots.LoganPlot.calculate_valid_indicies_and_x_and_y" title="pet_cli.graphical_plots.LoganPlot.calculate_valid_indicies_and_x_and_y"><code class="xref py py-meth docutils literal notranslate"><span class="pre">calculate_valid_indicies_and_x_and_y</span></code></a> for the calculation implementation.</p></li>
+</ul>
+</div>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="pet_cli.graphical_plots.AltLoganPlot">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">AltLoganPlot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pTAC</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.26)"><span class="pre">ndarray</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">tTAC</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.26)"><span class="pre">ndarray</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">t_thresh_in_mins</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">figObj</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://matplotlib.org/stable/api/_as_gen/matplotlib.figure.Figure.html#matplotlib.figure.Figure" title="(in Matplotlib v3.9.0)"><span class="pre">Figure</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pet_cli.graphical_plots.AltLoganPlot" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#pet_cli.graphical_plots.GraphicalAnalysisPlot" title="pet_cli.graphical_plots.GraphicalAnalysisPlot"><code class="xref py py-class docutils literal notranslate"><span class="pre">GraphicalAnalysisPlot</span></code></a></p>
+<p>This class handles generation of Alternative Logan plots (or &quot;new plots&quot;) for PET analysis.</p>
+<p>The <a class="reference internal" href="#pet_cli.graphical_plots.AltLoganPlot" title="pet_cli.graphical_plots.AltLoganPlot"><code class="xref py py-class docutils literal notranslate"><span class="pre">AltLoganPlot</span></code></a> class is designed to process PET data and display it in the form of Alt-Logan plots. The
+class handles data processing including computation of valid indices and calculation of plot-specific parameters,
+setting of plot labels and legends, as well as the actual plotting of data.</p>
+<p>The processing steps involve computations such as handling of non-zero indices in the plasma time-activity curve
+(pTAC), calculation of <span class="math notranslate nohighlight">\(x\)</span> and <span class="math notranslate nohighlight">\(y\)</span> coordinates for the Alt-Logan plot, and generation of plot labeling
+information.</p>
+<p>The class also provides a capability to add labels, legends and title to the figure to present the data in a
+meaningful way.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The class inherits from the <a class="reference internal" href="#pet_cli.graphical_plots.GraphicalAnalysisPlot" title="pet_cli.graphical_plots.GraphicalAnalysisPlot"><code class="xref py py-class docutils literal notranslate"><span class="pre">GraphicalAnalysisPlot</span></code></a> abstract base class.</p>
+</div>
+<p class="rubric">Example</p>
+<p>In the proceeding examples, <code class="docutils literal notranslate"><span class="pre">pTAC</span></code> represent the plasma TAC (or input TAC) and <code class="docutils literal notranslate"><span class="pre">tTAC</span></code> represents the tissue TAC.</p>
+<p>For the quickest way to generate the Alt-Logan Plot, we just instantiate the class and run the
+<code class="xref py py-meth docutils literal notranslate"><span class="pre">generate_figure</span></code> method. This will generate 2 plots in a row. The first one having a linear-linear scale,
+and the second one having a log-log scale.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">pet_cli.graphical_plots</span> <span class="kn">import</span> <span class="n">AltLoganPlot</span>
+<span class="n">alt_logan_plot</span> <span class="o">=</span> <span class="n">AltLoganPlot</span><span class="p">(</span><span class="n">tTAC</span><span class="o">=</span><span class="n">tTAC</span><span class="p">,</span> <span class="n">pTAC</span><span class="o">=</span><span class="n">pTAC</span><span class="p">,</span> <span class="n">t_thresh_in_mins</span><span class="o">=</span><span class="mf">45.0</span><span class="p">)</span>
+<span class="n">alt_logan_plot</span><span class="o">.</span><span class="n">generate_figure</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span> <span class="c1"># Or use plt.savefig() to save the figure.</span>
+</pre></div>
+</div>
+<p>If the default styling needs to be changed, we can pass keyword arguments to each of the plotting methods:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">pet_cli.graphical_plots</span> <span class="kn">import</span> <span class="n">AltLoganPlot</span>
+<span class="n">alt_logan_plot</span> <span class="o">=</span> <span class="n">AltLoganPlot</span><span class="p">(</span><span class="n">tTAC</span><span class="o">=</span><span class="n">tTAC</span><span class="p">,</span> <span class="n">pTAC</span><span class="o">=</span><span class="n">pTAC</span><span class="p">,</span> <span class="n">t_thresh_in_mins</span><span class="o">=</span><span class="mf">45.0</span><span class="p">)</span>
+<span class="n">alt_logan_plot</span><span class="o">.</span><span class="n">generate_figure</span><span class="p">(</span><span class="n">line_kwargs</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">lw</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.95</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;red&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="n">patlak_plot</span><span class="o">.</span><span class="n">generate_label_from_fit_params</span><span class="p">()),</span>
+                            <span class="n">shading_kwargs</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">color</span><span class="o">=</span><span class="s1">&#39;palegreen&#39;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.2</span><span class="p">),</span>
+                            <span class="n">data_kwargs</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">alpha</span><span class="o">=</span><span class="mf">0.85</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;k&#39;</span><span class="p">,</span> <span class="n">marker</span><span class="o">=</span><span class="s1">&#39;.&#39;</span><span class="p">))</span>
+</pre></div>
+</div>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="#pet_cli.graphical_plots.PatlakPlot" title="pet_cli.graphical_plots.PatlakPlot"><code class="xref py py-class docutils literal notranslate"><span class="pre">PatlakPlot</span></code></a></p></li>
+<li><p><a class="reference internal" href="#pet_cli.graphical_plots.LoganPlot" title="pet_cli.graphical_plots.LoganPlot"><code class="xref py py-class docutils literal notranslate"><span class="pre">LoganPlot</span></code></a></p></li>
+</ul>
+</div>
+<p>Initialize an instance of the GraphicalAnalysisPlot class.</p>
+<p>The instance is initialized with two Time-Activity Curves (TACs), a threshold time, and an optional matplotlib
+Figure. It calculates valid indices (where the denominator is non-zero for the particular analysis), 'x' and 'y'
+values for plotting based on the TACs and the threshold time, and also analyzes the TACs to generate the fits.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>pTAC</strong> (<em>np.ndarray</em>) -- The input Time Activity Curve, an array containing time points and corresponding activity.</p></li>
+<li><p><strong>tTAC</strong> (<em>np.ndarray</em>) -- The Tissue or Region Time Activity Curve, an array with time points and corresponding
+activity.</p></li>
+<li><p><strong>t_thresh_in_mins</strong> (<em>float</em>) -- The threshold time in minutes to consider when performing calculations for the
+plots.</p></li>
+<li><p><strong>figObj</strong> (<em>plt.Figure</em><em>, </em><em>optional</em>) -- An optional matplotlib Figure object. If not provided, a new Figure object is
+created.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>matplotlib error</strong> -- Error handling for the plot generation is managed by matplotlib. Any exceptions thrown
+    during plotting are handled by the <a class="reference external" href="https://matplotlib.org/stable/index.html#module-matplotlib" title="(in Matplotlib v3.9.0)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">matplotlib</span></code></a> internally.</p>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="pet_cli.graphical_plots.AltLoganPlot.calculate_valid_indicies_and_x_and_y">
+<span class="sig-name descname"><span class="pre">calculate_valid_indicies_and_x_and_y</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#pet_cli.graphical_plots.AltLoganPlot.calculate_valid_indicies_and_x_and_y" title="Link to this definition">#</a></dt>
+<dd><p>Calculates the valid indices along with <span class="math notranslate nohighlight">\(x\)</span> and <span class="math notranslate nohighlight">\(y\)</span> for Alt-Logan plot analysis.</p>
+<p>This method performs the computation for the non-zero indices in the provided region time-activity curve (tTAC).
+It further calculates the values of <span class="math notranslate nohighlight">\(x\)</span> and <span class="math notranslate nohighlight">\(y\)</span> used in Logan analysis based on these non-zero
+indices. This is done to avoid singularities caused by zero denominators. The Alt-Logan <span class="math notranslate nohighlight">\(x\)</span> and <span class="math notranslate nohighlight">\(y\)</span>
+values are:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}y&amp;= \frac{\int_{0}^{t}R(s)\mathrm{d}s}{C_\mathrm{P}(t)}\\
+x&amp;= \frac{\int_{0}^{t}C_\mathrm{P}(s)\mathrm{d}s}{C_\mathrm{P}(t)},\end{split}\]</div>
+<p>where <span class="math notranslate nohighlight">\(C_\mathrm{P}\)</span> is the input function and <span class="math notranslate nohighlight">\(R(t)\)</span> is PET activity in the particular region of
+interest. Compared to <a class="reference internal" href="#pet_cli.graphical_plots.LoganPlot" title="pet_cli.graphical_plots.LoganPlot"><code class="xref py py-class docutils literal notranslate"><span class="pre">LoganPlot</span></code></a>, the denominator is the input function.</p>
+<p>The method updates the instance variables <code class="docutils literal notranslate"><span class="pre">x</span></code>, <code class="docutils literal notranslate"><span class="pre">y</span></code>, <code class="docutils literal notranslate"><span class="pre">non_zero_idx</span></code>, and <code class="docutils literal notranslate"><span class="pre">t_thresh_idx</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pet_cli.graphical_plots.AltLoganPlot.generate_label_from_fit_params">
+<span class="sig-name descname"><span class="pre">generate_label_from_fit_params</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#pet_cli.graphical_plots.AltLoganPlot.generate_label_from_fit_params" title="Link to this definition">#</a></dt>
+<dd><p>Creates a label string from the fit parameters for graphical presentation.</p>
+<p>This method retrieves slope, intercept, and R-squared values from the instance's fit parameters, and then
+formats these values into a string that is LaTeX compatible for later rendering inside a plot's label.
+For example:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}V_\mathrm{T}&amp;=0.1\\
+b&amp;=0.2\\
+R^{2}&amp;=0.95\end{split}\]</div>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The created label. Each parameter is formatted as a separate line.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pet_cli.graphical_plots.AltLoganPlot.add_figure_axes_labels_and_legend">
+<span class="sig-name descname"><span class="pre">add_figure_axes_labels_and_legend</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pet_cli.graphical_plots.AltLoganPlot.add_figure_axes_labels_and_legend" title="Link to this definition">#</a></dt>
+<dd><p>Adds labels and a legend to the axes of the figure.</p>
+<p>This method sets the <cite>x_label</cite> and <cite>y_label</cite> for all axes on the figure. It also adds a legend to the figure,
+which is anchored to the upper left corner. Lastly, we also give a title to the figure: Alt-Logan Plots.</p>
+<p>The labels are set to:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}y&amp;= \frac{\int_{0}^{t}R(s)\mathrm{d}s}{C_\mathrm{P}(t)}\\
+x&amp;= \frac{\int_{0}^{t}C_\mathrm{P}(s)\mathrm{d}s}{C_\mathrm{P}},\end{split}\]</div>
+<p>where <span class="math notranslate nohighlight">\(C_\mathrm{P}\)</span> is the input function and <span class="math notranslate nohighlight">\(R(t)\)</span> is PET activity in the particular region of
+interest.</p>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="#pet_cli.graphical_plots.AltLoganPlot.calculate_valid_indicies_and_x_and_y" title="pet_cli.graphical_plots.AltLoganPlot.calculate_valid_indicies_and_x_and_y"><code class="xref py py-meth docutils literal notranslate"><span class="pre">calculate_valid_indicies_and_x_and_y</span></code></a> for the calculation implementation.</p></li>
+</ul>
+</div>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pet_cli.graphical_plots._safe_load_tac">
+<span class="sig-name descname"><span class="pre">_safe_load_tac</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.26)"><span class="pre">ndarray</span></a></span></span><a class="headerlink" href="#pet_cli.graphical_plots._safe_load_tac" title="Link to this definition">#</a></dt>
+<dd><p>Loads time-activity curves (TAC) from a file.</p>
+<p>Tries to read a TAC from specified file and raises an exception if unable to do so. We assume that the file has two
+columns, the first corresponding to time and second corresponding to activity.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>filename</strong> (<em>str</em>) -- The name of the file to be loaded.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A numpy array containing the loaded TAC. The first index corresponds to the times, and the second
+corresponds to the activity.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>np.ndarray</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>Exception</strong> -- An error occurred loading the TAC.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="pet_cli.graphical_plots.Plot">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Plot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_tac_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">roi_tac_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">threshold_in_mins</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_directory</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_filename_prefix</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">''</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pet_cli.graphical_plots.Plot" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>A class used to generate and save graphical analysis plots of PET Time-Activity Curves (TACs).</p>
+<p>This class provides a simple and convenient interface to generate plots from TACs for the 'patlak', 'logan', or
+'alt-logan' methods and save them in the specified output directory. The plots are saved in both PNG and PDF formats.</p>
+<p>It is initialized with paths to the input TACs, the method name, the output directory, and an optional filename
+prefix. During initialization, it checks the validity of the file paths and directory, loads the TACs, and selects
+the appropriate figure class based on the given method. Later on, the <cite>save_figure</cite> method can be called to generate
+and save the plots.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Variables<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>input_tac_path</strong> (<em>str</em>) -- Path to the input TAC file.</p></li>
+<li><p><strong>roi_tac_path</strong> (<em>str</em>) -- Path to the Region of Interest (ROI) TAC file.</p></li>
+<li><p><strong>output_directory</strong> (<em>str</em>) -- Path to the directory where the plot output will be saved.</p></li>
+<li><p><strong>method_name</strong> (<em>str</em>) -- Name of the method for generating the plot ('patlak', 'logan', 'alt-logan').</p></li>
+<li><p><strong>thresh_in_mins</strong> (<em>float</em>) -- A threshold in minutes below which data points will be discarded from the plot.</p></li>
+<li><p><strong>output_filename_prefix</strong> (<em>str</em>) -- An optional prefix for the output filenames.</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Example</p>
+<p>An example of how to use this class to save a Patlak graphical analysis plot:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">pet_cli.graphical_plots</span> <span class="k">as</span> <span class="nn">pet_plt</span>
+<span class="c1"># ptac_path points to a plasma TAC (or input TAC)</span>
+<span class="c1"># ttac_path points to a ROI TAC.</span>
+<span class="n">grph_plot</span> <span class="o">=</span> <span class="n">pet_plt</span><span class="o">.</span><span class="n">Plot</span><span class="p">(</span><span class="n">input_tac_path</span><span class="o">=</span><span class="n">ptac_path</span><span class="p">,</span>
+                         <span class="n">roi_tac_path</span><span class="o">=</span><span class="n">ttac_path</span><span class="p">,</span>
+                         <span class="n">threshold_in_mins</span><span class="o">=</span><span class="mf">30.0</span><span class="p">,</span>
+                         <span class="n">method_name</span><span class="o">=</span><span class="s1">&#39;patlak&#39;</span><span class="p">,</span>
+                         <span class="n">output_directory</span><span class="o">=</span><span class="s1">&#39;./&#39;</span><span class="p">,</span>
+                         <span class="n">output_filename_prefix</span><span class="o">=</span><span class="s2">&quot;plot&quot;</span><span class="p">)</span>
+<span class="n">grph_plot</span><span class="o">.</span><span class="n">save_figure</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>Initializes the <a class="reference internal" href="#pet_cli.graphical_plots.Plot" title="pet_cli.graphical_plots.Plot"><code class="xref py py-class docutils literal notranslate"><span class="pre">Plot</span></code></a> object given the paths and the method.</p>
+<p>During the initialization, it validates the given file paths and directory,  and selects the appropriate figure
+class based on the provided method name.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>input_tac_path</strong> (<em>str</em>) -- Path to the input Time Activity Curve (TAC) file.</p></li>
+<li><p><strong>roi_tac_path</strong> (<em>str</em>) -- Path to the Region of Interest (ROI) TAC file.</p></li>
+<li><p><strong>threshold_in_mins</strong> (<em>float</em>) -- Threshold in minutes below which data points will be discarded.</p></li>
+<li><p><strong>method_name</strong> (<em>str</em>) -- Name of the method to be used ('patlak', 'logan', or 'alt-logan').</p></li>
+<li><p><strong>output_directory</strong> (<em>str</em>) -- Path to the directory where output files will be stored.</p></li>
+<li><p><strong>output_filename_prefix</strong> (<em>str</em><em>, </em><em>optional</em>) -- Prefix to be appended to the output files. Defaults to an empty string.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>ValueError</strong> -- If any of the file paths or the directory path does not exist, or if the method name is invalid.</p>
+</dd>
+</dl>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This method does not return a value. It's an initializer of this class.</p>
+</div>
+<dl class="simple">
+<dt>Calls:</dt><dd><ul class="simple">
+<li><p><a class="reference internal" href="#pet_cli.graphical_plots.Plot._validate_filepath" title="pet_cli.graphical_plots.Plot._validate_filepath"><code class="xref py py-meth docutils literal notranslate"><span class="pre">_validate_filepath</span></code></a></p></li>
+<li><p><a class="reference internal" href="#pet_cli.graphical_plots.Plot._validate_directory" title="pet_cli.graphical_plots.Plot._validate_directory"><code class="xref py py-meth docutils literal notranslate"><span class="pre">_validate_directory</span></code></a></p></li>
+<li><p><a class="reference internal" href="#pet_cli.graphical_plots._safe_load_tac" title="pet_cli.graphical_plots._safe_load_tac"><code class="xref py py-func docutils literal notranslate"><span class="pre">_safe_load_tac</span></code></a></p></li>
+<li><p><a class="reference internal" href="#pet_cli.graphical_plots.Plot._select_fig_class_based_on_method" title="pet_cli.graphical_plots.Plot._select_fig_class_based_on_method"><code class="xref py py-meth docutils literal notranslate"><span class="pre">_select_fig_class_based_on_method</span></code></a></p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="pet_cli.graphical_plots.Plot.save_figure">
+<span class="sig-name descname"><span class="pre">save_figure</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pet_cli.graphical_plots.Plot.save_figure" title="Link to this definition">#</a></dt>
+<dd><p>Creates and saves the figure in both PNG and PDF formats.</p>
+<p>We first safely load the TACS. Then, this method generates the figure using the method selected during the
+initialization of the class. The figure is then saved inside the specified  output directory with a filename
+based on parameters provided at initialization.</p>
+<p>The saved files are in both PNG (with a resolution of 150 dpi) and PDF formats (with the PDF file being saved
+with transparency).</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This method does not return any value. It is responsible for saving the generated figure to the specified
+output directory in PNG and PDF formats.</p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>Exception</strong> -- An error occurred while loading the TACs from the input or ROI files.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pet_cli.graphical_plots.Plot._validate_filepath">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">_validate_filepath</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#pet_cli.graphical_plots.Plot._validate_filepath" title="Link to this definition">#</a></dt>
+<dd><p>Checks if the provided filename is a valid file.</p>
+<p>This is a private static method and should be called internally by the class while processing files.</p>
+<p>If the file is not valid, it raises a ValueError.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>filename</strong> (<em>str</em>) -- The path to the file.</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>ValueError</strong> -- if the file at provided path does not exist.</p>
+</dd>
+</dl>
+<p>No return value.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pet_cli.graphical_plots.Plot._validate_directory">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">_validate_directory</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">directory</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#pet_cli.graphical_plots.Plot._validate_directory" title="Link to this definition">#</a></dt>
+<dd><p>Validates if the provided directory path is an existing directory.</p>
+<p>This is a private static method and should be called internally by the class while processing directories.</p>
+<p>If the directory does not exist, it raises a ValueError.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>directory</strong> (<em>str</em>) -- Path to the directory.</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>ValueError</strong> -- if the provided directory path does not exist.</p>
+</dd>
+</dl>
+<p>No return value.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pet_cli.graphical_plots.Plot._select_fig_class_based_on_method">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">_select_fig_class_based_on_method</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">method_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Type</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#pet_cli.graphical_plots.PatlakPlot" title="pet_cli.graphical_plots.PatlakPlot"><span class="pre">PatlakPlot</span></a><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Type</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#pet_cli.graphical_plots.LoganPlot" title="pet_cli.graphical_plots.LoganPlot"><span class="pre">LoganPlot</span></a><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Type</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#pet_cli.graphical_plots.AltLoganPlot" title="pet_cli.graphical_plots.AltLoganPlot"><span class="pre">AltLoganPlot</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#pet_cli.graphical_plots.Plot._select_fig_class_based_on_method" title="Link to this definition">#</a></dt>
+<dd><p>Selects and returns the appropriate class based on the provided method name.</p>
+<p>This private static method returns the corresponding class object (<cite>PatlakPlot</cite>, <cite>LoganPlot</cite>, or <cite>AltLoganPlot</cite>)
+according to the provided method name ('patlak', 'logan', or 'alt-logan').</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>method_name</strong> (<em>str</em>) -- Name of the method.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Corresponding class.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#pet_cli.graphical_plots.PatlakPlot" title="pet_cli.graphical_plots.PatlakPlot"><code class="xref py py-class docutils literal notranslate"><span class="pre">PatlakPlot</span></code></a> | <a class="reference internal" href="#pet_cli.graphical_plots.LoganPlot" title="pet_cli.graphical_plots.LoganPlot"><code class="xref py py-class docutils literal notranslate"><span class="pre">LoganPlot</span></code></a> | <a class="reference internal" href="#pet_cli.graphical_plots.AltLoganPlot" title="pet_cli.graphical_plots.AltLoganPlot"><code class="xref py py-class docutils literal notranslate"><span class="pre">AltLoganPlot</span></code></a></p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>ValueError</strong> -- The method name is invalid.</p>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="#pet_cli.graphical_plots.PatlakPlot" title="pet_cli.graphical_plots.PatlakPlot"><code class="xref py py-class docutils literal notranslate"><span class="pre">PatlakPlot</span></code></a></p></li>
+<li><p><a class="reference internal" href="#pet_cli.graphical_plots.LoganPlot" title="pet_cli.graphical_plots.LoganPlot"><code class="xref py py-class docutils literal notranslate"><span class="pre">LoganPlot</span></code></a></p></li>
+<li><p><a class="reference internal" href="#pet_cli.graphical_plots.AltLoganPlot" title="pet_cli.graphical_plots.AltLoganPlot"><code class="xref py py-class docutils literal notranslate"><span class="pre">AltLoganPlot</span></code></a></p></li>
+</ul>
+</div>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="pet_cli.parametric_images.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title"><span class="section-number">7. </span>Parametric Images</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="pet_cli.image_visualization.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title"><span class="section-number">9. </span>Image Visualization</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#pet_cli.graphical_plots.GraphicalAnalysisPlot"><code class="docutils literal notranslate"><span class="pre">GraphicalAnalysisPlot</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pet_cli.graphical_plots.GraphicalAnalysisPlot.generate_figure_and_axes"><code class="docutils literal notranslate"><span class="pre">GraphicalAnalysisPlot.generate_figure_and_axes</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pet_cli.graphical_plots.GraphicalAnalysisPlot.add_data_plots"><code class="docutils literal notranslate"><span class="pre">GraphicalAnalysisPlot.add_data_plots</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pet_cli.graphical_plots.GraphicalAnalysisPlot.add_shading_plots"><code class="docutils literal notranslate"><span class="pre">GraphicalAnalysisPlot.add_shading_plots</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pet_cli.graphical_plots.GraphicalAnalysisPlot.add_fit_points"><code class="docutils literal notranslate"><span class="pre">GraphicalAnalysisPlot.add_fit_points</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pet_cli.graphical_plots.GraphicalAnalysisPlot.add_fit_lines"><code class="docutils literal notranslate"><span class="pre">GraphicalAnalysisPlot.add_fit_lines</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pet_cli.graphical_plots.GraphicalAnalysisPlot.add_plots"><code class="docutils literal notranslate"><span class="pre">GraphicalAnalysisPlot.add_plots</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pet_cli.graphical_plots.GraphicalAnalysisPlot.generate_figure"><code class="docutils literal notranslate"><span class="pre">GraphicalAnalysisPlot.generate_figure</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pet_cli.graphical_plots.GraphicalAnalysisPlot.calculate_fit_params"><code class="docutils literal notranslate"><span class="pre">GraphicalAnalysisPlot.calculate_fit_params</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pet_cli.graphical_plots.GraphicalAnalysisPlot.calculate_valid_indicies_and_x_and_y"><code class="docutils literal notranslate"><span class="pre">GraphicalAnalysisPlot.calculate_valid_indicies_and_x_and_y</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pet_cli.graphical_plots.GraphicalAnalysisPlot.generate_label_from_fit_params"><code class="docutils literal notranslate"><span class="pre">GraphicalAnalysisPlot.generate_label_from_fit_params</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pet_cli.graphical_plots.GraphicalAnalysisPlot.add_figure_axes_labels_and_legend"><code class="docutils literal notranslate"><span class="pre">GraphicalAnalysisPlot.add_figure_axes_labels_and_legend</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#pet_cli.graphical_plots.PatlakPlot"><code class="docutils literal notranslate"><span class="pre">PatlakPlot</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pet_cli.graphical_plots.PatlakPlot.calculate_valid_indicies_and_x_and_y"><code class="docutils literal notranslate"><span class="pre">PatlakPlot.calculate_valid_indicies_and_x_and_y</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pet_cli.graphical_plots.PatlakPlot.generate_label_from_fit_params"><code class="docutils literal notranslate"><span class="pre">PatlakPlot.generate_label_from_fit_params</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pet_cli.graphical_plots.PatlakPlot.add_figure_axes_labels_and_legend"><code class="docutils literal notranslate"><span class="pre">PatlakPlot.add_figure_axes_labels_and_legend</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#pet_cli.graphical_plots.LoganPlot"><code class="docutils literal notranslate"><span class="pre">LoganPlot</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pet_cli.graphical_plots.LoganPlot.calculate_valid_indicies_and_x_and_y"><code class="docutils literal notranslate"><span class="pre">LoganPlot.calculate_valid_indicies_and_x_and_y</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pet_cli.graphical_plots.LoganPlot.generate_label_from_fit_params"><code class="docutils literal notranslate"><span class="pre">LoganPlot.generate_label_from_fit_params</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pet_cli.graphical_plots.LoganPlot.add_figure_axes_labels_and_legend"><code class="docutils literal notranslate"><span class="pre">LoganPlot.add_figure_axes_labels_and_legend</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#pet_cli.graphical_plots.AltLoganPlot"><code class="docutils literal notranslate"><span class="pre">AltLoganPlot</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pet_cli.graphical_plots.AltLoganPlot.calculate_valid_indicies_and_x_and_y"><code class="docutils literal notranslate"><span class="pre">AltLoganPlot.calculate_valid_indicies_and_x_and_y</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pet_cli.graphical_plots.AltLoganPlot.generate_label_from_fit_params"><code class="docutils literal notranslate"><span class="pre">AltLoganPlot.generate_label_from_fit_params</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pet_cli.graphical_plots.AltLoganPlot.add_figure_axes_labels_and_legend"><code class="docutils literal notranslate"><span class="pre">AltLoganPlot.add_figure_axes_labels_and_legend</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#pet_cli.graphical_plots._safe_load_tac"><code class="docutils literal notranslate"><span class="pre">_safe_load_tac</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#pet_cli.graphical_plots.Plot"><code class="docutils literal notranslate"><span class="pre">Plot</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pet_cli.graphical_plots.Plot.save_figure"><code class="docutils literal notranslate"><span class="pre">Plot.save_figure</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pet_cli.graphical_plots.Plot._validate_filepath"><code class="docutils literal notranslate"><span class="pre">Plot._validate_filepath</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pet_cli.graphical_plots.Plot._validate_directory"><code class="docutils literal notranslate"><span class="pre">Plot._validate_directory</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pet_cli.graphical_plots.Plot._select_fig_class_based_on_method"><code class="docutils literal notranslate"><span class="pre">Plot._select_fig_class_based_on_method</span></code></a></li>
+</ul>
+</li>
+</ul>
+  </nav></div>
+
+  <div class="sidebar-secondary-item">
+
+  <div class="tocsection sourcelink">
+    <a href="_sources/pet_cli.graphical_plots.rst.txt">
+      <i class="fa-solid fa-file-lines"></i> Show Source
+    </a>
+  </div>
+</div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="_static/scripts/bootstrap.js?digest=8d27b9dea8ad943066ae"></script>
+<script src="_static/scripts/pydata-sphinx-theme.js?digest=8d27b9dea8ad943066ae"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2024, Furqan Dar, Bradley Judge, Noah Goldman.
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.2.6.
+    <br/>
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.15.2.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

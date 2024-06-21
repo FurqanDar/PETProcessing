@@ -1,4 +1,4 @@
-./pet_cli/__pycache__/
+petpal/__pycache__/
 ./data/tcm_tacs/.ipynb_checkpoints/
 ./test_notebooks/testing_graphical_analyses/.ipynb_checkpoints/
 ./.idea/

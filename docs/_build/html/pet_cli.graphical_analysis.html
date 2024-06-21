@@ -1,0 +1,1056 @@
+
+<!DOCTYPE html>
+
+
+<html lang="English (US)" data-content_root="./" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>4. Graphical Analysis Of TACs &#8212; PET Processing Module</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="_static/styles/theme.css?digest=8d27b9dea8ad943066ae" rel="stylesheet" />
+<link href="_static/styles/bootstrap.css?digest=8d27b9dea8ad943066ae" rel="stylesheet" />
+<link href="_static/styles/pydata-sphinx-theme.css?digest=8d27b9dea8ad943066ae" rel="stylesheet" />
+
+  
+  <link href="_static/vendor/fontawesome/6.5.1/css/all.min.css?digest=8d27b9dea8ad943066ae" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.1/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.1/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.1/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=a746c00c" />
+    <link rel="stylesheet" type="text/css" href="_static/plot_directive.css" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=8d27b9dea8ad943066ae" />
+<link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=8d27b9dea8ad943066ae" />
+  <script src="_static/vendor/fontawesome/6.5.1/js/all.min.js?digest=8d27b9dea8ad943066ae"></script>
+
+    <script src="_static/documentation_options.js?v=cd7df0db"></script>
+    <script src="_static/doctools.js?v=888ff710"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'pet_cli.graphical_analysis';</script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="5. Reference Tissue Models" href="pet_cli.reference_tissue_models.html" />
+    <link rel="prev" title="3. TCMs As Convolutions" href="pet_cli.tcms_as_convolutions.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="English (US)"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <a id="pst-skip-link" class="skip-link" href="#main-content">Skip to main content</a>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>
+    Back to top
+  </button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__primary"
+          id="__primary"/>
+  <label class="overlay overlay-primary" for="__primary"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__secondary"
+          id="__secondary"/>
+  <label class="overlay overlay-secondary" for="__secondary"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar">
+<div class="bd-header__inner bd-page-width">
+  <label class="sidebar-toggle primary-toggle" for="__primary">
+    <span class="fa-solid fa-bars"></span>
+  </label>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+
+<a class="navbar-brand logo" href="index.html">
+  
+  
+  
+  
+  
+  
+    <p class="title logo__title">PET Processing Module</p>
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav class="navbar-nav">
+  <ul class="bd-navbar-elements navbar-nav">
+    
+                    <li class="nav-item current active">
+                      <a class="nav-link nav-internal" href="modules.html">
+                        Modules
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="cli_ref.html">
+                        CLI Reference
+                      </a>
+                    </li>
+                
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+ <script>
+ document.write(`
+   <button class="btn navbar-btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<script>
+document.write(`
+  <button class="btn btn-sm navbar-btn theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="theme-switch nav-link" data-mode="light"><i class="fa-solid fa-sun fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="dark"><i class="fa-solid fa-moon fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg"></i></span>
+  </button>
+`);
+</script></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+ <script>
+ document.write(`
+   <button class="btn navbar-btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script>
+    </div>
+  
+
+  
+    <label class="sidebar-toggle secondary-toggle" for="__secondary" tabindex="0">
+      <span class="fa-solid fa-outdent"></span>
+    </label>
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          <div class="navbar-item">
+<nav class="navbar-nav">
+  <ul class="bd-navbar-elements navbar-nav">
+    
+                    <li class="nav-item current active">
+                      <a class="nav-link nav-internal" href="modules.html">
+                        Modules
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="cli_ref.html">
+                        CLI Reference
+                      </a>
+                    </li>
+                
+  </ul>
+</nav></div>
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<script>
+document.write(`
+  <button class="btn btn-sm navbar-btn theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="theme-switch nav-link" data-mode="light"><i class="fa-solid fa-sun fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="dark"><i class="fa-solid fa-moon fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg"></i></span>
+  </button>
+`);
+</script></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+<nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="pet_cli.image_io.html">1. Image IO</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pet_cli.tac_interpolation.html">2. TAC Interpolation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pet_cli.tcms_as_convolutions.html">3. TCMs As Convolutions</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">4. Graphical Analysis Of TACs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pet_cli.reference_tissue_models.html">5. Reference Tissue Models</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pet_cli.tac_fitting.html">6. TAC Fitting With Tissue Compartment Models</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pet_cli.parametric_images.html">7. Parametric Images</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pet_cli.graphical_plots.html">8. Graphical Analysis Plots</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pet_cli.image_visualization.html">9. Image Visualization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pet_cli.blood_input.html">10. Interpolation Blood Data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pet_cli.image_operations_4d.html">11. Special Operations on 4D Images</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pet_cli.register.html">12. Tools for Registration of PET to Anatomical and Atlas Space</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pet_cli.motion_corr.html">13. Tools to Motion Correct PET Images</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pet_cli.preproc.html">14. Python Interface for PET Preprocessing Tools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pet_cli.math_lib.html">15. Mathematical Operations Library</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pet_cli.bids_utils.html">16. BIDS File Management Utilities</a></li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+
+
+<nav aria-label="Breadcrumb">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="modules.html" class="nav-link">Modules</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page"><span...</li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="module-pet_cli.graphical_analysis">
+<span id="graphical-analysis-of-tacs"></span><h1><span class="section-number">4. </span>Graphical Analysis Of TACs<a class="headerlink" href="#module-pet_cli.graphical_analysis" title="Link to this heading">#</a></h1>
+<p>This module provides functions and a key class, <a class="reference internal" href="#pet_cli.graphical_analysis.GraphicalAnalysis" title="pet_cli.graphical_analysis.GraphicalAnalysis"><code class="xref py py-class docutils literal notranslate"><span class="pre">GraphicalAnalysis</span></code></a>, for performing graphical analysis on Time
+Activity Curve (TAC) data. It heavily utilizes Numpy and supports various analysis methods like Patlak, Logan, and
+alternative Logan analysis.</p>
+<p>The <a class="reference internal" href="#pet_cli.graphical_analysis.GraphicalAnalysis" title="pet_cli.graphical_analysis.GraphicalAnalysis"><code class="xref py py-class docutils literal notranslate"><span class="pre">GraphicalAnalysis</span></code></a> class encapsulates the main functionality of the module. It provides an organized way to
+perform graphical analysis where it initializes with paths to input data and output details, runs an analysis using a
+specific method, calculates the best fit parameters, computes properties related to the fitting process, and stores the
+analysis results. All these properties and results are stored within an instance's 'analysis_props' dictionary,
+providing an organized storage of result of an analysis task.</p>
+<div class="admonition-todo admonition" id="id1">
+<p class="admonition-title">Todo</p>
+<ul class="simple">
+<li><p>Check if it makes more sense to lift out the more mathy methods out into a separate module.</p></li>
+<li><p>Add references for the TCMs and Patlak. Could maybe rely on Turku PET Center.</p></li>
+<li><p>Handle cases when tac_vals = 0.0. Might be able to use t_thresh so that we are past the 0-values.</p></li>
+</ul>
+</div>
+<dl class="py function">
+<dt class="sig sig-object py" id="pet_cli.graphical_analysis._line_fitting_make_rhs_matrix_from_xdata">
+<span class="sig-name descname"><span class="pre">_line_fitting_make_rhs_matrix_from_xdata</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">xdata</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.26)"><span class="pre">ndarray</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.26)"><span class="pre">ndarray</span></a></span></span><a class="headerlink" href="#pet_cli.graphical_analysis._line_fitting_make_rhs_matrix_from_xdata" title="Link to this definition">#</a></dt>
+<dd><p>Generates the RHS matrix for linear least squares fitting</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>xdata</strong> (<em>np.ndarray</em>) -- array of independent variable values</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>2D matrix where first column is <cite>xdata</cite> and the second column is 1s.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>np.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pet_cli.graphical_analysis.fit_line_to_data_using_lls">
+<span class="sig-name descname"><span class="pre">fit_line_to_data_using_lls</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">xdata</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.26)"><span class="pre">ndarray</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">ydata</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.26)"><span class="pre">ndarray</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.26)"><span class="pre">ndarray</span></a></span></span><a class="headerlink" href="#pet_cli.graphical_analysis.fit_line_to_data_using_lls" title="Link to this definition">#</a></dt>
+<dd><p>Find the linear least squares solution given the x and y variables.</p>
+<p>Performs a linear least squares fit to the provided data. Explicitly calls numpy's <code class="docutils literal notranslate"><span class="pre">linalg.lstsq</span></code> method by
+constructing the matrix equations. We assume that <code class="docutils literal notranslate"><span class="pre">xdata</span></code> and <code class="docutils literal notranslate"><span class="pre">ydata</span></code> have the same number of elements.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>xdata</strong> -- Array of independent variable values</p></li>
+<li><p><strong>ydata</strong> -- Array of dependent variable values</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Linear least squares solution. (m, b) values</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pet_cli.graphical_analysis.fit_line_to_data_using_lls_with_rsquared">
+<span class="sig-name descname"><span class="pre">fit_line_to_data_using_lls_with_rsquared</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">xdata</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.26)"><span class="pre">ndarray</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">ydata</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.26)"><span class="pre">ndarray</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#pet_cli.graphical_analysis.fit_line_to_data_using_lls_with_rsquared" title="Link to this definition">#</a></dt>
+<dd><p>Fits a line to the data using least squares and explicitly computes the r-squared value.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>xdata</strong> (<em>np.ndarray</em>) -- X-coordinates of the data.</p></li>
+<li><p><strong>ydata</strong> (<em>np.ndarray</em>) -- Y-coordinates of the data.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A tuple containing three float values: the intercept of the fitted line, the slope of the fitted line,
+and the r-squared value.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>tuple</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pet_cli.graphical_analysis.cumulative_trapezoidal_integral">
+<span class="sig-name descname"><span class="pre">cumulative_trapezoidal_integral</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">xdata</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.26)"><span class="pre">ndarray</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">ydata</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.26)"><span class="pre">ndarray</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">initial</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.0</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.26)"><span class="pre">ndarray</span></a></span></span><a class="headerlink" href="#pet_cli.graphical_analysis.cumulative_trapezoidal_integral" title="Link to this definition">#</a></dt>
+<dd><p>Calculates the cumulative integral of <cite>ydata</cite> over <cite>xdata</cite> using the trapezoidal rule.</p>
+<p>This function is based <cite>heavily</cite> on the <a class="reference external" href="https://docs.scipy.org/doc/scipy/reference/generated/scipy.integrate.cumulative_trapezoid.html#scipy.integrate.cumulative_trapezoid" title="(in SciPy v1.13.1)"><code class="xref py py-func docutils literal notranslate"><span class="pre">scipy.integrate.cumulative_trapezoid</span></code></a> implementation
+(<a class="reference external" href="https://github.com/scipy/scipy/blob/v1.12.0/scipy/integrate/_quadrature.py#L432-L536">source</a>).
+This implementation only works for 1D arrays and was implemented to work with <code class="xref py py-mod docutils literal notranslate"><span class="pre">numba</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>xdata</strong> (<em>np.ndarray</em>) -- Array for the integration coordinate.</p></li>
+<li><p><strong>ydata</strong> (<em>np.ndarray</em>) -- Array for the values to integrate</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Cumulative integral of <code class="docutils literal notranslate"><span class="pre">ydata</span></code> over <code class="docutils literal notranslate"><span class="pre">xdata</span></code> using the trapezoidal rule.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>(np.ndarray)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pet_cli.graphical_analysis.calculate_patlak_x">
+<span class="sig-name descname"><span class="pre">calculate_patlak_x</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tac_times</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.26)"><span class="pre">ndarray</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">tac_vals</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.26)"><span class="pre">ndarray</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.26)"><span class="pre">ndarray</span></a></span></span><a class="headerlink" href="#pet_cli.graphical_analysis.calculate_patlak_x" title="Link to this definition">#</a></dt>
+<dd><p>Calculates the x-variable in Patlak analysis <span class="math notranslate nohighlight">\(\left(\frac{\int_{0}^{T}f(t)\mathrm{d}t}{f(T)}\right)\)</span>.</p>
+<p>Patlak-Gjedde analysis is a linearization of the 2-TCM with irreversible uptake in the second compartment.
+Therefore, we essentially have to fit a line to some data <span class="math notranslate nohighlight">\(y = mx+b\)</span>. This function calculates the <span class="math notranslate nohighlight">\(x\)</span>
+variable for Patlak analysis where,</p>
+<div class="math notranslate nohighlight">
+\[x = \frac{\int_{0}^{T} C_\mathrm{P}(t) \mathrm{d}t}{C_\mathrm{P}(t)},\]</div>
+<p>where further <span class="math notranslate nohighlight">\(C_\mathrm{P}\)</span> is usually the plasma TAC.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>tac_times</strong> (<em>np.ndarray</em>) -- Array containing the sampled times.</p></li>
+<li><p><strong>tac_vals</strong> (<em>np.ndarray</em>) -- Array for activity values at the sampled times.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Patlak x-variable. Cumulative integral of activity divided by activity.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>(np.ndarray)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pet_cli.graphical_analysis.get_index_from_threshold">
+<span class="sig-name descname"><span class="pre">get_index_from_threshold</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">times_in_minutes</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.26)"><span class="pre">ndarray</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">t_thresh_in_minutes</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">int</span></span></span><a class="headerlink" href="#pet_cli.graphical_analysis.get_index_from_threshold" title="Link to this definition">#</a></dt>
+<dd><p>Get the index after which all times are greater than the threshold.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>times_in_minutes</strong> (<em>np.ndarray</em>) -- Array containing times in minutes.</p></li>
+<li><p><strong>t_thresh_in_minutes</strong> (<em>float</em>) -- Threshold time in minutes.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Index for first time greater than or equal to the threshold time.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>If the threshold value is larger than the array, we return -1.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pet_cli.graphical_analysis.patlak_analysis">
+<span class="sig-name descname"><span class="pre">patlak_analysis</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_tac_values</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.26)"><span class="pre">ndarray</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">region_tac_values</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.26)"><span class="pre">ndarray</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">tac_times_in_minutes</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.26)"><span class="pre">ndarray</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">t_thresh_in_minutes</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.26)"><span class="pre">ndarray</span></a></span></span><a class="headerlink" href="#pet_cli.graphical_analysis.patlak_analysis" title="Link to this definition">#</a></dt>
+<dd><p>Performs Patlak analysis given the input TAC, region TAC, times and threshold.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>input_tac_values</strong> (<em>np.ndarray</em>) -- Array of input TAC values</p></li>
+<li><p><strong>region_tac_values</strong> (<em>np.ndarray</em>) -- Array of ROI TAC values</p></li>
+<li><p><strong>tac_times_in_minutes</strong> (<em>np.ndarray</em>) -- Array of times in minutes.</p></li>
+<li><p><strong>t_thresh_in_minutes</strong> (<em>np.ndarray</em>) -- Threshold time in minutes. Line is fit for all values after the threshold.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Array containing <span class="math notranslate nohighlight">\((K_{i}, V_{0})\)</span> values.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>(np.ndarray)</p>
+</dd>
+</dl>
+<div class="admonition important">
+<p class="admonition-title">Important</p>
+<ul class="simple">
+<li><p>We assume that the input TAC and ROI TAC values are sampled at the same times.</p></li>
+</ul>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pet_cli.graphical_analysis.patlak_analysis_with_rsquared">
+<span class="sig-name descname"><span class="pre">patlak_analysis_with_rsquared</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_tac_values</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.26)"><span class="pre">ndarray</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">region_tac_values</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.26)"><span class="pre">ndarray</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">tac_times_in_minutes</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.26)"><span class="pre">ndarray</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">t_thresh_in_minutes</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#pet_cli.graphical_analysis.patlak_analysis_with_rsquared" title="Link to this definition">#</a></dt>
+<dd><p>Performs Patlak analysis given the input TAC, region TAC, times and threshold.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>input_tac_values</strong> (<em>np.ndarray</em>) -- Array of input TAC values</p></li>
+<li><p><strong>region_tac_values</strong> (<em>np.ndarray</em>) -- Array of ROI TAC values</p></li>
+<li><p><strong>tac_times_in_minutes</strong> (<em>np.ndarray</em>) -- Array of times in minutes.</p></li>
+<li><p><strong>t_thresh_in_minutes</strong> (<em>np.ndarray</em>) -- Threshold time in minutes. Line is fit for all values after the threshold.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>(slope, intercept, <span class="math notranslate nohighlight">\(R^2\)</span>)</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>tuple</p>
+</dd>
+</dl>
+<div class="admonition important">
+<p class="admonition-title">Important</p>
+<ul class="simple">
+<li><p>We assume that the input TAC and ROI TAC values are sampled at the same times.</p></li>
+</ul>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pet_cli.graphical_analysis.logan_analysis">
+<span class="sig-name descname"><span class="pre">logan_analysis</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_tac_values</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.26)"><span class="pre">ndarray</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">region_tac_values</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.26)"><span class="pre">ndarray</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">tac_times_in_minutes</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.26)"><span class="pre">ndarray</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">t_thresh_in_minutes</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.26)"><span class="pre">ndarray</span></a></span></span><a class="headerlink" href="#pet_cli.graphical_analysis.logan_analysis" title="Link to this definition">#</a></dt>
+<dd><p>Performs Logan analysis on given input TAC, regional TAC, times and threshold, considering non-zero values.</p>
+<p>This function is similar to <a class="reference internal" href="#pet_cli.graphical_analysis.logan_analysis_with_rsquared" title="pet_cli.graphical_analysis.logan_analysis_with_rsquared"><code class="xref py py-func docutils literal notranslate"><span class="pre">logan_analysis_with_rsquared</span></code></a>, but avoids the issue of division by zero by
+only considering non-zero TAC values for the region TAC since it is in the denominator. If the number of non-zero
+indices is less than or equal to 2, or if the number of time points after the threshold is less than or equal to 2,
+the function returns an array of NaNs.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>input_tac_values</strong> (<em>np.ndarray</em>) -- Array of input TAC values.</p></li>
+<li><p><strong>region_tac_values</strong> (<em>np.ndarray</em>) -- Array of ROI TAC values.</p></li>
+<li><p><strong>tac_times_in_minutes</strong> (<em>np.ndarray</em>) -- Array of times in minutes.</p></li>
+<li><p><strong>t_thresh_in_minutes</strong> (<em>np.ndarray</em>) -- Threshold time in minutes. Line is fit for all values after the threshold.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Array of two elements - (slope, intercept) of the best-fit line to the given data.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>np.ndarray</p>
+</dd>
+</dl>
+<div class="admonition important">
+<p class="admonition-title">Important</p>
+<ul class="simple">
+<li><p>The interpretation of the returned values depends on the underlying kinetic model.</p></li>
+<li><p>We assume that the input TAC and ROI TAC values are sampled at the same times.</p></li>
+</ul>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pet_cli.graphical_analysis.logan_analysis_with_rsquared">
+<span class="sig-name descname"><span class="pre">logan_analysis_with_rsquared</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_tac_values</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.26)"><span class="pre">ndarray</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">region_tac_values</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.26)"><span class="pre">ndarray</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">tac_times_in_minutes</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.26)"><span class="pre">ndarray</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">t_thresh_in_minutes</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#pet_cli.graphical_analysis.logan_analysis_with_rsquared" title="Link to this definition">#</a></dt>
+<dd><p>Performs Logan analysis on given input TAC, regional TAC, times and threshold.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>input_tac_values</strong> (<em>np.ndarray</em>) -- Array of input TAC values</p></li>
+<li><p><strong>region_tac_values</strong> (<em>np.ndarray</em>) -- Array of ROI TAC values</p></li>
+<li><p><strong>tac_times_in_minutes</strong> (<em>np.ndarray</em>) -- Array of times in minutes.</p></li>
+<li><p><strong>t_thresh_in_minutes</strong> (<em>np.ndarray</em>) -- Threshold time in minutes. Line is fit for all values after the threshold.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>(slope, intercept, <span class="math notranslate nohighlight">\(R^2\)</span>)</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>tuple</p>
+</dd>
+</dl>
+<div class="admonition important">
+<p class="admonition-title">Important</p>
+<ul class="simple">
+<li><p>The interpretation of the values depends on the underlying kinetic model.</p></li>
+<li><p>We assume that the input TAC and ROI TAC values are sampled at the same times.</p></li>
+</ul>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pet_cli.graphical_analysis.alternative_logan_analysis">
+<span class="sig-name descname"><span class="pre">alternative_logan_analysis</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_tac_values</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.26)"><span class="pre">ndarray</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">region_tac_values</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.26)"><span class="pre">ndarray</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">tac_times_in_minutes</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.26)"><span class="pre">ndarray</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">t_thresh_in_minutes</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.26)"><span class="pre">ndarray</span></a></span></span><a class="headerlink" href="#pet_cli.graphical_analysis.alternative_logan_analysis" title="Link to this definition">#</a></dt>
+<dd><p>Performs Alternative Logan analysis on given input TAC, regional TAC, times and threshold, considering non-zero
+values for regional TAC.</p>
+<p>This function is similar to <a class="reference internal" href="#pet_cli.graphical_analysis.alternative_logan_analysis_with_rsquared" title="pet_cli.graphical_analysis.alternative_logan_analysis_with_rsquared"><code class="xref py py-func docutils literal notranslate"><span class="pre">alternative_logan_analysis_with_rsquared</span></code></a>, but avoids the issue of division by
+zero by only considering non-zero TAC values for the region TAC since it is in the denominator. If the number of
+indices is less than or equal to 2, or if the number of time points after the threshold is less than or equal to 2,
+the function returns an array of NaNs.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>input_tac_values</strong> (<em>np.ndarray</em>) -- Array of input TAC values.</p></li>
+<li><p><strong>region_tac_values</strong> (<em>np.ndarray</em>) -- Array of ROI TAC values.</p></li>
+<li><p><strong>tac_times_in_minutes</strong> (<em>np.ndarray</em>) -- Array of times in minutes.</p></li>
+<li><p><strong>t_thresh_in_minutes</strong> (<em>np.ndarray</em>) -- Threshold time in minutes. Line is fit for all values after the threshold.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Array of two elements - (slope, intercept) of the best-fit line to the given data.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>np.ndarray</p>
+</dd>
+</dl>
+<div class="admonition important">
+<p class="admonition-title">Important</p>
+<ul class="simple">
+<li><p>The interpretation of the returned values depends on the underlying kinetic model.</p></li>
+<li><p>We assume that the input TAC and ROI TAC values are sampled at the same times.</p></li>
+</ul>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pet_cli.graphical_analysis.alternative_logan_analysis_with_rsquared">
+<span class="sig-name descname"><span class="pre">alternative_logan_analysis_with_rsquared</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_tac_values</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.26)"><span class="pre">ndarray</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">region_tac_values</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.26)"><span class="pre">ndarray</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">tac_times_in_minutes</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.26)"><span class="pre">ndarray</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">t_thresh_in_minutes</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#pet_cli.graphical_analysis.alternative_logan_analysis_with_rsquared" title="Link to this definition">#</a></dt>
+<dd><p>Performs alternative logan analysis on given input TAC, regional TAC, times and threshold.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>input_tac_values</strong> (<em>np.ndarray</em>) -- Array of input TAC values</p></li>
+<li><p><strong>region_tac_values</strong> (<em>np.ndarray</em>) -- Array of ROI TAC values</p></li>
+<li><p><strong>tac_times_in_minutes</strong> (<em>np.ndarray</em>) -- Array of times in minutes.</p></li>
+<li><p><strong>t_thresh_in_minutes</strong> (<em>np.ndarray</em>) -- Threshold time in minutes. Line is fit for all values after the threshold.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>(slope, intercept, <span class="math notranslate nohighlight">\(R^2\)</span>)</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>tuple</p>
+</dd>
+</dl>
+<div class="admonition important">
+<p class="admonition-title">Important</p>
+<ul class="simple">
+<li><p>The interpretation of the values depends on the underlying kinetic model.</p></li>
+<li><p>We assume that the input TAC and ROI TAC values are sampled at the same times.</p></li>
+</ul>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pet_cli.graphical_analysis.get_graphical_analysis_method">
+<span class="sig-name descname"><span class="pre">get_graphical_analysis_method</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">method_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Callable</span></span></span><a class="headerlink" href="#pet_cli.graphical_analysis.get_graphical_analysis_method" title="Link to this definition">#</a></dt>
+<dd><p>Function for obtaining the appropriate graphical analysis method.</p>
+<p>This function accepts a string specifying a graphical time-activity curve (TAC) analysis method. It returns a
+reference to the function that performs the selected analysis method.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>method_name</strong> (<em>str</em>) -- The name of the graphical method. This should be one of the following strings: 'patlak',
+'logan', or 'alt_logan'.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A reference to the function that performs the corresponding graphical TAC analysis. The returned
+function will take arguments specific to the analysis method, such as input TAC values, tissue TAC values, TAC
+times in minutes, and threshold time in minutes.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>function</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>ValueError</strong> -- If <cite>method_name</cite> is not one of the supported graphical analysis methods, i.e., 'patlak', 'logan', or
+    'alt_logan'.</p>
+</dd>
+</dl>
+<p class="rubric">Example</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">pet_cli.graphical_analysis</span> <span class="kn">import</span> <span class="n">get_graphical_analysis_method</span> <span class="k">as</span> <span class="n">get_method</span>
+<span class="kn">from</span> <span class="nn">pet_cli.image_io</span> <span class="kn">import</span> <span class="n">load_tac</span>
+
+<span class="n">selected_func</span> <span class="o">=</span> <span class="n">get_method</span><span class="p">(</span><span class="s1">&#39;logan&#39;</span><span class="p">)</span>
+<span class="n">input_tac_values</span><span class="p">,</span> <span class="n">tac_times_in_minutes</span> <span class="o">=</span> <span class="n">load_tac</span><span class="p">(</span><span class="s2">&quot;PATH/TO/PLASMA/TAC.tsv&quot;</span><span class="p">)</span>
+<span class="n">tissue_tac_values</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">load_tac</span><span class="p">(</span><span class="s2">&quot;PATH/TO/ROI/TAC.tsv&quot;</span><span class="p">)</span>
+
+<span class="n">results</span> <span class="o">=</span> <span class="n">selected_func</span><span class="p">(</span><span class="n">input_tac_values</span><span class="p">,</span>
+                        <span class="n">tissue_tac_values</span><span class="p">,</span>
+                        <span class="n">tac_times_in_minutes</span><span class="p">,</span>
+                        <span class="n">t_thresh_in_minutes</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">results</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pet_cli.graphical_analysis.get_graphical_analysis_method_with_rsquared">
+<span class="sig-name descname"><span class="pre">get_graphical_analysis_method_with_rsquared</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">method_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Callable</span></span></span><a class="headerlink" href="#pet_cli.graphical_analysis.get_graphical_analysis_method_with_rsquared" title="Link to this definition">#</a></dt>
+<dd><p>Function for obtaining the appropriate graphical analysis method which also calculates the r-squared value.</p>
+<p>This function accepts a string specifying a graphical time-activity curve (TAC) analysis method. It returns a
+reference to the function that performs the selected analysis method.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>method_name</strong> (<em>str</em>) -- The name of the graphical method. This should be one of the following strings: 'patlak',
+'logan', or 'alt_logan'.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A reference to the function that performs the corresponding graphical TAC analysis. The returned
+function will take arguments specific to the analysis method, such as input TAC values, tissue TAC values, TAC
+times in minutes, and threshold time in minutes.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>function</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>ValueError</strong> -- If <cite>method_name</cite> is not one of the supported graphical analysis methods, i.e., 'patlak', 'logan', or
+    'alt_logan'.</p>
+</dd>
+</dl>
+<p class="rubric">Example</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">pet_cli.graphical_analysis</span> <span class="kn">import</span> <span class="n">get_graphical_analysis_method_with_rsquared</span> <span class="k">as</span> <span class="n">get_method</span>
+<span class="kn">from</span> <span class="nn">pet_cli.image_io</span> <span class="kn">import</span> <span class="n">load_tac</span>
+
+<span class="n">selected_func</span> <span class="o">=</span> <span class="n">get_method</span><span class="p">(</span><span class="s1">&#39;logan&#39;</span><span class="p">)</span>
+<span class="n">input_tac_values</span><span class="p">,</span> <span class="n">tac_times_in_minutes</span> <span class="o">=</span> <span class="n">load_tac</span><span class="p">(</span><span class="s2">&quot;PATH/TO/PLASMA/TAC.tsv&quot;</span><span class="p">)</span>
+<span class="n">tissue_tac_values</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">load_tac</span><span class="p">(</span><span class="s2">&quot;PATH/TO/ROI/TAC.tsv&quot;</span><span class="p">)</span>
+
+<span class="n">results</span> <span class="o">=</span> <span class="n">selected_func</span><span class="p">(</span><span class="n">input_tac_values</span><span class="p">,</span>
+                        <span class="n">tissue_tac_values</span><span class="p">,</span>
+                        <span class="n">tac_times_in_minutes</span><span class="p">,</span>
+                        <span class="n">t_thresh_in_minutes</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">results</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="pet_cli.graphical_analysis.GraphicalAnalysis">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">GraphicalAnalysis</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_tac_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">roi_tac_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_directory</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_filename_prefix</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pet_cli.graphical_analysis.GraphicalAnalysis" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p><a class="reference internal" href="#pet_cli.graphical_analysis.GraphicalAnalysis" title="pet_cli.graphical_analysis.GraphicalAnalysis"><code class="xref py py-class docutils literal notranslate"><span class="pre">GraphicalAnalysis</span></code></a> to handle Graphical Analysis for time activity curve (TAC) data.</p>
+<p>The <a class="reference internal" href="#pet_cli.graphical_analysis.GraphicalAnalysis" title="pet_cli.graphical_analysis.GraphicalAnalysis"><code class="xref py py-class docutils literal notranslate"><span class="pre">GraphicalAnalysis</span></code></a> class provides methods for managing TAC data analysis. The class is initialized
+with paths to input TAC data, region of interest (ROI) TAC data files, an output directory, and output filename prefix.</p>
+<p>Analysis is performed by specifying a method name and threshold time in the <a class="reference internal" href="#pet_cli.graphical_analysis.GraphicalAnalysis.run_analysis" title="pet_cli.graphical_analysis.GraphicalAnalysis.run_analysis"><code class="xref py py-func docutils literal notranslate"><span class="pre">run_analysis</span></code></a> method. The results
+of the analysis are stored within the instance's 'analysis_props' dictionary.</p>
+<p>Key methods include:
+- <a class="reference internal" href="#pet_cli.graphical_analysis.GraphicalAnalysis.init_analysis_props" title="pet_cli.graphical_analysis.GraphicalAnalysis.init_analysis_props"><code class="xref py py-func docutils literal notranslate"><span class="pre">init_analysis_props</span></code></a>: Initializes a dictionary with keys for analysis properties and default values.
+- <a class="reference internal" href="#pet_cli.graphical_analysis.GraphicalAnalysis.run_analysis" title="pet_cli.graphical_analysis.GraphicalAnalysis.run_analysis"><code class="xref py py-func docutils literal notranslate"><span class="pre">run_analysis</span></code></a>: Runs the graphical analysis on the data using a specific method.
+- <a class="reference internal" href="#pet_cli.graphical_analysis.GraphicalAnalysis.calculate_fit" title="pet_cli.graphical_analysis.GraphicalAnalysis.calculate_fit"><code class="xref py py-func docutils literal notranslate"><span class="pre">calculate_fit</span></code></a>: Calculates the best fit values for a given graphical analysis method.
+- <a class="reference internal" href="#pet_cli.graphical_analysis.GraphicalAnalysis.calculate_fit_properties" title="pet_cli.graphical_analysis.GraphicalAnalysis.calculate_fit_properties"><code class="xref py py-func docutils literal notranslate"><span class="pre">calculate_fit_properties</span></code></a>: Calculates and stores the properties related to the fitting process.
+- <a class="reference internal" href="#pet_cli.graphical_analysis.GraphicalAnalysis.save_analysis" title="pet_cli.graphical_analysis.GraphicalAnalysis.save_analysis"><code class="xref py py-func docutils literal notranslate"><span class="pre">save_analysis</span></code></a>: Stores the 'analysis_props' dictionary into a JSON file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>RuntimeError</strong> -- If the <a class="reference internal" href="#pet_cli.graphical_analysis.GraphicalAnalysis.run_analysis" title="pet_cli.graphical_analysis.GraphicalAnalysis.run_analysis"><code class="xref py py-func docutils literal notranslate"><span class="pre">run_analysis</span></code></a> method has not been run before <a class="reference internal" href="#pet_cli.graphical_analysis.GraphicalAnalysis.save_analysis" title="pet_cli.graphical_analysis.GraphicalAnalysis.save_analysis"><code class="xref py py-func docutils literal notranslate"><span class="pre">save_analysis</span></code></a> method.</p>
+</dd>
+<dt class="field-even">Variables<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>input_tac_path</strong> (<em>str</em>) -- The path to input TAC data file.</p></li>
+<li><p><strong>roi_tac_path</strong> (<em>str</em>) -- The path to ROI TAC data file.</p></li>
+<li><p><strong>output_directory</strong> (<em>str</em>) -- Directory where the output should be saved.</p></li>
+<li><p><strong>output_filename_prefix</strong> (<em>str</em>) -- Output filename prefix for saving the analysis.</p></li>
+<li><p><strong>analysis_props</strong> (<em>dict</em>) -- Property dictionary used to store results of the analysis.</p></li>
+</ul>
+</dd>
+</dl>
+<p>Initializes GraphicalAnalysis with provided paths and output details.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>input_tac_path</strong> (<em>str</em>) -- The path to the file containing input Time Activity Curve (TAC) data.</p></li>
+<li><p><strong>roi_tac_path</strong> (<em>str</em>) -- The path to the file containing Region of Interest (ROI) TAC data.</p></li>
+<li><p><strong>output_directory</strong> (<em>str</em>) -- The directory where the output of the analysis should be saved.</p></li>
+<li><p><strong>output_filename_prefix</strong> (<em>str</em>) -- The prefix for the name of output file(s).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="pet_cli.graphical_analysis.GraphicalAnalysis.init_analysis_props">
+<span class="sig-name descname"><span class="pre">init_analysis_props</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="headerlink" href="#pet_cli.graphical_analysis.GraphicalAnalysis.init_analysis_props" title="Link to this definition">#</a></dt>
+<dd><p>Initializes analysis properties dictionary.</p>
+<p>This method initializes a dictionary with keys for all the analysis properties and default values set to None.
+The paths to the input TAC and ROI TAC files are set from the object's properties.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>A dictionary with keys for each analysis property and default values. The keys include 'FilePathPTAC'
+(the file path to the input TAC file), 'FilePathTTAC' (the file path to the ROI TAC file), 'MethodName'
+(the name of the method used in the analysis), 'ThresholdTime' (the threshold time for the analysis),
+'StartFrameTime' and 'EndFrameTime' (the start and end times for the frame), 'NumberOfPointsFit' (The number
+of points used in the fit), 'Slope', 'Intercept' and 'RSquared' (the slope, intercept and R-squared of the fit).</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pet_cli.graphical_analysis.GraphicalAnalysis.run_analysis">
+<span class="sig-name descname"><span class="pre">run_analysis</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">method_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">t_thresh_in_mins</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pet_cli.graphical_analysis.GraphicalAnalysis.run_analysis" title="Link to this definition">#</a></dt>
+<dd><p>Runs the graphical analysis on the data using a specific method.</p>
+<p>This method is the main entry point to carry out the analysis. It executes the steps in order – first calculating
+the fit, then calculating the properties of the fit.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>method_name</strong> (<em>str</em>) -- The name of the graphical analysis method to be utilised.</p></li>
+<li><p><strong>t_thresh_in_mins</strong> (<em>float</em>) -- The threshold time in minutes for the analysis method.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+<dl class="simple">
+<dt>Side Effects:</dt><dd><p>Computes and updates the analysis-related properties in the object based on the provided method and threshold.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pet_cli.graphical_analysis.GraphicalAnalysis.calculate_fit">
+<span class="sig-name descname"><span class="pre">calculate_fit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">method_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">t_thresh_in_mins</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pet_cli.graphical_analysis.GraphicalAnalysis.calculate_fit" title="Link to this definition">#</a></dt>
+<dd><p>Calculates the best fit parameters for a graphical analysis method.</p>
+<p>This method applies the specified graphical analysis method to the Time Activity Curve (TAC) data and stores
+the slope, intercept, and r-squared values of the fit in the analysis properties.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>method_name</strong> (<em>str</em>) -- The name of the graphical analysis method for which the fit should be calculated.</p></li>
+<li><p><strong>t_thresh_in_mins</strong> (<em>float</em>) -- The threshold time in minutes for the analysis method.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+<dl class="simple">
+<dt>Side Effect:</dt><dd><p>Updates 'Slope', 'Intercept', and 'RSquared' in self.analysis_props dictionary with calculated fit parameters.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pet_cli.graphical_analysis.GraphicalAnalysis.calculate_fit_properties">
+<span class="sig-name descname"><span class="pre">calculate_fit_properties</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">method_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">t_thresh_in_mins</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pet_cli.graphical_analysis.GraphicalAnalysis.calculate_fit_properties" title="Link to this definition">#</a></dt>
+<dd><p>Calculates and stores the properties related to the fitting process.</p>
+<p>This method calculates several properties related to the fitting process, including the threshold time, the name
+of the method used, the start and end frame time, and the number of points used in the fit. These values are
+stored in the instance's <cite>analysis_props</cite> variable.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>method_name</strong> (<em>str</em>) -- The name of the methodology adopted for the fitting process.</p></li>
+<li><p><strong>t_thresh_in_mins</strong> (<em>float</em>) -- The threshold time (in minutes) used in the fitting process.</p></li>
+</ul>
+</dd>
+</dl>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This method relies on the <code class="xref py py-func docutils literal notranslate"><span class="pre">load_tac</span></code> function to load time-activity curve (TAC) data from the
+file at <code class="docutils literal notranslate"><span class="pre">input_tac_path</span></code>, and the <a class="reference internal" href="#pet_cli.graphical_analysis.get_index_from_threshold" title="pet_cli.graphical_analysis.get_index_from_threshold"><code class="xref py py-func docutils literal notranslate"><span class="pre">get_index</span></code></a>
+function to get the index from the threshold time.</p>
+</div>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<ul class="simple">
+<li><p><code class="xref py py-func docutils literal notranslate"><span class="pre">load_tac</span></code>: Function to safely load TAC data from a file.</p></li>
+<li><p><a class="reference internal" href="#pet_cli.graphical_analysis.get_index_from_threshold" title="pet_cli.graphical_analysis.get_index_from_threshold"><code class="xref py py-func docutils literal notranslate"><span class="pre">get_index_from_threshold</span></code></a>: Function to get the index from the threshold time.</p></li>
+</ul>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None. The results are stored within the instance's <cite>analysis_props</cite> variable.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pet_cli.graphical_analysis.GraphicalAnalysis.save_analysis">
+<span class="sig-name descname"><span class="pre">save_analysis</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pet_cli.graphical_analysis.GraphicalAnalysis.save_analysis" title="Link to this definition">#</a></dt>
+<dd><p>Saves the analysis properties to a JSON file.</p>
+<p>This method saves the 'analysis_props' dictionary to a JSON file. The file is saved in the specified output directory
+under a filename constructed from the 'output_filename_prefix' and the method name used in analysis. Before executing,
+the method checks if analysis has been run by verifying if 'RSquared' in 'analysis_props' is not None.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>RuntimeError</strong> -- If the 'run_analysis' method was not called before 'save_analysis' is invoked.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="pet_cli.tcms_as_convolutions.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title"><span class="section-number">3. </span>TCMs As Convolutions</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="pet_cli.reference_tissue_models.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title"><span class="section-number">5. </span>Reference Tissue Models</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#pet_cli.graphical_analysis._line_fitting_make_rhs_matrix_from_xdata"><code class="docutils literal notranslate"><span class="pre">_line_fitting_make_rhs_matrix_from_xdata</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#pet_cli.graphical_analysis.fit_line_to_data_using_lls"><code class="docutils literal notranslate"><span class="pre">fit_line_to_data_using_lls</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#pet_cli.graphical_analysis.fit_line_to_data_using_lls_with_rsquared"><code class="docutils literal notranslate"><span class="pre">fit_line_to_data_using_lls_with_rsquared</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#pet_cli.graphical_analysis.cumulative_trapezoidal_integral"><code class="docutils literal notranslate"><span class="pre">cumulative_trapezoidal_integral</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#pet_cli.graphical_analysis.calculate_patlak_x"><code class="docutils literal notranslate"><span class="pre">calculate_patlak_x</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#pet_cli.graphical_analysis.get_index_from_threshold"><code class="docutils literal notranslate"><span class="pre">get_index_from_threshold</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#pet_cli.graphical_analysis.patlak_analysis"><code class="docutils literal notranslate"><span class="pre">patlak_analysis</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#pet_cli.graphical_analysis.patlak_analysis_with_rsquared"><code class="docutils literal notranslate"><span class="pre">patlak_analysis_with_rsquared</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#pet_cli.graphical_analysis.logan_analysis"><code class="docutils literal notranslate"><span class="pre">logan_analysis</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#pet_cli.graphical_analysis.logan_analysis_with_rsquared"><code class="docutils literal notranslate"><span class="pre">logan_analysis_with_rsquared</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#pet_cli.graphical_analysis.alternative_logan_analysis"><code class="docutils literal notranslate"><span class="pre">alternative_logan_analysis</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#pet_cli.graphical_analysis.alternative_logan_analysis_with_rsquared"><code class="docutils literal notranslate"><span class="pre">alternative_logan_analysis_with_rsquared</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#pet_cli.graphical_analysis.get_graphical_analysis_method"><code class="docutils literal notranslate"><span class="pre">get_graphical_analysis_method</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#pet_cli.graphical_analysis.get_graphical_analysis_method_with_rsquared"><code class="docutils literal notranslate"><span class="pre">get_graphical_analysis_method_with_rsquared</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#pet_cli.graphical_analysis.GraphicalAnalysis"><code class="docutils literal notranslate"><span class="pre">GraphicalAnalysis</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pet_cli.graphical_analysis.GraphicalAnalysis.init_analysis_props"><code class="docutils literal notranslate"><span class="pre">GraphicalAnalysis.init_analysis_props</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pet_cli.graphical_analysis.GraphicalAnalysis.run_analysis"><code class="docutils literal notranslate"><span class="pre">GraphicalAnalysis.run_analysis</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pet_cli.graphical_analysis.GraphicalAnalysis.calculate_fit"><code class="docutils literal notranslate"><span class="pre">GraphicalAnalysis.calculate_fit</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pet_cli.graphical_analysis.GraphicalAnalysis.calculate_fit_properties"><code class="docutils literal notranslate"><span class="pre">GraphicalAnalysis.calculate_fit_properties</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pet_cli.graphical_analysis.GraphicalAnalysis.save_analysis"><code class="docutils literal notranslate"><span class="pre">GraphicalAnalysis.save_analysis</span></code></a></li>
+</ul>
+</li>
+</ul>
+  </nav></div>
+
+  <div class="sidebar-secondary-item">
+
+  <div class="tocsection sourcelink">
+    <a href="_sources/pet_cli.graphical_analysis.rst.txt">
+      <i class="fa-solid fa-file-lines"></i> Show Source
+    </a>
+  </div>
+</div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="_static/scripts/bootstrap.js?digest=8d27b9dea8ad943066ae"></script>
+<script src="_static/scripts/pydata-sphinx-theme.js?digest=8d27b9dea8ad943066ae"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2024, Furqan Dar, Bradley Judge, Noah Goldman.
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.2.6.
+    <br/>
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.15.2.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

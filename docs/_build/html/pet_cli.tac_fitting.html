@@ -1,0 +1,1340 @@
+
+<!DOCTYPE html>
+
+
+<html lang="English (US)" data-content_root="./" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>6. TAC Fitting With Tissue Compartment Models &#8212; PET Processing Module</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="_static/styles/theme.css?digest=8d27b9dea8ad943066ae" rel="stylesheet" />
+<link href="_static/styles/bootstrap.css?digest=8d27b9dea8ad943066ae" rel="stylesheet" />
+<link href="_static/styles/pydata-sphinx-theme.css?digest=8d27b9dea8ad943066ae" rel="stylesheet" />
+
+  
+  <link href="_static/vendor/fontawesome/6.5.1/css/all.min.css?digest=8d27b9dea8ad943066ae" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.1/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.1/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.1/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=a746c00c" />
+    <link rel="stylesheet" type="text/css" href="_static/plot_directive.css" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=8d27b9dea8ad943066ae" />
+<link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=8d27b9dea8ad943066ae" />
+  <script src="_static/vendor/fontawesome/6.5.1/js/all.min.js?digest=8d27b9dea8ad943066ae"></script>
+
+    <script src="_static/documentation_options.js?v=cd7df0db"></script>
+    <script src="_static/doctools.js?v=888ff710"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'pet_cli.tac_fitting';</script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="7. Parametric Images" href="pet_cli.parametric_images.html" />
+    <link rel="prev" title="5. Reference Tissue Models" href="pet_cli.reference_tissue_models.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="English (US)"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <a id="pst-skip-link" class="skip-link" href="#main-content">Skip to main content</a>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>
+    Back to top
+  </button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__primary"
+          id="__primary"/>
+  <label class="overlay overlay-primary" for="__primary"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__secondary"
+          id="__secondary"/>
+  <label class="overlay overlay-secondary" for="__secondary"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar">
+<div class="bd-header__inner bd-page-width">
+  <label class="sidebar-toggle primary-toggle" for="__primary">
+    <span class="fa-solid fa-bars"></span>
+  </label>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+
+<a class="navbar-brand logo" href="index.html">
+  
+  
+  
+  
+  
+  
+    <p class="title logo__title">PET Processing Module</p>
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav class="navbar-nav">
+  <ul class="bd-navbar-elements navbar-nav">
+    
+                    <li class="nav-item current active">
+                      <a class="nav-link nav-internal" href="modules.html">
+                        Modules
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="cli_ref.html">
+                        CLI Reference
+                      </a>
+                    </li>
+                
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+ <script>
+ document.write(`
+   <button class="btn navbar-btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<script>
+document.write(`
+  <button class="btn btn-sm navbar-btn theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="theme-switch nav-link" data-mode="light"><i class="fa-solid fa-sun fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="dark"><i class="fa-solid fa-moon fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg"></i></span>
+  </button>
+`);
+</script></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+ <script>
+ document.write(`
+   <button class="btn navbar-btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script>
+    </div>
+  
+
+  
+    <label class="sidebar-toggle secondary-toggle" for="__secondary" tabindex="0">
+      <span class="fa-solid fa-outdent"></span>
+    </label>
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          <div class="navbar-item">
+<nav class="navbar-nav">
+  <ul class="bd-navbar-elements navbar-nav">
+    
+                    <li class="nav-item current active">
+                      <a class="nav-link nav-internal" href="modules.html">
+                        Modules
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="cli_ref.html">
+                        CLI Reference
+                      </a>
+                    </li>
+                
+  </ul>
+</nav></div>
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<script>
+document.write(`
+  <button class="btn btn-sm navbar-btn theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="theme-switch nav-link" data-mode="light"><i class="fa-solid fa-sun fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="dark"><i class="fa-solid fa-moon fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg"></i></span>
+  </button>
+`);
+</script></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+<nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="pet_cli.image_io.html">1. Image IO</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pet_cli.tac_interpolation.html">2. TAC Interpolation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pet_cli.tcms_as_convolutions.html">3. TCMs As Convolutions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pet_cli.graphical_analysis.html">4. Graphical Analysis Of TACs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pet_cli.reference_tissue_models.html">5. Reference Tissue Models</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">6. TAC Fitting With Tissue Compartment Models</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pet_cli.parametric_images.html">7. Parametric Images</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pet_cli.graphical_plots.html">8. Graphical Analysis Plots</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pet_cli.image_visualization.html">9. Image Visualization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pet_cli.blood_input.html">10. Interpolation Blood Data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pet_cli.image_operations_4d.html">11. Special Operations on 4D Images</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pet_cli.register.html">12. Tools for Registration of PET to Anatomical and Atlas Space</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pet_cli.motion_corr.html">13. Tools to Motion Correct PET Images</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pet_cli.preproc.html">14. Python Interface for PET Preprocessing Tools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pet_cli.math_lib.html">15. Mathematical Operations Library</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pet_cli.bids_utils.html">16. BIDS File Management Utilities</a></li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+
+
+<nav aria-label="Breadcrumb">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="modules.html" class="nav-link">Modules</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page"><span...</li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="module-pet_cli.tac_fitting">
+<span id="tac-fitting-with-tissue-compartment-models"></span><h1><span class="section-number">6. </span>TAC Fitting With Tissue Compartment Models<a class="headerlink" href="#module-pet_cli.tac_fitting" title="Link to this heading">#</a></h1>
+<p>This module provides functionalities for fitting Tissue Compartment Models (TCM) to Time Activity Curves (TAC)
+using various methods.</p>
+<dl class="simple">
+<dt>It includes classes that handle different parts of the TAC fitting process:</dt><dd><ul class="simple">
+<li><p><a class="reference internal" href="#pet_cli.tac_fitting.TACFitter" title="pet_cli.tac_fitting.TACFitter"><code class="xref py py-class docutils literal notranslate"><span class="pre">TACFitter</span></code></a>: The primary class for fitting TCMs to TACs. It provides utility methods to prepare data,
+set up fitting parameters, and perform the curve fitting. This class allows fitting based on various TCM functions
+such as one-tissue compartment model (1TCM), 2TCM, and others.</p></li>
+<li><p><a class="reference internal" href="#pet_cli.tac_fitting.TACFitterWithoutBloodVolume" title="pet_cli.tac_fitting.TACFitterWithoutBloodVolume"><code class="xref py py-class docutils literal notranslate"><span class="pre">TACFitterWithoutBloodVolume</span></code></a>: A subclass of TACFitter designed for scenarios when there is no signal
+contribution from blood volume in the TAC. It utilises the functionalities of <a class="reference internal" href="#pet_cli.tac_fitting.TACFitter" title="pet_cli.tac_fitting.TACFitter"><code class="xref py py-class docutils literal notranslate"><span class="pre">TACFitter</span></code></a> and modifies
+certain methods to exclude the blood volume parameter.</p></li>
+</ul>
+</dd>
+</dl>
+<p>Functions and methods in this module use <a class="reference external" href="https://numpy.org/doc/stable/reference/index.html#module-numpy" title="(in NumPy v1.26)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">numpy</span></code></a> and <a class="reference external" href="https://docs.scipy.org/doc/scipy/index.html#module-scipy" title="(in SciPy v1.13.1)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">scipy</span></code></a> packages for data manipulation and optimization
+of the fitting process.</p>
+<p>Please refer to the documentation of each class for more detailed information.</p>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="pet_cli.tcms_as_convolutions.html#module-pet_cli.tcms_as_convolutions" title="pet_cli.tcms_as_convolutions"><code class="xref py py-mod docutils literal notranslate"><span class="pre">pet_cli.tcms_as_convolutions</span></code></a></p></li>
+<li><p><a class="reference internal" href="pet_cli.blood_input.html#module-pet_cli.blood_input" title="pet_cli.blood_input"><code class="xref py py-mod docutils literal notranslate"><span class="pre">pet_cli.blood_input</span></code></a></p></li>
+</ul>
+</div>
+<dl class="py function">
+<dt class="sig sig-object py" id="pet_cli.tac_fitting._get_fitting_params_for_tcm_func">
+<span class="sig-name descname"><span class="pre">_get_fitting_params_for_tcm_func</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">f</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Callable</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span></span></span><a class="headerlink" href="#pet_cli.tac_fitting._get_fitting_params_for_tcm_func" title="Link to this definition">#</a></dt>
+<dd><p>Fetches the parameter names from the function signature of a given Tissue Compartment Model (TCM) function. The
+functions can be one of the following:</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="pet_cli.tcms_as_convolutions.html#pet_cli.tcms_as_convolutions.generate_tac_1tcm_c1_from_tac" title="pet_cli.tcms_as_convolutions.generate_tac_1tcm_c1_from_tac"><code class="xref py py-func docutils literal notranslate"><span class="pre">generate_tac_1tcm_c1_from_tac</span></code></a></p></li>
+<li><p><a class="reference internal" href="pet_cli.tcms_as_convolutions.html#pet_cli.tcms_as_convolutions.generate_tac_2tcm_with_k4zero_cpet_from_tac" title="pet_cli.tcms_as_convolutions.generate_tac_2tcm_with_k4zero_cpet_from_tac"><code class="xref py py-func docutils literal notranslate"><span class="pre">generate_tac_2tcm_with_k4zero_cpet_from_tac</span></code></a></p></li>
+<li><p><a class="reference internal" href="pet_cli.tcms_as_convolutions.html#pet_cli.tcms_as_convolutions.generate_tac_serial_2tcm_cpet_from_tac" title="pet_cli.tcms_as_convolutions.generate_tac_serial_2tcm_cpet_from_tac"><code class="xref py py-func docutils literal notranslate"><span class="pre">generate_tac_serial_2tcm_cpet_from_tac</span></code></a></p></li>
+</ul>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>f</strong> (<em>Callable</em>) -- TCM function.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>List of parameter names.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>list</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pet_cli.tac_fitting._get_number_of_fit_params_for_tcm_func">
+<span class="sig-name descname"><span class="pre">_get_number_of_fit_params_for_tcm_func</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">f</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Callable</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">int</span></span></span><a class="headerlink" href="#pet_cli.tac_fitting._get_number_of_fit_params_for_tcm_func" title="Link to this definition">#</a></dt>
+<dd><p>Counts the number of fitting parameters for a given Tissue Compartment Model (TCM) function. The
+functions can be one of the following:</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="pet_cli.tcms_as_convolutions.html#pet_cli.tcms_as_convolutions.generate_tac_1tcm_c1_from_tac" title="pet_cli.tcms_as_convolutions.generate_tac_1tcm_c1_from_tac"><code class="xref py py-func docutils literal notranslate"><span class="pre">generate_tac_1tcm_c1_from_tac</span></code></a></p></li>
+<li><p><a class="reference internal" href="pet_cli.tcms_as_convolutions.html#pet_cli.tcms_as_convolutions.generate_tac_2tcm_with_k4zero_cpet_from_tac" title="pet_cli.tcms_as_convolutions.generate_tac_2tcm_with_k4zero_cpet_from_tac"><code class="xref py py-func docutils literal notranslate"><span class="pre">generate_tac_2tcm_with_k4zero_cpet_from_tac</span></code></a></p></li>
+<li><p><a class="reference internal" href="pet_cli.tcms_as_convolutions.html#pet_cli.tcms_as_convolutions.generate_tac_serial_2tcm_cpet_from_tac" title="pet_cli.tcms_as_convolutions.generate_tac_serial_2tcm_cpet_from_tac"><code class="xref py py-func docutils literal notranslate"><span class="pre">generate_tac_serial_2tcm_cpet_from_tac</span></code></a></p></li>
+</ul>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>f</strong> (<em>Callable</em>) -- TCM function.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Number of fitting parameters.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="pet_cli.tac_fitting.TACFitter">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">TACFitter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pTAC</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.26)"><span class="pre">ndarray</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">tTAC</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.26)"><span class="pre">ndarray</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">weights</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">None</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.26)"><span class="pre">ndarray</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tcm_func</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Callable</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fit_bounds</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">None</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.26)"><span class="pre">ndarray</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">resample_num</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">512</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">aif_fit_thresh_in_mins</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">30.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_iters</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">2500</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pet_cli.tac_fitting.TACFitter" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>A class used for fitting Tissue Compartment Models(TCM) to Time Activity Curves (TAC).</p>
+<p>It facilitates and simplifies the curve fitting process of TCM functions to TAC data. The class
+takes in raw TAC data for the plasma and tissue as input, and provides numerous utility methods
+to prepare data, set up fitting parameters, and perform the curve fitting. The resample method ensures
+data is appropriate for curve fitting by interpolating the TAC data over a regular time grid, and includes a
+time=0 data-point to the TACs if necessary.</p>
+<p>The class provides multiple options for setting up weights for the curve fitting residuals and for providing
+initial guesses and setting up bounds for the fitting parameters of the TCM function.</p>
+<p>Allows fitting on the basis of various TCM functions like one-tissue compartment model (1TCM), 2TCM, and others.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Variables<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>resample_times</strong> (<em>np.ndarray</em>) -- Times at which TACs are resampled.</p></li>
+<li><p><strong>resampled_t_tac</strong> (<em>np.ndarray</em>) -- Tissue TAC values resampled at these times.</p></li>
+<li><p><strong>p_tac_vals</strong> (<em>np.ndarray</em>) -- Plasma TAC values used for feeding to TCM function.</p></li>
+<li><p><strong>raw_t_tac</strong> (<em>np.ndarray</em>) -- Raw TAC times for tissue, fed at initialization.</p></li>
+<li><p><strong>weights</strong> (<em>np.ndarray</em>) -- Weights for handling residuals during the optimization process.</p></li>
+<li><p><strong>tgt_tac_vals</strong> (<em>np.ndarray</em>) -- Tissue TAC values to fit TCM model.</p></li>
+<li><p><strong>fit_param_number</strong> (<em>int</em>) -- Number of fitting parameters in the TCM function.</p></li>
+<li><p><strong>initial_guesses</strong> (<em>np.ndarray</em>) -- Initial guesses for all the parameters for curve fitting.</p></li>
+<li><p><strong>bounds_hi</strong> (<em>np.ndarray</em>) -- Upper bounds for all the parameters for curve fitting.</p></li>
+<li><p><strong>fit_results</strong> (<em>np.optimize.OptimizeResult</em>) -- The results of the fit, including optimized parameters and covariance
+matrix.</p></li>
+<li><p><strong>fit_param_names</strong> (<em>List</em><em>[</em><em>str</em><em>]</em>) -- Names of fitting parameters in the TCM function.</p></li>
+<li><p><strong>raw_p_tac</strong> (<em>np.ndarray</em>) -- Raw TAC times for plasma, fed at initialization.</p></li>
+<li><p><strong>resampled_p_tac</strong> (<em>np.ndarray</em>) -- Plasma TAC values resampled on these times.</p></li>
+<li><p><strong>sanitized_t_tac</strong> (<em>np.ndarray</em>) -- Sanitized version of tissue TAC times.</p></li>
+<li><p><strong>bounds_lo</strong> (<em>np.ndarray</em>) -- Lower bounds for all the parameters for curve fitting.</p></li>
+<li><p><strong>bounds</strong> (<em>np.ndarray</em>) -- Bounds for each parameter for curve fitting.</p></li>
+<li><p><strong>max_func_evals</strong> (<em>int</em>) -- Maximum number of function evaluations (iterations) for the optimization process.</p></li>
+<li><p><strong>tcm_func</strong> (<em>Callable</em>) -- The tissue compartment model (TCM) function to fit.</p></li>
+<li><p><strong>sanitized_p_tac</strong> (<em>np.ndarray</em>) -- Sanitized version of plasma TAC times.</p></li>
+<li><p><strong>delta_t</strong> (<em>float</em>) -- Delta between the newly created time steps in resampled times.</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Example</p>
+<p>In the following quick example, <code class="docutils literal notranslate"><span class="pre">tTAC</span></code> represents a tissue TAC (<code class="docutils literal notranslate"><span class="pre">[times,</span> <span class="pre">values]</span></code>) and <code class="docutils literal notranslate"><span class="pre">pTAC</span></code> represents the
+input function (<code class="docutils literal notranslate"><span class="pre">[times,</span> <span class="pre">values]</span></code>). Furthermore, we want to fit the provided <code class="docutils literal notranslate"><span class="pre">tTAC</span></code> with a 2TCM.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">pet_cli.tcms_as_convolutions</span> <span class="k">as</span> <span class="nn">pet_tcm</span>
+<span class="kn">import</span> <span class="nn">pet_cli.tac_fitting</span> <span class="k">as</span> <span class="nn">pet_fit</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="n">tcm_func</span> <span class="o">=</span> <span class="n">pet_tcm</span><span class="o">.</span><span class="n">generate_tac_serial_2tcm_cpet_from_tac</span>
+<span class="n">fit</span> <span class="o">=</span> <span class="n">pet_fit</span><span class="o">.</span><span class="n">TACFitter</span><span class="p">(</span><span class="n">pTAC</span><span class="o">=</span><span class="n">pTAC</span><span class="p">,</span> <span class="n">tTAC</span><span class="o">=</span><span class="n">tTAC</span><span class="p">,</span> <span class="n">tcm_func</span><span class="o">=</span><span class="n">tcm_func</span><span class="p">,</span> <span class="n">resample_num</span><span class="o">=</span><span class="mi">512</span><span class="p">)</span>
+<span class="n">fit</span><span class="o">.</span><span class="n">run_fit</span><span class="p">()</span>
+<span class="n">fit_params</span> <span class="o">=</span> <span class="n">fit</span><span class="o">.</span><span class="n">fit_results</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">fit_params</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="mi">3</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>In the following example, we use an FDG input function from the module-provided data, and simulate a noisy 1TCM
+TAC and fit it -- showing a plot of everything at the end.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">pet_cli.tcms_as_convolutions</span> <span class="k">as</span> <span class="nn">pet_tcm</span>
+<span class="kn">import</span> <span class="nn">pet_cli.tac_fitting</span> <span class="k">as</span> <span class="nn">pet_fit</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="kn">import</span> <span class="nn">pet_cli.testing_utils</span> <span class="k">as</span> <span class="nn">pet_tst</span>
+
+<span class="n">tcm_func</span> <span class="o">=</span> <span class="n">pet_tcm</span><span class="o">.</span><span class="n">generate_tac_1tcm_c1_from_tac</span>
+<span class="n">pTAC</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">loadtxt</span><span class="p">(</span><span class="s2">&quot;../data/tcm_tacs/fdg_plasma_clamp_evenly_resampled.txt&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">T</span><span class="p">)</span>
+<span class="n">tTAC</span> <span class="o">=</span> <span class="n">tcm_func</span><span class="p">(</span><span class="o">*</span><span class="n">pTAC</span><span class="p">,</span> <span class="n">k1</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">k2</span><span class="o">=</span><span class="mf">0.25</span><span class="p">,</span> <span class="n">vb</span><span class="o">=</span><span class="mf">0.05</span><span class="p">)</span>
+<span class="n">tTAC</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">pet_tst</span><span class="o">.</span><span class="n">add_gaussian_noise_to_tac_based_on_max</span><span class="p">(</span><span class="n">tTAC</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+
+<span class="n">fitter</span> <span class="o">=</span> <span class="n">pet_fit</span><span class="o">.</span><span class="n">TACFitter</span><span class="p">(</span><span class="n">pTAC</span><span class="o">=</span><span class="n">pTAC</span><span class="p">,</span> <span class="n">tTAC</span><span class="o">=</span><span class="n">tTAC</span><span class="p">,</span> <span class="n">tcm_func</span><span class="o">=</span><span class="n">tcm_func</span><span class="p">)</span>
+<span class="n">fitter</span><span class="o">.</span><span class="n">run_fit</span><span class="p">()</span>
+<span class="n">fit_params</span> <span class="o">=</span> <span class="n">fitter</span><span class="o">.</span><span class="n">fit_results</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+<span class="n">fit_tac</span> <span class="o">=</span> <span class="n">pet_tcm</span><span class="o">.</span><span class="n">generate_tac_1tcm_c1_from_tac</span><span class="p">(</span><span class="o">*</span><span class="n">pTAC</span><span class="p">,</span> <span class="o">*</span><span class="n">fit_params</span><span class="p">)</span>
+
+<span class="n">plotter</span> <span class="o">=</span> <span class="n">pet_tst</span><span class="o">.</span><span class="n">TACPlots</span><span class="p">()</span>
+<span class="n">plotter</span><span class="o">.</span><span class="n">add_tac</span><span class="p">(</span><span class="o">*</span><span class="n">pTAC</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;Input TAC&#39;</span><span class="p">,</span> <span class="n">pl_kwargs</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;color&#39;</span><span class="p">:</span><span class="s1">&#39;black&#39;</span><span class="p">,</span> <span class="s1">&#39;ls&#39;</span><span class="p">:</span><span class="s1">&#39;--&#39;</span><span class="p">})</span>
+<span class="n">plotter</span><span class="o">.</span><span class="n">add_tac</span><span class="p">(</span><span class="o">*</span><span class="n">tTAC</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;Tissue TAC&#39;</span><span class="p">,</span> <span class="n">pl_kwargs</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;color&#39;</span><span class="p">:</span><span class="s1">&#39;blue&#39;</span><span class="p">,</span> <span class="s1">&#39;ls&#39;</span><span class="p">:</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="s1">&#39;marker&#39;</span><span class="p">:</span><span class="s1">&#39;o&#39;</span><span class="p">,</span> <span class="s1">&#39;mec&#39;</span><span class="p">:</span><span class="s1">&#39;k&#39;</span><span class="p">})</span>
+<span class="n">plotter</span><span class="o">.</span><span class="n">add_tac</span><span class="p">(</span><span class="o">*</span><span class="n">fit_tac</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;Fit TAC&#39;</span><span class="p">,</span> <span class="n">pl_kwargs</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;color&#39;</span><span class="p">:</span><span class="s1">&#39;red&#39;</span><span class="p">,</span> <span class="s1">&#39;ls&#39;</span><span class="p">:</span><span class="s1">&#39;-&#39;</span><span class="p">,</span> <span class="s1">&#39;marker&#39;</span><span class="p">:</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="s1">&#39;lw&#39;</span><span class="p">:</span><span class="mf">2.5</span><span class="p">})</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>(<a class="reference download internal" download="" href="_downloads/05a0715ba9a3df3297da627667939aa9/pet_cli-tac_fitting-1.py"><code class="xref download docutils literal notranslate"><span class="pre">Source</span> <span class="pre">code</span></code></a>, <a class="reference download internal" download="" href="_downloads/328f38e274b6ed3113c6ca4a642fe5ca/pet_cli-tac_fitting-1.png"><code class="xref download docutils literal notranslate"><span class="pre">png</span></code></a>, <a class="reference download internal" download="" href="_downloads/b72e85dca111702bee5c57c67af6f0df/pet_cli-tac_fitting-1.hires.png"><code class="xref download docutils literal notranslate"><span class="pre">hires.png</span></code></a>, <a class="reference download internal" download="" href="_downloads/1b220a56acbb4e9f7bac66b478d70244/pet_cli-tac_fitting-1.pdf"><code class="xref download docutils literal notranslate"><span class="pre">pdf</span></code></a>)</p>
+<figure class="align-default" id="id1">
+<img alt="_images/pet_cli-tac_fitting-1.png" class="plot-directive" src="_images/pet_cli-tac_fitting-1.png" />
+<figcaption>
+<p><span class="caption-text">Fitting a noisy simulated 1TCM TAC.</span><a class="headerlink" href="#id1" title="Link to this image">#</a></p>
+</figcaption>
+</figure>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="#pet_cli.tac_fitting.TACFitterWithoutBloodVolume" title="pet_cli.tac_fitting.TACFitterWithoutBloodVolume"><code class="xref py py-class docutils literal notranslate"><span class="pre">TACFitterWithoutBloodVolume</span></code></a> to assume <span class="math notranslate nohighlight">\(V_B=0\)</span> and only fit the kinetic parameters.</p></li>
+</ul>
+</div>
+<p>Initialize TACFitter with provided arguments.</p>
+<dl class="simple">
+<dt>The init function performs several important operations:</dt><dd><ol class="arabic simple">
+<li><p>It sets the maximum number of function evaluations (iterations) for the optimization process.</p></li>
+<li><p>It sets the TCM function properties and initial bounds with the provided TCM function and fit bounds.</p></li>
+<li><p>It loads the raw tissue and plasma TACs and then resamples them evenly over a regular time grid.</p></li>
+<li><p>It determines the weights to be used for handling residuals during the optimization process.</p></li>
+<li><p>It sets the plasma TAC values and tissue TAC values to fit the TCM model.</p></li>
+</ol>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>pTAC</strong> (<em>np.ndarray</em>) -- The plasma TAC, with the form <code class="docutils literal notranslate"><span class="pre">[times,</span> <span class="pre">values]</span></code>.</p></li>
+<li><p><strong>tTAC</strong> (<em>np.ndarray</em>) -- The tissue TAC to which we will fit a TCM, with the form <code class="docutils literal notranslate"><span class="pre">[times,</span> <span class="pre">values]</span></code>.</p></li>
+<li><p><strong>weights</strong> (<em>float</em><em>, </em><em>np.ndarray</em><em> or </em><em>None</em><em>, </em><em>optional</em>) -- Weights for handling residuals during the optimization
+process. If None, all residuals are equally weighted. Defaults to None.</p></li>
+<li><p><strong>tcm_func</strong> (<em>Callable</em><em>, </em><em>optional</em>) -- The specific TCM function to be used for fitting. Defaults to None.</p></li>
+<li><p><strong>fit_bounds</strong> (<em>np.ndarray</em><em> or </em><em>None</em><em>, </em><em>optional</em>) -- Bounds for each parameter for curve fitting.
+If None, they will be guessed. Defaults to None.</p></li>
+<li><p><strong>resample_num</strong> (<em>int</em><em>, </em><em>optional</em>) -- The number of time points used when resampling TAC data. Defaults to 512.</p></li>
+<li><p><strong>aif_fit_thresh_in_mins</strong> (<em>float</em><em>, </em><em>optional</em>) -- The threshold in minutes when resampling. Defaults to 30.0.</p></li>
+<li><p><strong>max_iters</strong> (<em>int</em><em>, </em><em>optional</em>) -- Maximum number of function evaluations (iterations) for the optimization process.
+Defaults to 2500.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="pet_cli.tac_fitting.TACFitter.set_bounds_and_initial_guesses">
+<span class="sig-name descname"><span class="pre">set_bounds_and_initial_guesses</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fit_bounds</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.26)"><span class="pre">ndarray</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#pet_cli.tac_fitting.TACFitter.set_bounds_and_initial_guesses" title="Link to this definition">#</a></dt>
+<dd><p>Sets initial guesses for the fitting parameters, along with their lower and upper bounds.</p>
+<p>The function checks if a custom <code class="docutils literal notranslate"><span class="pre">fit_bounds</span></code> is provided. If yes, it makes
+sure that its shape is valid (that is, for each fitting parameter it requires
+the tuple: <code class="docutils literal notranslate"><span class="pre">(initial,</span> <span class="pre">lower,</span> <span class="pre">upper)</span></code>) and then sets it. But if no custom
+<cite>fit_bounds</cite> is given, it first initializes bounds to all zeros and then sets
+each parameter's bounds to <code class="docutils literal notranslate"><span class="pre">(0.1,</span> <span class="pre">1.0e-8,</span> <span class="pre">5.0)</span></code> except for the last parameter,
+which it sets to <code class="docutils literal notranslate"><span class="pre">(0.1,</span> <span class="pre">0.0,</span> <span class="pre">1.0)</span></code> because it corresponds to the fraction of blood
+and is physically constrained between 0 and 1. The function separately stores the initial points,
+lower and upper bounds in three different numpy arrays for later use.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>fit_bounds</strong> (<a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.26)"><em>numpy.ndarray</em></a>) -- A 2D numpy array containing initial parameter guesses, and their lower and
+upper bounds in the form of <code class="docutils literal notranslate"><span class="pre">(initial,</span> <span class="pre">lower,</span> <span class="pre">upper)</span></code>. The shape should be
+(<code class="docutils literal notranslate"><span class="pre">number_of_fit_params</span></code>, 3).</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>AssertionError</strong> -- If <cite>fit_bounds</cite> doesn't have a valid shape.</p>
+</dd>
+</dl>
+<dl class="simple">
+<dt>Side Effects:</dt><dd><ul class="simple">
+<li><dl class="simple">
+<dt>bounds (np.ndarray): Either takes custom defined <code class="docutils literal notranslate"><span class="pre">fit_bounds</span></code>, or sets the default bounds</dt><dd><p>for each parameter with the last parameter having bounds defined
+between 0 and 1.</p>
+</dd>
+</dl>
+</li>
+<li><p>initial_guesses (np.ndarray): Initial guesses for all the parameters.</p></li>
+<li><p>bounds_lo (np.ndarray): Lower bounds for all the parameters.</p></li>
+<li><p>bounds_hi (np.ndarray): Upper bounds for all the parameters.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pet_cli.tac_fitting.TACFitter.resample_tacs_evenly">
+<span class="sig-name descname"><span class="pre">resample_tacs_evenly</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fit_thresh_in_mins</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">resample_num</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#pet_cli.tac_fitting.TACFitter.resample_tacs_evenly" title="Link to this definition">#</a></dt>
+<dd><p>Resample pTAC and tTAC evenly with respect to time, and at the same times.</p>
+<p>The method takes a threshold in minutes and a resample number as inputs. It starts by sanitizing
+the pTAC and tTAC (prepending a <span class="math notranslate nohighlight">\(f(t=0)=0\)</span> point to data if necessary). A regularly sampled time is
+then generated using the start, end, and number of samples dictated by resample_num. Following this,
+an interpolation object is created using the <a class="reference internal" href="pet_cli.blood_input.html#pet_cli.blood_input.BloodInputFunction" title="pet_cli.blood_input.BloodInputFunction"><code class="xref py py-class docutils literal notranslate"><span class="pre">pet_cli.blood_input.BloodInputFunction</span></code></a> class for the pTAC.
+This allows both interpolation and extrapolation for times beyond the pTAC onto the new tTAC times.</p>
+<p>Finally, the method resamples the sanitized tTAC and pTAC across these new evenly distributed
+times to ensure that they are regularly spaced over time. These resampled values are stored for
+future computations. The <span class="math notranslate nohighlight">\(\Delta t\)</span> for the regularly sampled times is also stored.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>fit_thresh_in_mins</strong> (<em>float</em>) -- Threshold in minutes used for defining how to fit half of the pTAC.
+The fitting time threshold determines the point at which the pTAC
+switches from interpolation to fitting. It should be a positive float value.</p></li>
+<li><p><strong>resample_num</strong> (<em>int</em>) -- Number of samples to generate when resampling the tTAC. This will be the total
+number of samples in tTAC after it has been resampled. It should be a positive integer.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+<dl class="simple">
+<dt>Side Effects:</dt><dd><ul class="simple">
+<li><p>sanitized_t_tac (np.ndarray): Sanitized version of the original tTAC given during class initialization.</p></li>
+<li><p>sanitized_p_tac (np.ndarray): Sanitized version of the original pTAC given during class initialization.</p></li>
+<li><p>resample_times (np.ndarray): Regularly sampled time points generated from the start and end of sanitized
+tTAC, and the passed resample_num.</p></li>
+<li><p>delta_t (float): Delta between the newly created time steps in resample_times.</p></li>
+<li><p>resampled_t_tac (np.ndarray): tTAC resampled at the time points defined in resample_times.</p></li>
+<li><p>resampled_p_tac (np.ndarray): pTAC resampled and extrapolated (if necessary) at the time points defined in
+resample_times.</p></li>
+</ul>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="pet_cli.blood_input.html#pet_cli.blood_input.BloodInputFunction" title="pet_cli.blood_input.BloodInputFunction"><code class="xref py py-class docutils literal notranslate"><span class="pre">pet_cli.blood_input.BloodInputFunction</span></code></a></p></li>
+</ul>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pet_cli.tac_fitting.TACFitter.set_weights">
+<span class="sig-name descname"><span class="pre">set_weights</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">weights</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#pet_cli.tac_fitting.TACFitter.set_weights" title="Link to this definition">#</a></dt>
+<dd><p>Sets the weights for handling the residuals in the optimization process.</p>
+<dl class="simple">
+<dt>The <code class="docutils literal notranslate"><span class="pre">weights</span></code> parameter determines how weights will be used:</dt><dd><ul class="simple">
+<li><p>It can be a float which will generate the weights based on an exponential decay formula. We assume that
+the passed in float is the decay constant, <span class="math notranslate nohighlight">\(\lambda=\ln(2)/T_{1/2}\)</span>, where the half-life is in
+minutes. The weights are generated as: <span class="math notranslate nohighlight">\(\sigma_i=\sqrt{e^{-\lambda t_i}C(t_i)}\)</span>, to be used as the
+<code class="docutils literal notranslate"><span class="pre">sigma</span></code> parameter for <a class="reference external" href="https://docs.scipy.org/doc/scipy/reference/generated/scipy.optimize.curve_fit.html#scipy.optimize.curve_fit" title="(in SciPy v1.13.1)"><code class="xref py py-func docutils literal notranslate"><span class="pre">scipy.optimize.curve_fit</span></code></a>.</p></li>
+<li><p>If it's a numpy array, the weights are linearly interpolated on the calculated <cite>resample_times</cite>.</p></li>
+<li><p>If no specific value or an array is given, a numpy array of ones is used (i.e., it assumes equal weight).</p></li>
+</ul>
+</dd>
+</dl>
+<p>The method asserts that <code class="docutils literal notranslate"><span class="pre">resampled_t_tac</span></code> has been computed, thus <a class="reference internal" href="#pet_cli.tac_fitting.TACFitter.resample_tacs_evenly" title="pet_cli.tac_fitting.TACFitter.resample_tacs_evenly"><code class="xref py py-meth docutils literal notranslate"><span class="pre">resample_tacs_evenly</span></code></a>
+method should be run before this.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>weights</strong> (<em>Union</em><em>[</em><em>float</em><em>, </em><em>str</em><em>, </em><em>None</em><em>]</em>) -- Determines how weights will be computed. If a float, it is used
+as the exponential decay constant. If a numpy array, the provided weights
+are linearly interpolated on the calculated resampled times. If None,
+equal weights are assumed.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+<dl class="simple">
+<dt>Side Effects:</dt><dd><dl class="simple">
+<dt>weights (np.ndarray): Sets the weights attribute of the class based on logical conditions. Either</dt><dd><p>they are based on an exponential decay function, directly supplied, or assumed
+as equal weights.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pet_cli.tac_fitting.TACFitter.get_tcm_func_properties">
+<span class="sig-name descname"><span class="pre">get_tcm_func_properties</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tcm_func</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Callable</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#pet_cli.tac_fitting.TACFitter.get_tcm_func_properties" title="Link to this definition">#</a></dt>
+<dd><p>Analyzes the provided tissue compartment model (TCM) function, sets it for the current instance, and extracts
+related property information. The <code class="docutils literal notranslate"><span class="pre">tcm_func</span></code> should be one of the following:</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="pet_cli.tcms_as_convolutions.html#pet_cli.tcms_as_convolutions.generate_tac_1tcm_c1_from_tac" title="pet_cli.tcms_as_convolutions.generate_tac_1tcm_c1_from_tac"><code class="xref py py-func docutils literal notranslate"><span class="pre">generate_tac_1tcm_c1_from_tac</span></code></a></p></li>
+<li><p><a class="reference internal" href="pet_cli.tcms_as_convolutions.html#pet_cli.tcms_as_convolutions.generate_tac_2tcm_with_k4zero_cpet_from_tac" title="pet_cli.tcms_as_convolutions.generate_tac_2tcm_with_k4zero_cpet_from_tac"><code class="xref py py-func docutils literal notranslate"><span class="pre">generate_tac_2tcm_with_k4zero_cpet_from_tac</span></code></a></p></li>
+<li><p><a class="reference internal" href="pet_cli.tcms_as_convolutions.html#pet_cli.tcms_as_convolutions.generate_tac_serial_2tcm_cpet_from_tac" title="pet_cli.tcms_as_convolutions.generate_tac_serial_2tcm_cpet_from_tac"><code class="xref py py-func docutils literal notranslate"><span class="pre">generate_tac_serial_2tcm_cpet_from_tac</span></code></a></p></li>
+</ul>
+<p>The function extracts fitting parameter names and their count from the function signature and sets them in the
+current instance for later usage.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>tcm_func</strong> (<em>Callable</em>) -- A function that generates a TAC using a specific compartment model.</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>AssertionError</strong> -- If <code class="docutils literal notranslate"><span class="pre">tcm_func</span></code> is not one of the allowed TCM functions.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pet_cli.tac_fitting.TACFitter.sanitize_tac">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">sanitize_tac</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tac_times</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.26)"><span class="pre">ndarray</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">tac_vals</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.26)"><span class="pre">ndarray</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.26)"><span class="pre">ndarray</span></a></span></span><a class="headerlink" href="#pet_cli.tac_fitting.TACFitter.sanitize_tac" title="Link to this definition">#</a></dt>
+<dd><p>Makes sure that the Time-Activity Curve (TAC) starts from time zero.</p>
+<p>The method ensures that the TAC starts from time zero by checking the first timestamp. If it's not zero, a zero
+timestamp and value are prepended, otherwise, the first value is set to zero. This method assumes that
+<cite>tac_times</cite> and <cite>tac_vals</cite> arrays have the same shape.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>tac_times</strong> (<a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.26)"><em>numpy.ndarray</em></a>) -- The original times of the TAC.</p></li>
+<li><p><strong>tac_vals</strong> (<a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.26)"><em>numpy.ndarray</em></a>) -- The original values of the TAC.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The sanitized TAC: <code class="docutils literal notranslate"><span class="pre">[sanitized_times,</span> <span class="pre">sanitized_vals]</span></code>.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.26)">numpy.ndarray</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pet_cli.tac_fitting.TACFitter.resample_tac_on_new_times">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">resample_tac_on_new_times</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tac_times</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.26)"><span class="pre">ndarray</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">tac_vals</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.26)"><span class="pre">ndarray</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">new_times</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.26)"><span class="pre">ndarray</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.26)"><span class="pre">ndarray</span></a></span></span><a class="headerlink" href="#pet_cli.tac_fitting.TACFitter.resample_tac_on_new_times" title="Link to this definition">#</a></dt>
+<dd><p>Resamples the Time-Activity Curve (TAC) on given new time points by linear interpolation.</p>
+<p>The method performs a linear interpolation of <cite>tac_vals</cite> on <cite>new_times</cite> based on <cite>tac_times</cite>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>tac_times</strong> (<a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.26)"><em>numpy.ndarray</em></a>) -- The original times of the TAC.</p></li>
+<li><p><strong>tac_vals</strong> (<a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.26)"><em>numpy.ndarray</em></a>) -- The original values of the TAC.</p></li>
+<li><p><strong>new_times</strong> (<a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.26)"><em>numpy.ndarray</em></a>) -- The new times to resample the TAC on.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The resampled TAC: the resampled times and values. <code class="docutils literal notranslate"><span class="pre">[new_times,</span> <span class="pre">new_vals]</span></code>.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.26)">numpy.ndarray</a></p>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.interp.html#numpy.interp" title="(in NumPy v1.26)"><code class="xref py py-func docutils literal notranslate"><span class="pre">numpy.interp</span></code></a></p>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pet_cli.tac_fitting.TACFitter.fitting_func">
+<span class="sig-name descname"><span class="pre">fitting_func</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.26)"><span class="pre">ndarray</span></a></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">params</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.26)"><span class="pre">ndarray</span></a></span></span><a class="headerlink" href="#pet_cli.tac_fitting.TACFitter.fitting_func" title="Link to this definition">#</a></dt>
+<dd><p>A wrapper function to fit the Tissue Compartment Model (TCM) using given parameters.</p>
+<p>It calculates the results of the TCM function with the given times and parameters using the resampled pTAC.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x</strong> (<em>np.ndarray</em>) -- The independent data (time-points for TAC)</p></li>
+<li><p><strong>*params</strong> -- The parameters for the TCM function</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The values of the TCM function with the given parameters at the given x-values.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>np.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pet_cli.tac_fitting.TACFitter.run_fit">
+<span class="sig-name descname"><span class="pre">run_fit</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#pet_cli.tac_fitting.TACFitter.run_fit" title="Link to this definition">#</a></dt>
+<dd><p>Runs the optimization/fitting process on the data, using previously defined function and parameters.</p>
+<p>This method runs the curve fitting process on the TAC data, starting with the initial guesses
+for the parameters and the preset bounds for each. <code class="docutils literal notranslate"><span class="pre">fitting_func</span></code>, initial guesses and bounds
+should have been set prior to calling this method. Optimized fit results and fit covariances are stored in
+<code class="docutils literal notranslate"><span class="pre">fit_results</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+<dl class="simple">
+<dt>Side Effects:</dt><dd><ul class="simple">
+<li><p>fit_results (OptimizeResult): The results of the fit, including optimized parameters and covariance matrix.
+Fitted values can be extracted using fit_results.x, among other available attributes (refer to
+<a class="reference external" href="https://docs.scipy.org/doc/scipy/reference/generated/scipy.optimize.curve_fit.html#scipy.optimize.curve_fit" title="(in SciPy v1.13.1)"><code class="xref py py-func docutils literal notranslate"><span class="pre">scipy.optimize.curve_fit</span></code></a> documentation for more details).</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="pet_cli.tac_fitting.TACFitterWithoutBloodVolume">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">TACFitterWithoutBloodVolume</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pTAC</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.26)"><span class="pre">ndarray</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">tTAC</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.26)"><span class="pre">ndarray</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">weights</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.26)"><span class="pre">ndarray</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tcm_func</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Callable</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fit_bounds</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.26)"><span class="pre">ndarray</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">resample_num</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">2048</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">aif_fit_thresh_in_mins</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">30.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_iters</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">2500</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pet_cli.tac_fitting.TACFitterWithoutBloodVolume" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#pet_cli.tac_fitting.TACFitter" title="pet_cli.tac_fitting.TACFitter"><code class="xref py py-class docutils literal notranslate"><span class="pre">TACFitter</span></code></a></p>
+<p>A sub-class of TACFitter used specifically for fitting Tissue Compartment Models(TCM) to Time Activity Curves (TAC),
+when there is no signal contribution from blood volume in the TAC.</p>
+<p>It uses the functionalities of <a class="reference internal" href="#pet_cli.tac_fitting.TACFitter" title="pet_cli.tac_fitting.TACFitter"><code class="xref py py-class docutils literal notranslate"><span class="pre">TACFitter</span></code></a> and modifies the methods calculating the <code class="docutils literal notranslate"><span class="pre">tcm_function</span></code>
+properties and the bounds setting, and the wrapped <code class="docutils literal notranslate"><span class="pre">fitting_func</span></code> to ignore the blood volume parameter, <code class="docutils literal notranslate"><span class="pre">vb</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Variables<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>resample_times</strong> (<em>np.ndarray</em>) -- Times at which TACs are resampled.</p></li>
+<li><p><strong>resampled_t_tac</strong> (<em>np.ndarray</em>) -- Tissue TAC values resampled at these times.</p></li>
+<li><p><strong>p_tac_vals</strong> (<em>np.ndarray</em>) -- Plasma TAC values used for feeding to TCM function.</p></li>
+<li><p><strong>raw_t_tac</strong> (<em>np.ndarray</em>) -- Raw TAC times for tissue, fed at initialization.</p></li>
+<li><p><strong>weights</strong> (<em>np.ndarray</em>) -- Weights for handling residuals during the optimization process.</p></li>
+<li><p><strong>tgt_tac_vals</strong> (<em>np.ndarray</em>) -- Tissue TAC values to fit TCM model.</p></li>
+<li><p><strong>fit_param_number</strong> (<em>int</em>) -- Number of fitting parameters in the TCM function.</p></li>
+<li><p><strong>initial_guesses</strong> (<em>np.ndarray</em>) -- Initial guesses for all the parameters for curve fitting.</p></li>
+<li><p><strong>bounds_hi</strong> (<em>np.ndarray</em>) -- Upper bounds for all the parameters for curve fitting.</p></li>
+<li><p><strong>fit_results</strong> (<em>np.optimize.OptimizeResult</em>) -- The results of the fit, including optimized parameters and covariance
+matrix.</p></li>
+<li><p><strong>fit_param_names</strong> (<em>List</em><em>[</em><em>str</em><em>]</em>) -- Names of fitting parameters in the TCM function.</p></li>
+<li><p><strong>raw_p_tac</strong> (<em>np.ndarray</em>) -- Raw TAC times for plasma, fed at initialization.</p></li>
+<li><p><strong>resampled_p_tac</strong> (<em>np.ndarray</em>) -- Plasma TAC values resampled on these times.</p></li>
+<li><p><strong>sanitized_t_tac</strong> (<em>np.ndarray</em>) -- Sanitized version of tissue TAC times.</p></li>
+<li><p><strong>bounds_lo</strong> (<em>np.ndarray</em>) -- Lower bounds for all the parameters for curve fitting.</p></li>
+<li><p><strong>bounds</strong> (<em>np.ndarray</em>) -- Bounds for each parameter for curve fitting.</p></li>
+<li><p><strong>max_func_evals</strong> (<em>int</em>) -- Maximum number of function evaluations (iterations) for the optimization process.</p></li>
+<li><p><strong>tcm_func</strong> (<em>Callable</em>) -- The tissue compartment model (TCM) function to fit.</p></li>
+<li><p><strong>sanitized_p_tac</strong> (<em>np.ndarray</em>) -- Sanitized version of plasma TAC times.</p></li>
+<li><p><strong>delta_t</strong> (<em>float</em>) -- Delta between the newly created time steps in resampled times.</p></li>
+</ul>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="#pet_cli.tac_fitting.TACFitter" title="pet_cli.tac_fitting.TACFitter"><code class="xref py py-class docutils literal notranslate"><span class="pre">TACFitter</span></code></a></p></li>
+</ul>
+</div>
+<p>Initializes TACFitterWithoutBloodVolume with provided arguments. Inherits all arguments from parent class TACFitter.</p>
+<p>This <code class="docutils literal notranslate"><span class="pre">__init__</span></code> method, in comparison to TACFitter's <code class="docutils literal notranslate"><span class="pre">__init__</span></code>, executes the same initial operations but
+disregards the blood volume parameter. The significant steps are:</p>
+<blockquote>
+<div><ol class="arabic simple">
+<li><p>Calls the TACFitter's __init__ with the provided arguments.</p></li>
+<li><p>Sets the TCM function properties while eliminating blood volume.</p></li>
+<li><p>Sets the fitting bounds and initial guesses, again excluding blood volume.</p></li>
+</ol>
+</div></blockquote>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>pTAC</strong> (<em>np.ndarray</em>) -- The plasma TAC, with the form [times, values].</p></li>
+<li><p><strong>tTAC</strong> (<em>np.ndarray</em>) -- The tissue TAC to which we will fit a TCM, with the form [times, values].</p></li>
+<li><p><strong>weights</strong> (<em>float</em><em>, </em><em>np.ndarray</em><em> or </em><em>None</em><em>, </em><em>optional</em>) -- Weights for handling residuals during the optimization process.
+If None, all residuals are equally weighted. Defaults to None.</p></li>
+<li><p><strong>tcm_func</strong> (<em>Callable</em><em>, </em><em>optional</em>) -- The specific TCM function to be used for fitting. Defaults to None.</p></li>
+<li><p><strong>fit_bounds</strong> (<em>np.ndarray</em><em> or </em><em>None</em><em>, </em><em>optional</em>) -- Bounds for each parameter for curve fitting.
+If None, they will be guessed. Defaults to None.</p></li>
+<li><p><strong>resample_num</strong> (<em>int</em><em>, </em><em>optional</em>) -- The number of time points used when resampling TAC data. Defaults to 512.</p></li>
+<li><p><strong>aif_fit_thresh_in_mins</strong> (<em>float</em><em>, </em><em>optional</em>) -- The threshold in minutes when resampling. Defaults to 30.0.</p></li>
+<li><p><strong>max_iters</strong> (<em>int</em><em>, </em><em>optional</em>) -- Maximum number of function evaluations (iterations) for the optimization process.
+Defaults to 2500.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="simple">
+<dt>Side-effect:</dt><dd><p>Sets the TCM function properties and initial bounds while disregarding the blood volume parameter.</p>
+</dd>
+<dt>See Also</dt><dd><ul class="simple">
+<li><p><a class="reference internal" href="#pet_cli.tac_fitting.TACFitter" title="pet_cli.tac_fitting.TACFitter"><code class="xref py py-class docutils literal notranslate"><span class="pre">TACFitter</span></code></a></p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="pet_cli.tac_fitting.TACFitterWithoutBloodVolume.get_tcm_func_properties">
+<span class="sig-name descname"><span class="pre">get_tcm_func_properties</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tcm_func</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Callable</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#pet_cli.tac_fitting.TACFitterWithoutBloodVolume.get_tcm_func_properties" title="Link to this definition">#</a></dt>
+<dd><p>Overridden method to define a TCM function excluding blood volume.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">tcm_func</span></code> should be one of the following:</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="pet_cli.tcms_as_convolutions.html#pet_cli.tcms_as_convolutions.generate_tac_1tcm_c1_from_tac" title="pet_cli.tcms_as_convolutions.generate_tac_1tcm_c1_from_tac"><code class="xref py py-func docutils literal notranslate"><span class="pre">generate_tac_1tcm_c1_from_tac</span></code></a></p></li>
+<li><p><a class="reference internal" href="pet_cli.tcms_as_convolutions.html#pet_cli.tcms_as_convolutions.generate_tac_2tcm_with_k4zero_cpet_from_tac" title="pet_cli.tcms_as_convolutions.generate_tac_2tcm_with_k4zero_cpet_from_tac"><code class="xref py py-func docutils literal notranslate"><span class="pre">generate_tac_2tcm_with_k4zero_cpet_from_tac</span></code></a></p></li>
+<li><p><a class="reference internal" href="pet_cli.tcms_as_convolutions.html#pet_cli.tcms_as_convolutions.generate_tac_serial_2tcm_cpet_from_tac" title="pet_cli.tcms_as_convolutions.generate_tac_serial_2tcm_cpet_from_tac"><code class="xref py py-func docutils literal notranslate"><span class="pre">generate_tac_serial_2tcm_cpet_from_tac</span></code></a></p></li>
+</ul>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>tcm_func</strong> -- The chosen TCM function model.</p>
+</dd>
+</dl>
+<dl class="simple">
+<dt>Side-effect:</dt><dd><p>Sets <code class="docutils literal notranslate"><span class="pre">tcm_func</span></code>, <code class="docutils literal notranslate"><span class="pre">fit_param_names</span></code>, and <code class="docutils literal notranslate"><span class="pre">fit_param_number</span></code> attributes.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pet_cli.tac_fitting.TACFitterWithoutBloodVolume.set_bounds_and_initial_guesses">
+<span class="sig-name descname"><span class="pre">set_bounds_and_initial_guesses</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fit_bounds</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.26)"><span class="pre">ndarray</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#pet_cli.tac_fitting.TACFitterWithoutBloodVolume.set_bounds_and_initial_guesses" title="Link to this definition">#</a></dt>
+<dd><p>Overridden method to set bounds and initial guesses excluding blood volume parameter.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>fit_bounds</strong> -- The input bounds for fitting parameters.</p>
+</dd>
+</dl>
+<dl class="simple">
+<dt>Side-effect:</dt><dd><ul class="simple">
+<li><p>Sets <code class="docutils literal notranslate"><span class="pre">initial_guesses</span></code>, <code class="docutils literal notranslate"><span class="pre">bounds_lo</span></code>, <code class="docutils literal notranslate"><span class="pre">bounds_hi</span></code>, and <code class="docutils literal notranslate"><span class="pre">bounds</span></code>, ignoring the last parameter
+(blood volume).</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pet_cli.tac_fitting.TACFitterWithoutBloodVolume.fitting_func">
+<span class="sig-name descname"><span class="pre">fitting_func</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.26)"><span class="pre">ndarray</span></a></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">params</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.26)"><span class="pre">ndarray</span></a></span></span><a class="headerlink" href="#pet_cli.tac_fitting.TACFitterWithoutBloodVolume.fitting_func" title="Link to this definition">#</a></dt>
+<dd><p>Overridden method to fit the TCM model setting <code class="docutils literal notranslate"><span class="pre">vb=0.0</span></code> explicitly.</p>
+<p>It calculates the results of the TCM function with the given times and parameters using the resampled pTAC (with
+<code class="docutils literal notranslate"><span class="pre">vb=0.0</span></code>).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x</strong> -- The independent data (time-points for TAC).</p></li>
+<li><p><strong>*params</strong> -- Parameters of TCM function (excluding blood volume).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The values of the TCM function with the given parameters at the given x-values,
+with blood volume (<code class="docutils literal notranslate"><span class="pre">vb</span></code>) set to 0.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pet_cli.tac_fitting._safe_load_tac">
+<span class="sig-name descname"><span class="pre">_safe_load_tac</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.26)"><span class="pre">ndarray</span></a></span></span><a class="headerlink" href="#pet_cli.tac_fitting._safe_load_tac" title="Link to this definition">#</a></dt>
+<dd><p>Loads time-activity curves (TAC) from a file.</p>
+<p>Tries to read a TAC from specified file and raises an exception if unable to do so. We assume that the file has two
+columns, the first corresponding to time and second corresponding to activity.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>filename</strong> (<em>str</em>) -- The name of the file to be loaded.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A numpy array containing the loaded TAC. The first index corresponds to the times, and the second
+corresponds to the activity.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>np.ndarray</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>Exception</strong> -- An error occurred loading the TAC.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="pet_cli.tac_fitting.FitTCMToTAC">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">FitTCMToTAC</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_tac_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">roi_tac_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_directory</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_filename_prefix</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">compartment_model</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parameter_bounds</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">None</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.26)"><span class="pre">ndarray</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">weights</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">None</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.26)"><span class="pre">ndarray</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">resample_num</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">512</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">aif_fit_thresh_in_mins</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">40.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_func_iters</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">2500</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ignore_blood_volume</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pet_cli.tac_fitting.FitTCMToTAC" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>A class dedicated to perform Tissue Compartment Model (TCM) fitting to time-activity curves (TACs).</p>
+<p>This class consolidates all related TAC fitting functionalities. It first initializes relevant fitting parameters
+and paths to TAC data from input arguments. After initialization, an analysis with methods like <cite>run_analysis()</cite>
+and <cite>save_analysis()</cite> can be performed. The results, including fit parameters and properties, can be
+accessed after the analysis.</p>
+<p class="rubric">Example</p>
+<p>In the proceeding example, we assume that we have two tacs: an input function tac, and a region of interest
+(ROI) tac named 'input_tac.txt' and 'roi_tac.txt', respectively. Here, we are trying to fit the ROI tac to
+a standard serial 2TCM. Note that we are not fitting any time delay or dispersion corrections.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">pet_cli.tac_fitting</span> <span class="k">as</span> <span class="nn">pet_fit</span>
+
+<span class="n">fit_obj</span> <span class="o">=</span> <span class="n">pet_fit</span><span class="o">.</span><span class="n">FitTCMToTAC</span><span class="p">(</span><span class="n">input_tac_path</span><span class="o">=</span><span class="s1">&#39;./input_tac.txt&#39;</span><span class="p">,</span>
+                              <span class="n">roi_tac_path</span><span class="o">=</span><span class="s1">&#39;./roi_tac.txt&#39;</span><span class="p">,</span>
+                              <span class="n">output_directory</span><span class="o">=</span><span class="s1">&#39;./&#39;</span><span class="p">,</span>
+                              <span class="n">output_filename_prefix</span><span class="o">=</span><span class="s1">&#39;fit&#39;</span><span class="p">,</span>
+                              <span class="n">compartment_model</span><span class="o">=</span><span class="s1">&#39;serial-2tcm&#39;</span><span class="p">,</span>
+                              <span class="n">weights</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                              <span class="n">parameter_bounds</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">([[</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">],</span>
+                                                           <span class="p">[</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">],</span>
+                                                           <span class="p">[</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">],</span>
+                                                           <span class="p">[</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">],</span>
+                                                           <span class="p">[</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">]]),</span>
+                              <span class="n">resample_num</span><span class="o">=</span><span class="mi">512</span>
+                  <span class="p">)</span>
+<span class="n">fit_obj</span><span class="o">.</span><span class="n">run_analysis</span><span class="p">()</span>
+<span class="n">fit_obj</span><span class="o">.</span><span class="n">save_analysis</span><span class="p">()</span>
+</pre></div>
+</div>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="#pet_cli.tac_fitting.TACFitter" title="pet_cli.tac_fitting.TACFitter"><code class="xref py py-class docutils literal notranslate"><span class="pre">TACFitter</span></code></a></p></li>
+<li><p><a class="reference internal" href="#pet_cli.tac_fitting.TACFitterWithoutBloodVolume" title="pet_cli.tac_fitting.TACFitterWithoutBloodVolume"><code class="xref py py-class docutils literal notranslate"><span class="pre">TACFitterWithoutBloodVolume</span></code></a></p></li>
+</ul>
+</div>
+<p>Initializes an instance of the FitTCMToTAC class.</p>
+<dl class="simple">
+<dt>The initialization follows these steps:</dt><dd><ol class="arabic simple">
+<li><p>Saves absolute paths of the TAC files and output directory.</p></li>
+<li><p>Validates and stores the compartment model and the corresponding fitting function.</p></li>
+<li><p>Stores the other fitting parameters passed as arguments.</p></li>
+<li><p>Initializes the appropriate fitting object, depending on whether blood volume is considered or not.</p></li>
+<li><p>Initializes the analysis properties structure.</p></li>
+</ol>
+</dd>
+</dl>
+<p>After initialization, you can directly run and save the analysis using bundled methods <a class="reference internal" href="#pet_cli.tac_fitting.FitTCMToTAC.run_analysis" title="pet_cli.tac_fitting.FitTCMToTAC.run_analysis"><code class="xref py py-meth docutils literal notranslate"><span class="pre">run_analysis</span></code></a> and
+<a class="reference internal" href="#pet_cli.tac_fitting.FitTCMToTAC.save_analysis" title="pet_cli.tac_fitting.FitTCMToTAC.save_analysis"><code class="xref py py-meth docutils literal notranslate"><span class="pre">save_analysis</span></code></a>, respectively.</p>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="#pet_cli.tac_fitting.FitTCMToTAC.validated_tcm" title="pet_cli.tac_fitting.FitTCMToTAC.validated_tcm"><code class="xref py py-meth docutils literal notranslate"><span class="pre">validated_tcm</span></code></a></p></li>
+</ul>
+</div>
+<dl class="py method">
+<dt class="sig sig-object py" id="pet_cli.tac_fitting.FitTCMToTAC.init_analysis_props">
+<span class="sig-name descname"><span class="pre">init_analysis_props</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pet_cli.tac_fitting.FitTCMToTAC.init_analysis_props" title="Link to this definition">#</a></dt>
+<dd><p>Initialize the structure of the analysis properties dictionary. This dictionary can be saved as a JSON file for
+parsing the results.</p>
+<p>The dictionary structure is as follows:</p>
+<blockquote>
+<div><p>FilePathPTAC -&gt; path of the input TAC file
+FilePathTTAC -&gt; path of the ROI TAC file
+TissueCompartmentModel -&gt; type of tissue compartment model used
+IgnoreBloodVolume -&gt; flag indicating whether blood volume is being considered or not
+PTACFittingThresholdTime -&gt; threshold time for the AIF fitting
+FitProperties -&gt; an inner dictionary with empty lists/arrays as placeholders</p>
+<blockquote>
+<div><p>for FitValues, FitStdErr and Bounds. Also contains ResampleNum and MaxIterations.</p>
+</div></blockquote>
+</div></blockquote>
+<p>FitProperties will be updated during the analysis process.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Initialized dictionary with analysis properties structure.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>dict</p>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="#pet_cli.tac_fitting.FitTCMToTAC.calculate_fit_properties" title="pet_cli.tac_fitting.FitTCMToTAC.calculate_fit_properties"><code class="xref py py-meth docutils literal notranslate"><span class="pre">calculate_fit_properties</span></code></a></p></li>
+</ul>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pet_cli.tac_fitting.FitTCMToTAC.validated_tcm">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">validated_tcm</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">compartment_model</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#pet_cli.tac_fitting.FitTCMToTAC.validated_tcm" title="Link to this definition">#</a></dt>
+<dd><p>Validates the type of tissue compartment model.</p>
+<p>This method checks that the provided compartment model is one of the pre-defined options '1tcm', '2tcm-k4zero'
+or 'serial-2tcm'. The input is transformed to lowercase and spaces are replaced with hyphens before checking
+validity.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>compartment_model</strong> (<em>str</em>) -- The name of the compartment model.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The transformed name of the validated compartment model if it was valid.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>ValueError</strong> -- If the provided compartment model is not one of '1tcm', '2tcm-k4zero' or 'serial-2tcm'</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pet_cli.tac_fitting.FitTCMToTAC._get_tcm_function">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">_get_tcm_function</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">compartment_model</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Callable</span></span></span><a class="headerlink" href="#pet_cli.tac_fitting.FitTCMToTAC._get_tcm_function" title="Link to this definition">#</a></dt>
+<dd><p>Returns the corresponding function for the provided tissue compartment model used for the fitting class</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>compartment_model</strong> -- The name of the tissue compartment model.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The corresponding function for the tissue compartment model.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>function</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>KeyError</strong> -- If the provided tissue compartment model name does not correspond to any known models.</p>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="pet_cli.tcms_as_convolutions.html#pet_cli.tcms_as_convolutions.generate_tac_1tcm_c1_from_tac" title="pet_cli.tcms_as_convolutions.generate_tac_1tcm_c1_from_tac"><code class="xref py py-func docutils literal notranslate"><span class="pre">generate_tac_1tcm_c1_from_tac</span></code></a></p></li>
+<li><p><a class="reference internal" href="pet_cli.tcms_as_convolutions.html#pet_cli.tcms_as_convolutions.generate_tac_2tcm_with_k4zero_cpet_from_tac" title="pet_cli.tcms_as_convolutions.generate_tac_2tcm_with_k4zero_cpet_from_tac"><code class="xref py py-func docutils literal notranslate"><span class="pre">generate_tac_2tcm_with_k4zero_cpet_from_tac</span></code></a></p></li>
+<li><p><a class="reference internal" href="pet_cli.tcms_as_convolutions.html#pet_cli.tcms_as_convolutions.generate_tac_serial_2tcm_cpet_from_tac" title="pet_cli.tcms_as_convolutions.generate_tac_serial_2tcm_cpet_from_tac"><code class="xref py py-func docutils literal notranslate"><span class="pre">generate_tac_serial_2tcm_cpet_from_tac</span></code></a></p></li>
+<li><p><a class="reference internal" href="#pet_cli.tac_fitting.TACFitter" title="pet_cli.tac_fitting.TACFitter"><code class="xref py py-class docutils literal notranslate"><span class="pre">TACFitter</span></code></a></p></li>
+<li><p><a class="reference internal" href="#pet_cli.tac_fitting.TACFitterWithoutBloodVolume" title="pet_cli.tac_fitting.TACFitterWithoutBloodVolume"><code class="xref py py-class docutils literal notranslate"><span class="pre">TACFitterWithoutBloodVolume</span></code></a></p></li>
+</ul>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pet_cli.tac_fitting.FitTCMToTAC.run_analysis">
+<span class="sig-name descname"><span class="pre">run_analysis</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pet_cli.tac_fitting.FitTCMToTAC.run_analysis" title="Link to this definition">#</a></dt>
+<dd><p>Runs the fitting analysis given the file-paths and method.</p>
+<p><a class="reference internal" href="#pet_cli.tac_fitting.FitTCMToTAC.calculate_fit" title="pet_cli.tac_fitting.FitTCMToTAC.calculate_fit"><code class="xref py py-meth docutils literal notranslate"><span class="pre">calculate_fit</span></code></a> and <a class="reference internal" href="#pet_cli.tac_fitting.FitTCMToTAC.calculate_fit_properties" title="pet_cli.tac_fitting.FitTCMToTAC.calculate_fit_properties"><code class="xref py py-meth docutils literal notranslate"><span class="pre">calculate_fit_properties</span></code></a> are run, and the analysis-has-been-fun flag is set to
+true.</p>
+<p>This method first calculates the fit, then updates the analysis properties with the
+fit results and finally sets the flag denoting that analysis has been successfully run.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pet_cli.tac_fitting.FitTCMToTAC.save_analysis">
+<span class="sig-name descname"><span class="pre">save_analysis</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pet_cli.tac_fitting.FitTCMToTAC.save_analysis" title="Link to this definition">#</a></dt>
+<dd><p>Saves the analysis properties to a json file in the prescribed output directory.</p>
+<p>The saved filename is constructed as a combination of the output directory, filename prefix,
+&quot;analysis&quot;, and the used TissueCompartmentModel.
+If the analysis has not been run before calling this method, a RuntimeError is raised.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>RuntimeError</strong> -- If the method is called before the analysis has been run.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pet_cli.tac_fitting.FitTCMToTAC.calculate_fit_properties">
+<span class="sig-name descname"><span class="pre">calculate_fit_properties</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pet_cli.tac_fitting.FitTCMToTAC.calculate_fit_properties" title="Link to this definition">#</a></dt>
+<dd><p>Calculates the fit properties and updates the analysis properties.</p>
+<p>This method retrieves the fitting parameters and their standard errors from the fitting
+results, formats them for readability, and stores them in the analysis properties dictionary.
+Bounds to the fitting parameters are also formatted and stored.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pet_cli.tac_fitting.FitTCMToTAC.calculate_fit">
+<span class="sig-name descname"><span class="pre">calculate_fit</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pet_cli.tac_fitting.FitTCMToTAC.calculate_fit" title="Link to this definition">#</a></dt>
+<dd><p>Performs the fit and stores results to the instance.</p>
+<dl class="simple">
+<dt>This method has a series of actions which it performs in the following order:</dt><dd><ol class="arabic simple">
+<li><p>Loads TAC files using the <a class="reference internal" href="#pet_cli.tac_fitting._safe_load_tac" title="pet_cli.tac_fitting._safe_load_tac"><code class="xref py py-func docutils literal notranslate"><span class="pre">_safe_load_tac</span></code></a> method, specific to the paths stored in instance
+variables.</p></li>
+<li><p>Creates a fitting object with the relevant parameters and TACs.</p></li>
+<li><p>Runs the fit using the fitting object's <code class="docutils literal notranslate"><span class="pre">run_fit</span></code> method.</p></li>
+<li><p>Stores the results of the fit in the <code class="docutils literal notranslate"><span class="pre">fit_results</span></code> instance variable.</p></li>
+</ol>
+</dd>
+</dl>
+<p>As a result of this method, <code class="docutils literal notranslate"><span class="pre">fit_results</span></code> instance variable will hold the results of the fit, that
+can be used for further analysis or calculations.</p>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="#pet_cli.tac_fitting.TACFitter" title="pet_cli.tac_fitting.TACFitter"><code class="xref py py-class docutils literal notranslate"><span class="pre">TACFitter</span></code></a></p></li>
+<li><p><a class="reference internal" href="#pet_cli.tac_fitting.TACFitterWithoutBloodVolume" title="pet_cli.tac_fitting.TACFitterWithoutBloodVolume"><code class="xref py py-class docutils literal notranslate"><span class="pre">TACFitterWithoutBloodVolume</span></code></a></p></li>
+</ul>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pet_cli.tac_fitting.FitTCMToTAC._generate_pretty_params">
+<span class="sig-name descname"><span class="pre">_generate_pretty_params</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">results</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.26)"><span class="pre">ndarray</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="headerlink" href="#pet_cli.tac_fitting.FitTCMToTAC._generate_pretty_params" title="Link to this definition">#</a></dt>
+<dd><p>Transforms array of results into a formatted dictionary.</p>
+<p>This method formats the fitting results into a more human-readable form.
+If the fitting was done without blood volume, it formats all values as 'k_i': value.
+Otherwise it formats all but the last as 'k_i': value and the last as 'vb': value.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>results</strong> (<em>np.ndarray</em>) -- The array of fitting results.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><dl class="simple">
+<dt>The formatted fitting results as {param: value} pairs. In the case of</dt><dd><p>TACFitterWithBloodVolume, the last parameter will be named 'vb', others 'k_i'.
+In the case of TACFitterWithoutBloodVolume, parameters will be named 'k_i'.</p>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pet_cli.tac_fitting.FitTCMToTAC._generate_pretty_bounds">
+<span class="sig-name descname"><span class="pre">_generate_pretty_bounds</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">bounds</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.26)"><span class="pre">ndarray</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="headerlink" href="#pet_cli.tac_fitting.FitTCMToTAC._generate_pretty_bounds" title="Link to this definition">#</a></dt>
+<dd><p>Transforms array of bounds into a formatted dictionary.</p>
+<p>This method creates a dictionary of the fitting parameters and their corresponding
+initial values and lower and upper bounds. The keys of the dictionary are the names
+of the fitting parameters from <a class="reference internal" href="#pet_cli.tac_fitting.FitTCMToTAC._generate_pretty_params" title="pet_cli.tac_fitting.FitTCMToTAC._generate_pretty_params"><code class="xref py py-meth docutils literal notranslate"><span class="pre">_generate_pretty_params</span></code></a> method.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>bounds</strong> (<em>np.ndarray</em>) -- The array of parameter bounds.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><dl class="simple">
+<dt>The fitting parameters with their corresponding initial values, and lower and</dt><dd><p>upper bounds, in the following format: {param: {'initial': val, 'lo': lo, 'hi': hi}}</p>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="pet_cli.reference_tissue_models.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title"><span class="section-number">5. </span>Reference Tissue Models</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="pet_cli.parametric_images.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title"><span class="section-number">7. </span>Parametric Images</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#pet_cli.tac_fitting._get_fitting_params_for_tcm_func"><code class="docutils literal notranslate"><span class="pre">_get_fitting_params_for_tcm_func</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#pet_cli.tac_fitting._get_number_of_fit_params_for_tcm_func"><code class="docutils literal notranslate"><span class="pre">_get_number_of_fit_params_for_tcm_func</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#pet_cli.tac_fitting.TACFitter"><code class="docutils literal notranslate"><span class="pre">TACFitter</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pet_cli.tac_fitting.TACFitter.set_bounds_and_initial_guesses"><code class="docutils literal notranslate"><span class="pre">TACFitter.set_bounds_and_initial_guesses</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pet_cli.tac_fitting.TACFitter.resample_tacs_evenly"><code class="docutils literal notranslate"><span class="pre">TACFitter.resample_tacs_evenly</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pet_cli.tac_fitting.TACFitter.set_weights"><code class="docutils literal notranslate"><span class="pre">TACFitter.set_weights</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pet_cli.tac_fitting.TACFitter.get_tcm_func_properties"><code class="docutils literal notranslate"><span class="pre">TACFitter.get_tcm_func_properties</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pet_cli.tac_fitting.TACFitter.sanitize_tac"><code class="docutils literal notranslate"><span class="pre">TACFitter.sanitize_tac</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pet_cli.tac_fitting.TACFitter.resample_tac_on_new_times"><code class="docutils literal notranslate"><span class="pre">TACFitter.resample_tac_on_new_times</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pet_cli.tac_fitting.TACFitter.fitting_func"><code class="docutils literal notranslate"><span class="pre">TACFitter.fitting_func</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pet_cli.tac_fitting.TACFitter.run_fit"><code class="docutils literal notranslate"><span class="pre">TACFitter.run_fit</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#pet_cli.tac_fitting.TACFitterWithoutBloodVolume"><code class="docutils literal notranslate"><span class="pre">TACFitterWithoutBloodVolume</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pet_cli.tac_fitting.TACFitterWithoutBloodVolume.get_tcm_func_properties"><code class="docutils literal notranslate"><span class="pre">TACFitterWithoutBloodVolume.get_tcm_func_properties</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pet_cli.tac_fitting.TACFitterWithoutBloodVolume.set_bounds_and_initial_guesses"><code class="docutils literal notranslate"><span class="pre">TACFitterWithoutBloodVolume.set_bounds_and_initial_guesses</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pet_cli.tac_fitting.TACFitterWithoutBloodVolume.fitting_func"><code class="docutils literal notranslate"><span class="pre">TACFitterWithoutBloodVolume.fitting_func</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#pet_cli.tac_fitting._safe_load_tac"><code class="docutils literal notranslate"><span class="pre">_safe_load_tac</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#pet_cli.tac_fitting.FitTCMToTAC"><code class="docutils literal notranslate"><span class="pre">FitTCMToTAC</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pet_cli.tac_fitting.FitTCMToTAC.init_analysis_props"><code class="docutils literal notranslate"><span class="pre">FitTCMToTAC.init_analysis_props</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pet_cli.tac_fitting.FitTCMToTAC.validated_tcm"><code class="docutils literal notranslate"><span class="pre">FitTCMToTAC.validated_tcm</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pet_cli.tac_fitting.FitTCMToTAC._get_tcm_function"><code class="docutils literal notranslate"><span class="pre">FitTCMToTAC._get_tcm_function</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pet_cli.tac_fitting.FitTCMToTAC.run_analysis"><code class="docutils literal notranslate"><span class="pre">FitTCMToTAC.run_analysis</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pet_cli.tac_fitting.FitTCMToTAC.save_analysis"><code class="docutils literal notranslate"><span class="pre">FitTCMToTAC.save_analysis</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pet_cli.tac_fitting.FitTCMToTAC.calculate_fit_properties"><code class="docutils literal notranslate"><span class="pre">FitTCMToTAC.calculate_fit_properties</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pet_cli.tac_fitting.FitTCMToTAC.calculate_fit"><code class="docutils literal notranslate"><span class="pre">FitTCMToTAC.calculate_fit</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pet_cli.tac_fitting.FitTCMToTAC._generate_pretty_params"><code class="docutils literal notranslate"><span class="pre">FitTCMToTAC._generate_pretty_params</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pet_cli.tac_fitting.FitTCMToTAC._generate_pretty_bounds"><code class="docutils literal notranslate"><span class="pre">FitTCMToTAC._generate_pretty_bounds</span></code></a></li>
+</ul>
+</li>
+</ul>
+  </nav></div>
+
+  <div class="sidebar-secondary-item">
+
+  <div class="tocsection sourcelink">
+    <a href="_sources/pet_cli.tac_fitting.rst.txt">
+      <i class="fa-solid fa-file-lines"></i> Show Source
+    </a>
+  </div>
+</div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="_static/scripts/bootstrap.js?digest=8d27b9dea8ad943066ae"></script>
+<script src="_static/scripts/pydata-sphinx-theme.js?digest=8d27b9dea8ad943066ae"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2024, Furqan Dar, Bradley Judge, Noah Goldman.
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.2.6.
+    <br/>
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.15.2.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

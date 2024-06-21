@@ -8,7 +8,7 @@ In the top-level directory (where `setup.py` exists), we run the following comma
 
 ```shell
 python setup.py sdist #Generates a tarball that we can use pip to install
-pip install dist/pet_cli-0.0.1.tar.gz #Installs the package
+pip install dist/petpal-0.0.1.tar.gz #Installs the package
 ```
 
 ## Generating Documentation

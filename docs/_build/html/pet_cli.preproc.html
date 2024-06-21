@@ -1,0 +1,655 @@
+
+<!DOCTYPE html>
+
+
+<html lang="English (US)" data-content_root="./" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>14. Python Interface for PET Preprocessing Tools &#8212; PET Processing Module</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="_static/styles/theme.css?digest=8d27b9dea8ad943066ae" rel="stylesheet" />
+<link href="_static/styles/bootstrap.css?digest=8d27b9dea8ad943066ae" rel="stylesheet" />
+<link href="_static/styles/pydata-sphinx-theme.css?digest=8d27b9dea8ad943066ae" rel="stylesheet" />
+
+  
+  <link href="_static/vendor/fontawesome/6.5.1/css/all.min.css?digest=8d27b9dea8ad943066ae" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.1/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.1/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.1/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=a746c00c" />
+    <link rel="stylesheet" type="text/css" href="_static/plot_directive.css" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=8d27b9dea8ad943066ae" />
+<link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=8d27b9dea8ad943066ae" />
+  <script src="_static/vendor/fontawesome/6.5.1/js/all.min.js?digest=8d27b9dea8ad943066ae"></script>
+
+    <script src="_static/documentation_options.js?v=cd7df0db"></script>
+    <script src="_static/doctools.js?v=888ff710"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'pet_cli.preproc';</script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="15. Mathematical Operations Library" href="pet_cli.math_lib.html" />
+    <link rel="prev" title="13. Tools to Motion Correct PET Images" href="pet_cli.motion_corr.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="English (US)"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <a id="pst-skip-link" class="skip-link" href="#main-content">Skip to main content</a>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>
+    Back to top
+  </button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__primary"
+          id="__primary"/>
+  <label class="overlay overlay-primary" for="__primary"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__secondary"
+          id="__secondary"/>
+  <label class="overlay overlay-secondary" for="__secondary"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar">
+<div class="bd-header__inner bd-page-width">
+  <label class="sidebar-toggle primary-toggle" for="__primary">
+    <span class="fa-solid fa-bars"></span>
+  </label>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+
+<a class="navbar-brand logo" href="index.html">
+  
+  
+  
+  
+  
+  
+    <p class="title logo__title">PET Processing Module</p>
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav class="navbar-nav">
+  <ul class="bd-navbar-elements navbar-nav">
+    
+                    <li class="nav-item current active">
+                      <a class="nav-link nav-internal" href="modules.html">
+                        Modules
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="cli_ref.html">
+                        CLI Reference
+                      </a>
+                    </li>
+                
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+ <script>
+ document.write(`
+   <button class="btn navbar-btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<script>
+document.write(`
+  <button class="btn btn-sm navbar-btn theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="theme-switch nav-link" data-mode="light"><i class="fa-solid fa-sun fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="dark"><i class="fa-solid fa-moon fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg"></i></span>
+  </button>
+`);
+</script></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+ <script>
+ document.write(`
+   <button class="btn navbar-btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script>
+    </div>
+  
+
+  
+    <label class="sidebar-toggle secondary-toggle" for="__secondary" tabindex="0">
+      <span class="fa-solid fa-outdent"></span>
+    </label>
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          <div class="navbar-item">
+<nav class="navbar-nav">
+  <ul class="bd-navbar-elements navbar-nav">
+    
+                    <li class="nav-item current active">
+                      <a class="nav-link nav-internal" href="modules.html">
+                        Modules
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="cli_ref.html">
+                        CLI Reference
+                      </a>
+                    </li>
+                
+  </ul>
+</nav></div>
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<script>
+document.write(`
+  <button class="btn btn-sm navbar-btn theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="theme-switch nav-link" data-mode="light"><i class="fa-solid fa-sun fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="dark"><i class="fa-solid fa-moon fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg"></i></span>
+  </button>
+`);
+</script></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+<nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="pet_cli.image_io.html">1. Image IO</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pet_cli.tac_interpolation.html">2. TAC Interpolation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pet_cli.tcms_as_convolutions.html">3. TCMs As Convolutions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pet_cli.graphical_analysis.html">4. Graphical Analysis Of TACs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pet_cli.reference_tissue_models.html">5. Reference Tissue Models</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pet_cli.tac_fitting.html">6. TAC Fitting With Tissue Compartment Models</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pet_cli.parametric_images.html">7. Parametric Images</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pet_cli.graphical_plots.html">8. Graphical Analysis Plots</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pet_cli.image_visualization.html">9. Image Visualization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pet_cli.blood_input.html">10. Interpolation Blood Data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pet_cli.image_operations_4d.html">11. Special Operations on 4D Images</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pet_cli.register.html">12. Tools for Registration of PET to Anatomical and Atlas Space</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pet_cli.motion_corr.html">13. Tools to Motion Correct PET Images</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">14. Python Interface for PET Preprocessing Tools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pet_cli.math_lib.html">15. Mathematical Operations Library</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pet_cli.bids_utils.html">16. BIDS File Management Utilities</a></li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+
+
+<nav aria-label="Breadcrumb">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="modules.html" class="nav-link">Modules</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page"><span...</li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="module-pet_cli.preproc">
+<span id="python-interface-for-pet-preprocessing-tools"></span><h1><span class="section-number">14. </span>Python Interface for PET Preprocessing Tools<a class="headerlink" href="#module-pet_cli.preproc" title="Link to this heading">#</a></h1>
+<p>Introduces class <a class="reference internal" href="#pet_cli.preproc.PreProc" title="pet_cli.preproc.PreProc"><code class="xref py py-class docutils literal notranslate"><span class="pre">PreProc</span></code></a> which handles preprocessing of PET and other
+neuroimaging data for a PET study. Acts as a wrapper for other tools supplied
+in <code class="docutils literal notranslate"><span class="pre">PPM</span></code>.</p>
+<div class="admonition-todo admonition" id="id1">
+<p class="admonition-title">Todo</p>
+<ul class="simple">
+<li><p>Check if input files exist, throw error if no</p></li>
+</ul>
+</div>
+<dl class="py class">
+<dt class="sig sig-object py" id="pet_cli.preproc.PreProc">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">PreProc</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">output_directory</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_filename_prefix</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pet_cli.preproc.PreProc" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p><code class="xref py py-class docutils literal notranslate"><span class="pre">ImageOps4D</span></code> to provide basic implementations of the preprocessing functions in module
+<code class="docutils literal notranslate"><span class="pre">image_operations_4d</span></code>. Uses a properties dictionary <code class="docutils literal notranslate"><span class="pre">preproc_props</span></code> to
+determine the inputs and outputs of preprocessing methods.</p>
+<dl class="simple">
+<dt>Key methods include:</dt><dd><ul class="simple">
+<li><p><a class="reference internal" href="#pet_cli.preproc.PreProc.update_props" title="pet_cli.preproc.PreProc.update_props"><code class="xref py py-meth docutils literal notranslate"><span class="pre">update_props</span></code></a>: Update properties dictionary <code class="docutils literal notranslate"><span class="pre">preproc_props</span></code>
+with new properties.</p></li>
+<li><p><a class="reference internal" href="#pet_cli.preproc.PreProc.run_preproc" title="pet_cli.preproc.PreProc.run_preproc"><code class="xref py py-meth docutils literal notranslate"><span class="pre">run_preproc</span></code></a>: Given a method in <code class="docutils literal notranslate"><span class="pre">image_operations_4d</span></code>, run the
+provided method with inputs and outputs determined by properties
+dictionary <code class="docutils literal notranslate"><span class="pre">preproc_props</span></code>.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Variables<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>-output_directory</strong> -- Directory in which files are written to.</p></li>
+<li><p><strong>-output_filename_prefix</strong> -- Prefix appended to beginning of written
+files.</p></li>
+<li><p><strong>-preproc_props</strong> -- Properties dictionary used to set parameters for PET
+preprocessing. See <a class="reference internal" href="#pet_cli.preproc.PreProc._init_preproc_props" title="pet_cli.preproc.PreProc._init_preproc_props"><code class="xref py py-meth docutils literal notranslate"><span class="pre">_init_preproc_props</span></code></a> for further details.</p></li>
+</ul>
+</dd>
+</dl>
+<p>Example:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">output_directory</span> <span class="o">=</span> <span class="s1">&#39;/path/to/processing&#39;</span>
+<span class="n">output_filename_prefix</span> <span class="o">=</span> <span class="s1">&#39;sub-01&#39;</span>
+<span class="n">sub_01</span> <span class="o">=</span> <span class="n">pet_cli</span><span class="o">.</span><span class="n">preproc</span><span class="o">.</span><span class="n">PreProc</span><span class="p">(</span><span class="n">output_directory</span><span class="p">,</span><span class="n">output_filename_prefix</span><span class="p">)</span>
+<span class="n">params</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s1">&#39;FilePathWSSInput&#39;</span><span class="p">:</span> <span class="s1">&#39;/path/to/pet.nii.gz&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;FilePathAnat&#39;</span><span class="p">:</span> <span class="s1">&#39;/path/to/mri.nii.gz&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;HalfLife&#39;</span><span class="p">:</span> <span class="mf">1220.04</span><span class="p">,</span>  <span class="c1"># C11 half-life in seconds</span>
+    <span class="s1">&#39;FilePathRegInp&#39;</span><span class="p">:</span> <span class="s1">&#39;/path/to/image/to/be/registered.nii.gz&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;FilePathMocoInp&#39;</span><span class="p">:</span> <span class="s1">&#39;/path/to/image/to/be/motion/corrected.nii.gz&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;MotionTarget&#39;</span><span class="p">:</span> <span class="s1">&#39;/path/to/pet/reference/target.nii.gz&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;FilePathTACInput&#39;</span><span class="p">:</span> <span class="s1">&#39;/path/to/registered/pet.nii.gz&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;FilePathLabelMap&#39;</span><span class="p">:</span> <span class="s1">&#39;/path/to/label/map.tsv&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;FilePathSeg&#39;</span><span class="p">:</span> <span class="s1">&#39;/path/to/segmentation.nii.gz&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;TimeFrameKeyword&#39;</span><span class="p">:</span> <span class="s1">&#39;FrameTimesStart&#39;</span><span class="p">,</span>  <span class="c1"># using start time or midpoint reference time</span>
+    <span class="s1">&#39;Verbose&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+<span class="p">}</span>
+<span class="n">sub_01</span><span class="o">.</span><span class="n">update_props</span><span class="p">(</span><span class="n">params</span><span class="p">)</span>
+<span class="n">sub_01</span><span class="o">.</span><span class="n">run_preproc</span><span class="p">(</span><span class="s1">&#39;weighted_series_sum&#39;</span><span class="p">)</span>
+<span class="n">sub_01</span><span class="o">.</span><span class="n">run_preproc</span><span class="p">(</span><span class="s1">&#39;motion_corr&#39;</span><span class="p">)</span>
+<span class="n">sub_01</span><span class="o">.</span><span class="n">run_preproc</span><span class="p">(</span><span class="s1">&#39;register_pet&#39;</span><span class="p">)</span>
+<span class="n">sub_01</span><span class="o">.</span><span class="n">run_preproc</span><span class="p">(</span><span class="s1">&#39;write_tacs&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><code class="xref py py-class docutils literal notranslate"><span class="pre">ImageIO</span></code></p>
+</div>
+<p>Initialize PreProc class.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>output_directory</strong> (<em>str</em>) -- Directory to which output images are saved.</p></li>
+<li><p><strong>output_filename_prefix</strong> (<em>str</em>) -- Prefix appended to beginning of saved
+files. Typically subject ID.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="pet_cli.preproc.PreProc._init_preproc_props">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">_init_preproc_props</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="headerlink" href="#pet_cli.preproc.PreProc._init_preproc_props" title="Link to this definition">#</a></dt>
+<dd><p>Initializes preproc properties dictionary.</p>
+<p>The available fields in the preproc properties dictionary are described
+as follows:
+* FilePathWSSInput (str): Path to file on which to compute weighted series sum.
+* FilePathMocoInp (str): Path to PET file to be motion corrected.
+* FilePathRegInp (str): Path to PET file to be registered to anatomical data.
+* FilePathAnat (str): Path to anatomical image to which <code class="docutils literal notranslate"><span class="pre">FilePathRegInp</span></code> is registered.
+* FilePathTACInput (str): Path to PET file with which TACs are computed.
+* FilePathSeg (str): Path to a segmentation image in anatomical space.
+* FilePathLabelMap (str): Path to a label map file, indexing segmentation values to ROIs.
+* FilePathAtlas (str): Path to atlas image, e.g. MNI152 T1 atlas.
+* FilePathSUVRInput (str): Path to summed or parametric image on which to normalize to SUVR.
+* FilePathBlurInput (str): Path to image to blur with a gaussian kernal.
+* FilePathFSLPremat (str): Path to initial affine transform matrix in FSL format, used for FSL type warping.
+* FilePathFSLPostmat (str): Path to post-warp affine transform matrix in FSL format, used for FSL type warping.
+* FilePathWarpRef (str): Path to reference used to compute warp to atlas space. Typically anatomical scan.
+* FilePathAntsXfm (str): Path to list of Ants transforms used to apply ANTs type warping.
+* HalfLife (float): Half life of radioisotope. Used for a number of tools.
+* MotionTarget (str | tuple): Target for transformation methods. See <code class="xref py py-meth docutils literal notranslate"><span class="pre">determine_motion_target</span></code>.
+* MocoPars (keyword arguments): Keyword arguments fed into the method call <code class="xref py py-meth docutils literal notranslate"><span class="pre">ants.motion_correction</span></code>.
+* RegPars (keyword arguments): Keyword arguments fed into the method call <code class="xref py py-meth docutils literal notranslate"><span class="pre">ants.registration</span></code> while performing PET to anat registration.
+* WarpPars (keyword arguments): Keyword arguments fed into the method call <code class="xref py py-meth docutils literal notranslate"><span class="pre">ants.registration</span></code> while performing PET to atlas registration.
+* RefRegion (int): Reference region used to normalize SUVR.
+* BlurSize (float): Size of gaussian kernal used to blur image.
+* RegionExtract (int): Region index in the segmentation image to extract TAC from, if running TAC on a single ROI.
+* TimeFrameKeyword (str): Keyword in metadata file corresponding to frame timing array to be used in analysis.
+* Verbose (bool): Set to <code class="docutils literal notranslate"><span class="pre">True</span></code> to output processing information.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pet_cli.preproc.PreProc.update_props">
+<span class="sig-name descname"><span class="pre">update_props</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">new_preproc_props</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="headerlink" href="#pet_cli.preproc.PreProc.update_props" title="Link to this definition">#</a></dt>
+<dd><p>Update the processing properties with items from a new dictionary.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>new_preproc_props</strong> (<em>dict</em>) -- Dictionary with updated properties
+values. Can have any or all fields filled from the available
+list of fields.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The updated <code class="docutils literal notranslate"><span class="pre">preproc_props</span></code> dictionary.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>updated_props (dict)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pet_cli.preproc.PreProc._write_params_json">
+<span class="sig-name descname"><span class="pre">_write_params_json</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pet_cli.preproc.PreProc._write_params_json" title="Link to this definition">#</a></dt>
+<dd><p>Write current class properties to json params file.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pet_cli.preproc.PreProc._read_params_json">
+<span class="sig-name descname"><span class="pre">_read_params_json</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="headerlink" href="#pet_cli.preproc.PreProc._read_params_json" title="Link to this definition">#</a></dt>
+<dd><p>Read a json params file and set the class properties to the saved params.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pet_cli.preproc.PreProc._check_method_props_exist">
+<span class="sig-name descname"><span class="pre">_check_method_props_exist</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">method_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#pet_cli.preproc.PreProc._check_method_props_exist" title="Link to this definition">#</a></dt>
+<dd><p>Check if all necessary properties exist in the <code class="docutils literal notranslate"><span class="pre">props</span></code> dictionary to
+run the given method.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>method_name</strong> (<em>str</em>) -- Name of method to be checked. Must be name of
+a method in this module.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pet_cli.preproc.PreProc._generate_outfile_path">
+<span class="sig-name descname"><span class="pre">_generate_outfile_path</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">method_short</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">extension</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'nii.gz'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pet_cli.preproc.PreProc._generate_outfile_path" title="Link to this definition">#</a></dt>
+<dd><p>Generate the path to an output file, from the output directory,
+filename prefix, abbreviation of the method name, and filename
+extension.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>method_short</strong> (<em>str</em>) -- Abbreviation of the method to generate outfile.</p></li>
+<li><p><strong>extension</strong> (<em>str</em>) -- File type extension to return. Defaults to
+'nii.gz'.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pet_cli.preproc.PreProc.run_preproc">
+<span class="sig-name descname"><span class="pre">run_preproc</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">method_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pet_cli.preproc.PreProc.run_preproc" title="Link to this definition">#</a></dt>
+<dd><p>Run a specific preprocessing step.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>method_name</strong> (<em>str</em>) -- Name of method to be run. Must be name of a
+method in this module.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="pet_cli.motion_corr.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title"><span class="section-number">13. </span>Tools to Motion Correct PET Images</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="pet_cli.math_lib.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title"><span class="section-number">15. </span>Mathematical Operations Library</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#pet_cli.preproc.PreProc"><code class="docutils literal notranslate"><span class="pre">PreProc</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pet_cli.preproc.PreProc._init_preproc_props"><code class="docutils literal notranslate"><span class="pre">PreProc._init_preproc_props</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pet_cli.preproc.PreProc.update_props"><code class="docutils literal notranslate"><span class="pre">PreProc.update_props</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pet_cli.preproc.PreProc._write_params_json"><code class="docutils literal notranslate"><span class="pre">PreProc._write_params_json</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pet_cli.preproc.PreProc._read_params_json"><code class="docutils literal notranslate"><span class="pre">PreProc._read_params_json</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pet_cli.preproc.PreProc._check_method_props_exist"><code class="docutils literal notranslate"><span class="pre">PreProc._check_method_props_exist</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pet_cli.preproc.PreProc._generate_outfile_path"><code class="docutils literal notranslate"><span class="pre">PreProc._generate_outfile_path</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pet_cli.preproc.PreProc.run_preproc"><code class="docutils literal notranslate"><span class="pre">PreProc.run_preproc</span></code></a></li>
+</ul>
+</li>
+</ul>
+  </nav></div>
+
+  <div class="sidebar-secondary-item">
+
+  <div class="tocsection sourcelink">
+    <a href="_sources/pet_cli.preproc.rst.txt">
+      <i class="fa-solid fa-file-lines"></i> Show Source
+    </a>
+  </div>
+</div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="_static/scripts/bootstrap.js?digest=8d27b9dea8ad943066ae"></script>
+<script src="_static/scripts/pydata-sphinx-theme.js?digest=8d27b9dea8ad943066ae"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2024, Furqan Dar, Bradley Judge, Noah Goldman.
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.2.6.
+    <br/>
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.15.2.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

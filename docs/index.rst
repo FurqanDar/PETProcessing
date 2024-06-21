@@ -11,8 +11,8 @@ PET Processing Module Documentation
    :maxdepth: 1
    :caption: API Reference:
 
-   modules
-   cli_ref
+   petpal
+   petpal.cli
 
 
 
