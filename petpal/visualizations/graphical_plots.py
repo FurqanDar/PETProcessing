@@ -19,12 +19,13 @@ plots.
 Please refer to the documentation of each class for more detailed information.
 """
 
-from matplotlib import pyplot as plt
-import numpy as np
 from abc import ABC, abstractmethod
 import os
 from typing import Dict, Union, Type
+from matplotlib import pyplot as plt
+import numpy as np
 from ..kinetic_modeling import graphical_analysis as pet_grph
+from ..utils.image_io import safe_load_tac
 
 
 class GraphicalAnalysisPlot(ABC):
@@ -824,31 +825,6 @@ class AltLoganPlot(GraphicalAnalysisPlot):
         self.fig.suptitle("Alt-Logan Plots")
 
 
-# TODO: Use the safe loading of TACs function from an IO module when it is implemented
-def _safe_load_tac(filename: str) -> np.ndarray:
-    """
-    Loads time-activity curves (TAC) from a file.
-
-    Tries to read a TAC from specified file and raises an exception if unable to do so. We assume that the file has two
-    columns, the first corresponding to time and second corresponding to activity.
-
-    Args:
-        filename (str): The name of the file to be loaded.
-
-    Returns:
-        np.ndarray: A numpy array containing the loaded TAC. The first index corresponds to the times, and the second
-        corresponds to the activity.
-
-    Raises:
-        Exception: An error occurred loading the TAC.
-    """
-    try:
-        return np.array(np.loadtxt(filename).T, dtype=float, order='C')
-    except Exception as e:
-        print(f"Couldn't read file {filename}. Error: {e}")
-        raise e
-
-
 class Plot:
     """
     A class used to generate and save graphical analysis plots of PET Time-Activity Curves (TACs).
@@ -918,7 +894,7 @@ class Plot:
         Calls:
             * :meth:`_validate_filepath`
             * :meth:`_validate_directory`
-            * :func:`_safe_load_tac`
+            * :func:`safe_load_tac`
             * :meth:`_select_fig_class_based_on_method`
 
         """
@@ -952,8 +928,8 @@ class Plot:
             Exception: An error occurred while loading the TACs from the input or ROI files.
 
         """
-        p_tac = _safe_load_tac(self.input_tac_path)
-        t_tac = _safe_load_tac(self.roi_tac_path)
+        p_tac = safe_load_tac(self.input_tac_path)
+        t_tac = safe_load_tac(self.roi_tac_path)
 
         filename = f"{self.output_filename_prefix}_analysis-{self.method_name}"
         out_path = os.path.join(self.output_directory, filename)

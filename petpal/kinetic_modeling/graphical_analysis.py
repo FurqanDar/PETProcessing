@@ -18,11 +18,12 @@ TODO:
 
 __version__ = '0.2'
 
-import numba
-import numpy as np
 from typing import Callable, Tuple
 import os
 import json
+import numba
+import numpy as np
+from ..utils.image_io import safe_load_tac
 
 
 @numba.njit()
@@ -178,22 +179,22 @@ def patlak_analysis(input_tac_values: np.ndarray,
     
     """
     non_zero_indices = np.argwhere(input_tac_values != 0.).T[0]
-    
+
     if len(non_zero_indices) <= 2:
         return np.asarray([np.nan, np.nan])
-    
+
     t_thresh = get_index_from_threshold(times_in_minutes=tac_times_in_minutes[non_zero_indices],
                                         t_thresh_in_minutes=t_thresh_in_minutes)
-    
+
     if len(tac_times_in_minutes[non_zero_indices][t_thresh:]) <= 2:
         return np.asarray([np.nan, np.nan])
-    
+
     patlak_x = calculate_patlak_x(tac_times=tac_times_in_minutes[non_zero_indices],
                                   tac_vals=input_tac_values[non_zero_indices])
     patlak_y = region_tac_values[non_zero_indices] / input_tac_values[non_zero_indices]
-    
+
     patlak_values = fit_line_to_data_using_lls(xdata=patlak_x[t_thresh:], ydata=patlak_y[t_thresh:])
-    
+
     return patlak_values
 
 
@@ -218,22 +219,22 @@ def patlak_analysis_with_rsquared(input_tac_values: np.ndarray,
 
     """
     non_zero_indices = np.argwhere(input_tac_values != 0.).T[0]
-    
+
     if len(non_zero_indices) <= 2:
         return np.nan, np.nan, np.nan
-    
+
     t_thresh = get_index_from_threshold(times_in_minutes=tac_times_in_minutes[non_zero_indices],
                                         t_thresh_in_minutes=t_thresh_in_minutes)
     
     if len(tac_times_in_minutes[non_zero_indices][t_thresh:]) <= 2:
         return np.nan, np.nan, np.nan
-    
+
     patlak_x = calculate_patlak_x(tac_times=tac_times_in_minutes[non_zero_indices],
                                   tac_vals=input_tac_values[non_zero_indices])
     patlak_y = region_tac_values[non_zero_indices] / input_tac_values[non_zero_indices]
-    
+
     patlak_values = fit_line_to_data_using_lls_with_rsquared(xdata=patlak_x[t_thresh:], ydata=patlak_y[t_thresh:])
-    
+
     return patlak_values
 
 
@@ -264,22 +265,22 @@ def logan_analysis(input_tac_values: np.ndarray,
         
     """
     non_zero_indices = np.argwhere(region_tac_values != 0.).T[0]
-    
+
     if len(non_zero_indices) <= 2:
         return np.asarray([np.nan, np.nan])
-    
+
     t_thresh = get_index_from_threshold(times_in_minutes=tac_times_in_minutes[non_zero_indices],
                                         t_thresh_in_minutes=t_thresh_in_minutes)
-    
+
     if len(tac_times_in_minutes[non_zero_indices][t_thresh:]) <= 2:
         return np.asarray([np.nan, np.nan])
-    
+
     logan_x = cumulative_trapezoidal_integral(xdata=tac_times_in_minutes, ydata=input_tac_values)
     logan_y = cumulative_trapezoidal_integral(xdata=tac_times_in_minutes, ydata=region_tac_values)
-    
+
     logan_x = logan_x[non_zero_indices][t_thresh:] / region_tac_values[non_zero_indices][t_thresh:]
     logan_y = logan_y[non_zero_indices][t_thresh:] / region_tac_values[non_zero_indices][t_thresh:]
-    
+
     fit_ans = fit_line_to_data_using_lls(xdata=logan_x, ydata=logan_y)
     return fit_ans
 
@@ -306,26 +307,26 @@ def logan_analysis_with_rsquared(input_tac_values: np.ndarray,
         * We assume that the input TAC and ROI TAC values are sampled at the same times.
         
     """
-    
+
     non_zero_indices = np.argwhere(region_tac_values != 0.).T[0]
-    
+
     if len(non_zero_indices) <= 2:
         return np.nan, np.nan, np.nan
-    
+
     t_thresh = get_index_from_threshold(times_in_minutes=tac_times_in_minutes[non_zero_indices],
                                         t_thresh_in_minutes=t_thresh_in_minutes)
-    
+
     if len(tac_times_in_minutes[non_zero_indices][t_thresh:]) <= 2:
         return np.nan, np.nan, np.nan
-    
+
     logan_x = cumulative_trapezoidal_integral(xdata=tac_times_in_minutes, ydata=input_tac_values)
     logan_y = cumulative_trapezoidal_integral(xdata=tac_times_in_minutes, ydata=region_tac_values)
-    
+
     logan_x = logan_x[non_zero_indices][t_thresh:] / region_tac_values[non_zero_indices][t_thresh:]
     logan_y = logan_y[non_zero_indices][t_thresh:] / region_tac_values[non_zero_indices][t_thresh:]
-    
+
     logan_values = fit_line_to_data_using_lls_with_rsquared(xdata=logan_x, ydata=logan_y)
-    
+
     return logan_values
 
 
@@ -358,22 +359,22 @@ def alternative_logan_analysis(input_tac_values: np.ndarray,
         
     """
     non_zero_indices = np.argwhere(input_tac_values != 0.).T[0]
-    
+
     if len(non_zero_indices) <= 2:
         return np.asarray([np.nan, np.nan])
-    
+
     t_thresh = get_index_from_threshold(times_in_minutes=tac_times_in_minutes[non_zero_indices],
                                         t_thresh_in_minutes=t_thresh_in_minutes)
-    
+
     if len(tac_times_in_minutes[non_zero_indices][t_thresh:]) <= 2:
         return np.asarray([np.nan, np.nan])
-    
+
     alt_logan_x = cumulative_trapezoidal_integral(xdata=tac_times_in_minutes, ydata=input_tac_values)
     alt_logan_y = cumulative_trapezoidal_integral(xdata=tac_times_in_minutes, ydata=region_tac_values)
-    
+
     alt_logan_x = alt_logan_x[non_zero_indices][t_thresh:] / input_tac_values[non_zero_indices][t_thresh:]
     alt_logan_y = alt_logan_y[non_zero_indices][t_thresh:] / input_tac_values[non_zero_indices][t_thresh:]
-    
+
     fit_ans = fit_line_to_data_using_lls(xdata=alt_logan_x, ydata=alt_logan_y)
     return fit_ans
 
@@ -399,27 +400,27 @@ def alternative_logan_analysis_with_rsquared(input_tac_values: np.ndarray,
         * We assume that the input TAC and ROI TAC values are sampled at the same times.
         
     """
-    
+
     non_zero_indices = np.argwhere(input_tac_values != 0.).T[0]
-    
+
     if len(non_zero_indices) <= 2:
         return np.nan, np.nan, np.nan
-    
+
     t_thresh = get_index_from_threshold(times_in_minutes=tac_times_in_minutes[non_zero_indices],
                                         t_thresh_in_minutes=t_thresh_in_minutes)
-    
+
     if len(tac_times_in_minutes[non_zero_indices][t_thresh:]) <= 2:
         return np.nan, np.nan, np.nan
-    
+
     alt_logan_x = cumulative_trapezoidal_integral(xdata=tac_times_in_minutes, ydata=input_tac_values)
     alt_logan_y = cumulative_trapezoidal_integral(xdata=tac_times_in_minutes, ydata=region_tac_values)
-    
+
     alt_logan_x = alt_logan_x[non_zero_indices][t_thresh:] / input_tac_values[non_zero_indices][t_thresh:]
     alt_logan_y = alt_logan_y[non_zero_indices][t_thresh:] / input_tac_values[non_zero_indices][t_thresh:]
     
     alt_logan_values = fit_line_to_data_using_lls_with_rsquared(xdata=alt_logan_x[t_thresh:],
                                                                 ydata=alt_logan_y[t_thresh:])
-    
+
     return alt_logan_values
 
 
@@ -447,7 +448,7 @@ def get_graphical_analysis_method(method_name: str) -> Callable:
         .. code-block:: python
             
             from petpal.graphical_analysis import get_graphical_analysis_method as get_method
-            from petpal.graphical_analysis import _safe_load_tac as load_tac
+            from petpal.graphical_analysis import safe_load_tac as load_tac
             
             selected_func = get_method('logan')
             input_tac_values, tac_times_in_minutes = load_tac("PATH/TO/PLASMA/TAC.tsv")
@@ -494,7 +495,7 @@ def get_graphical_analysis_method_with_rsquared(method_name: str) -> Callable:
         .. code-block:: python
             
             from petpal.graphical_analysis import get_graphical_analysis_method_with_rsquared as get_method
-            from petpal.graphical_analysis import _safe_load_tac as load_tac
+            from petpal.graphical_analysis import safe_load_tac as load_tac
             
             selected_func = get_method('logan')
             input_tac_values, tac_times_in_minutes = load_tac("PATH/TO/PLASMA/TAC.tsv")
@@ -515,31 +516,6 @@ def get_graphical_analysis_method_with_rsquared(method_name: str) -> Callable:
         return alternative_logan_analysis_with_rsquared
     else:
         raise ValueError(f"Invalid method_name! Must be either 'patlak', 'logan', or 'alt_logan'. Got {method_name}")
-
-
-# TODO: Use the safe loading of TACs function from an IO module when it is implemented
-def _safe_load_tac(filename: str) -> np.ndarray:
-    """
-    Loads time-activity curves (TAC) from a file.
-
-    Tries to read a TAC from specified file and raises an exception if unable to do so. We assume that the file has two
-    columns, the first corresponding to time and second corresponding to activity.
-
-    Args:
-        filename (str): The name of the file to be loaded.
-
-    Returns:
-        np.ndarray: A numpy array containing the loaded TAC. The first index corresponds to the times, and the second
-        corresponds to the activity.
-
-    Raises:
-        Exception: An error occurred loading the TAC.
-    """
-    try:
-        return np.array(np.loadtxt(filename).T, dtype=float, order='C')
-    except Exception as e:
-        print(f"Couldn't read file {filename}. Error: {e}")
-        raise e
 
 
 class GraphicalAnalysis:
@@ -637,7 +613,7 @@ class GraphicalAnalysis:
         """
         self.calculate_fit(method_name=method_name, t_thresh_in_mins=t_thresh_in_mins)
         self.calculate_fit_properties(method_name=method_name, t_thresh_in_mins=t_thresh_in_mins)
-        
+
     def calculate_fit(self, method_name: str, t_thresh_in_mins: float):
         """
         Calculates the best fit parameters for a graphical analysis method.
@@ -657,8 +633,8 @@ class GraphicalAnalysis:
 
         """
         analysis_func = get_graphical_analysis_method_with_rsquared(method_name)
-        p_tac_times, p_tac_vals = _safe_load_tac(self.input_tac_path)
-        t_tac_times, t_tac_vals = _safe_load_tac(self.roi_tac_path)
+        p_tac_times, p_tac_vals = safe_load_tac(self.input_tac_path)
+        _t_tac_times, t_tac_vals = safe_load_tac(self.roi_tac_path)
         slope, intercept, rsquared = analysis_func(input_tac_values=p_tac_vals,
                                                    region_tac_values=t_tac_vals,
                                                    tac_times_in_minutes=p_tac_times,
@@ -666,7 +642,7 @@ class GraphicalAnalysis:
         self.analysis_props['Slope'] = slope
         self.analysis_props['Intercept'] = intercept
         self.analysis_props['RSquared'] = rsquared
-    
+
     def calculate_fit_properties(self, method_name: str, t_thresh_in_mins: float):
         """
         Calculates and stores the properties related to the fitting process.
@@ -680,12 +656,12 @@ class GraphicalAnalysis:
             t_thresh_in_mins (float): The threshold time (in minutes) used in the fitting process.
 
         Note:
-            This method relies on the :func:`_safe_load_tac` function to load time-activity curve (TAC) data from the
+            This method relies on the :func:`safe_load_tac` function to load time-activity curve (TAC) data from the
             file at ``input_tac_path``, and the :func:`get_index <get_index_from_threshold>`
             function to get the index from the threshold time.
 
         See also:
-            * :func:`_safe_load_tac`: Function to safely load TAC data from a file.
+            * :func:`safe_load_tac`: Function to safely load TAC data from a file.
             * :func:`get_index_from_threshold`: Function to get the index from the threshold time.
 
         Returns:
@@ -693,7 +669,7 @@ class GraphicalAnalysis:
         """
         self.analysis_props['ThresholdTime'] = t_thresh_in_mins
         self.analysis_props['MethodName'] = method_name
-        p_tac_times, _ = _safe_load_tac(filename=self.input_tac_path)
+        p_tac_times, _ = safe_load_tac(filename=self.input_tac_path)
         t_thresh_index = get_index_from_threshold(times_in_minutes=p_tac_times, t_thresh_in_minutes=t_thresh_in_mins)
         self.analysis_props['StartFrameTime'] = p_tac_times[t_thresh_index]
         self.analysis_props['EndFrameTime'] = p_tac_times[-1]
@@ -718,5 +694,5 @@ class GraphicalAnalysis:
         file_name_prefix = os.path.join(self.output_directory,
                                         f"{self.output_filename_prefix}_analysis-{self.analysis_props['MethodName']}")
         analysis_props_file = f"{file_name_prefix}_props.json"
-        with open(analysis_props_file, 'w') as f:
+        with open(analysis_props_file, 'w',encoding='utf-8') as f:
             json.dump(obj=self.analysis_props, fp=f, indent=4)

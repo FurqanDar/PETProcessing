@@ -8,13 +8,13 @@ Todo:
 import json
 import os.path
 from typing import Union
-
 import numpy as np
 from scipy.optimize import curve_fit as sp_fit
 import numba
 from .graphical_analysis import get_index_from_threshold
 from .graphical_analysis import cumulative_trapezoidal_integral as cum_trapz
 from . import tcms_as_convolutions as tcms_conv
+from ..utils.image_io import safe_load_tac
 
 
 def calc_srtm_tac(tac_times: np.ndarray, ref_tac_vals: np.ndarray, r1: float, k2: float, bp: float) -> np.ndarray:
@@ -61,7 +61,7 @@ def calc_srtm_tac(tac_times: np.ndarray, ref_tac_vals: np.ndarray, r1: float, k2
     exp_term = np.exp(-bp_coeff * tac_times)
     dt = tac_times[1] - tac_times[0]
     second_term = (k2 - r1 * bp_coeff) * tcms_conv.calc_convolution_with_check(f=exp_term, g=ref_tac_vals, dt=dt)
-    
+
     return first_term + second_term
 
 
@@ -302,12 +302,12 @@ def fit_srtm2_to_tac(tgt_tac_vals: np.ndarray,
         * :func:`fit_srtm_to_tac`
 
     """
-    
+
     def _fitting_srtm(tac_times, r1, bp):
         return calc_srtm_tac(tac_times=tac_times, ref_tac_vals=ref_tac_vals, r1=r1, k2=k2_prime, bp=bp)
-    
+
     starting_values = [r1_start, bp_start]
-    
+
     return sp_fit(f=_fitting_srtm, xdata=ref_tac_times, ydata=tgt_tac_vals, p0=starting_values)
 
 
@@ -350,11 +350,11 @@ def fit_srtm_to_tac_with_bounds(tgt_tac_vals: np.ndarray,
     """
     def _fitting_srtm(tac_times, r1, k2, bp):
         return calc_srtm_tac(tac_times=tac_times, ref_tac_vals=ref_tac_vals, r1=r1, k2=k2, bp=bp)
-    
+
     st_values = (r1_bounds[0], k2_bounds[0], bp_bounds[0])
     lo_values = (r1_bounds[1], k2_bounds[1], bp_bounds[1])
     hi_values = (r1_bounds[2], k2_bounds[2], bp_bounds[2])
-    
+
     return sp_fit(f=_fitting_srtm, xdata=ref_tac_times, ydata=tgt_tac_vals,
                   p0=st_values, bounds=[lo_values, hi_values])
 
@@ -397,14 +397,14 @@ def fit_srtm2_to_tac_with_bounds(tgt_tac_vals: np.ndarray,
         * :func:`fit_srtm_to_tac_with_bounds`
 
     """
-    
+
     def _fitting_srtm(tac_times, r1, bp):
         return calc_srtm_tac(tac_times=tac_times, ref_tac_vals=ref_tac_vals, r1=r1, k2=k2_prime, bp=bp)
-    
+
     st_values = (r1_bounds[0], bp_bounds[0])
     lo_values = (r1_bounds[1], bp_bounds[1])
     hi_values = (r1_bounds[2], bp_bounds[2])
-    
+
     return sp_fit(f=_fitting_srtm, xdata=ref_tac_times, ydata=tgt_tac_vals, p0=st_values, bounds=[lo_values, hi_values])
 
 
@@ -489,10 +489,10 @@ def fit_frtm2_to_tac(tgt_tac_vals: np.ndarray,
         * :func:`calc_frtm_tac`
 
     """
-    
+
     def _fitting_frtm(tac_times, r1, k3, k4):
         return calc_frtm_tac(tac_times=tac_times, ref_tac_vals=ref_tac_vals, r1=r1, k2=k2_prime, k3=k3, k4=k4)
-    
+
     starting_values = (r1_start, k3_start, k4_start)
     return sp_fit(f=_fitting_frtm, xdata=ref_tac_times, ydata=tgt_tac_vals, p0=starting_values)
 
@@ -537,11 +537,11 @@ def fit_frtm_to_tac_with_bounds(tgt_tac_vals: np.ndarray,
     """
     def _fitting_frtm(tac_times, r1, k2, k3, k4):
         return calc_frtm_tac(tac_times=tac_times, ref_tac_vals=ref_tac_vals, r1=r1, k2=k2, k3=k3, k4=k4)
-    
+
     st_values = (r1_bounds[0], k2_bounds[0], k3_bounds[0], k4_bounds[0])
     lo_values = (r1_bounds[1], k2_bounds[1], k3_bounds[1], k4_bounds[1])
     hi_values = (r1_bounds[2], k2_bounds[2], k3_bounds[2], k4_bounds[2])
-    
+
     return sp_fit(f=_fitting_frtm, xdata=ref_tac_times, ydata=tgt_tac_vals,
                   p0=st_values, bounds=[lo_values, hi_values])
 
@@ -585,14 +585,14 @@ def fit_frtm2_to_tac_with_bounds(tgt_tac_vals: np.ndarray,
         * :func:`fit_frtm2_to_tac`
 
     """
-    
+
     def _fitting_frtm(tac_times, r1, k3, k4):
         return calc_frtm_tac(tac_times=tac_times, ref_tac_vals=ref_tac_vals, r1=r1, k2=k2_prime, k3=k3, k4=k4)
-    
+
     st_values = (r1_bounds[0], k3_bounds[0], k4_bounds[0])
     lo_values = (r1_bounds[1], k3_bounds[1], k4_bounds[1])
     hi_values = (r1_bounds[2], k3_bounds[2], k4_bounds[2])
-    
+
     return sp_fit(f=_fitting_frtm, xdata=ref_tac_times, ydata=tgt_tac_vals, p0=st_values, bounds=[lo_values, hi_values])
 
 @numba.njit(fastmath=True)
@@ -631,30 +631,30 @@ def fit_mrtm_original_to_tac(tgt_tac_vals: np.ndarray,
         This function is implemented with numba for improved performance.
         
     """
-    
+
     non_zero_indices = np.argwhere(tgt_tac_vals != 0.).T[0]
-    
+
     if len(non_zero_indices) <= 2:
         return np.asarray([np.nan, np.nan, np.nan])
-    
+
     t_thresh = get_index_from_threshold(times_in_minutes=ref_tac_times[non_zero_indices],
                                         t_thresh_in_minutes=t_thresh_in_mins)
-    
+
     if len(ref_tac_times[non_zero_indices][t_thresh:]) <= 2:
         return np.asarray([np.nan, np.nan, np.nan])
-    
+
     y = cum_trapz(xdata=ref_tac_times, ydata=tgt_tac_vals, initial=0.0)
     y = y[non_zero_indices] / tgt_tac_vals[non_zero_indices]
-    
+
     x1 = cum_trapz(xdata=ref_tac_times, ydata=ref_tac_vals, initial=0.0)
     x1 = x1[non_zero_indices] / tgt_tac_vals[non_zero_indices]
-    
+
     x2 = ref_tac_vals[non_zero_indices] / tgt_tac_vals[non_zero_indices]
-    
+
     x_matrix = np.ones((len(y), 3), float)
     x_matrix[:, 0] = x1[:]
     x_matrix[:, 1] = x2[:]
-    
+
     fit_ans = np.linalg.lstsq(x_matrix[t_thresh:], y[t_thresh:])[0]
     return fit_ans
 
@@ -694,17 +694,17 @@ def fit_mrtm_2003_to_tac(tgt_tac_vals: np.ndarray,
         This function is implemented with numba for improved performance.
 
     """
-    
+
     t_thresh = get_index_from_threshold(times_in_minutes=ref_tac_times, t_thresh_in_minutes=t_thresh_in_mins)
     if t_thresh == -1:
         return np.asarray([np.nan, np.nan, np.nan])
-    
+
     y = tgt_tac_vals
     x_matrix = np.ones((len(y), 3), float)
     x_matrix[:, 0] = cum_trapz(xdata=ref_tac_times, ydata=ref_tac_vals, initial=0.0)
     x_matrix[:, 1] = cum_trapz(xdata=ref_tac_times, ydata=tgt_tac_vals, initial=0.0)
     x_matrix[:, 2] = ref_tac_vals
-    
+
     fit_ans = np.linalg.lstsq(x_matrix[t_thresh:], y[t_thresh:])[0]
     return fit_ans
 
@@ -745,11 +745,11 @@ def fit_mrtm2_2003_to_tac(tgt_tac_vals: np.ndarray,
         This function is implemented with numba for improved performance.
         
     """
-    
+
     t_thresh = get_index_from_threshold(times_in_minutes=ref_tac_times, t_thresh_in_minutes=t_thresh_in_mins)
     if t_thresh == -1:
         return np.asarray([np.nan, np.nan])
-    
+
     x1 = cum_trapz(xdata=ref_tac_times, ydata=ref_tac_vals, initial=0.0)
     x1 += ref_tac_vals / k2_prime
     x2 = cum_trapz(xdata=ref_tac_times, ydata=tgt_tac_vals, initial=0.0)
@@ -758,7 +758,7 @@ def fit_mrtm2_2003_to_tac(tgt_tac_vals: np.ndarray,
     x_matrix = np.ones((len(y), 2), float)
     x_matrix[:, 0] = x1[:]
     x_matrix[:, 1] = x2[:]
-    
+
     fit_ans = np.linalg.lstsq(x_matrix[t_thresh:], y[t_thresh:])[0]
     return fit_ans
 
@@ -1031,14 +1031,14 @@ class FitTACWithRTMs:
         """
         if self.method.startswith("mrtm"):
             if self.t_thresh_in_mins is None:
-                raise ValueError(f"t_t_thresh_in_mins must be defined if method is 'mrtm'")
+                raise ValueError("t_t_thresh_in_mins must be defined if method is 'mrtm'")
             else:
-                assert self.t_thresh_in_mins >= 0, f"t_thresh_in_mins must be a positive number."
+                assert self.t_thresh_in_mins >= 0, "t_thresh_in_mins must be a positive number."
         if self.method.endswith("2"):
             if self.k2_prime is None:
-                raise ValueError(f"k2_prime must be defined if we are using the reduced models: FRTM2, SRTM2, "
-                                 f"and MRTM2.")
-            assert self.k2_prime >= 0, f"k2_prime must be a positive number."
+                raise ValueError("k2_prime must be defined if we are using the reduced models: FRTM2, SRTM2, "
+                                 "and MRTM2.")
+            assert self.k2_prime >= 0,"k2_prime must be a positive number."
     
     def validate_bounds(self):
         r"""Validates the bounds for different methods
@@ -1084,7 +1084,7 @@ class FitTACWithRTMs:
                     "for each of the fitting parameters: r1, k3, k4")
             else:
                 raise ValueError(f"Invalid method! Must be either 'srtm', 'frtm', 'srtm2' or 'frtm2' if bounds are "
-                                 f"provided.")
+                                 f"provided. Got {self.method}.")
     
     def fit_tac_to_model(self):
         r"""Fits TAC vals to model
@@ -1125,7 +1125,7 @@ class FitTACWithRTMs:
                 self.fit_results = fit_srtm_to_tac(tgt_tac_vals=self.target_tac_vals,
                                                    ref_tac_times=self.reference_tac_times,
                                                    ref_tac_vals=self.reference_tac_vals)
-            
+
         elif self.method == "srtm2":
             if self.bounds is not None:
                 self.fit_results = fit_srtm2_to_tac_with_bounds(tgt_tac_vals=self.target_tac_vals,
@@ -1152,7 +1152,7 @@ class FitTACWithRTMs:
                 self.fit_results = fit_frtm_to_tac(tgt_tac_vals=self.target_tac_vals,
                                                    ref_tac_times=self.reference_tac_times,
                                                    ref_tac_vals=self.reference_tac_vals)
-                
+
         elif self.method == "frtm2":
             if self.bounds is not None:
                 self.fit_results = fit_frtm2_to_tac_with_bounds(tgt_tac_vals=self.target_tac_vals,
@@ -1167,19 +1167,19 @@ class FitTACWithRTMs:
                                                     ref_tac_times=self.reference_tac_times,
                                                     ref_tac_vals=self.reference_tac_vals,
                                                     k2_prime=self.k2_prime)
-        
+
         elif self.method == "mrtm-original":
             self.fit_results = fit_mrtm_original_to_tac(tgt_tac_vals=self.target_tac_vals,
                                                         ref_tac_times=self.reference_tac_times,
                                                         ref_tac_vals=self.reference_tac_vals,
                                                         t_thresh_in_mins=self.t_thresh_in_mins)
-        
+
         elif self.method == "mrtm":
             self.fit_results = fit_mrtm_2003_to_tac(tgt_tac_vals=self.target_tac_vals,
                                                     ref_tac_times=self.reference_tac_times,
                                                     ref_tac_vals=self.reference_tac_vals,
                                                     t_thresh_in_mins=self.t_thresh_in_mins)
-        
+
         elif self.method == "mrtm2":
             self.fit_results = fit_mrtm2_2003_to_tac(tgt_tac_vals=self.target_tac_vals,
                                                      ref_tac_times=self.reference_tac_times,
@@ -1187,32 +1187,7 @@ class FitTACWithRTMs:
                                                      t_thresh_in_mins=self.t_thresh_in_mins,
                                                      k2_prime=self.k2_prime)
         else:
-            raise ValueError(f"Invalid method! Must be either 'srtm', 'frtm', 'mrtm-original', 'mrtm' or 'mrtm2'")
-
-
-# TODO: Use the safe loading of TACs function from an IO module when it is implemented
-def _safe_load_tac(filename: str, **kwargs) -> np.ndarray:
-    """
-    Loads time-activity curves (TAC) from a file.
-
-    Tries to read a TAC from specified file and raises an exception if unable to do so. We assume that the file has two
-    columns, the first corresponding to time and second corresponding to activity.
-
-    Args:
-        filename (str): The name of the file to be loaded.
-
-    Returns:
-        np.ndarray: A numpy array containing the loaded TAC. The first index corresponds to the times, and the second
-        corresponds to the activity.
-
-    Raises:
-        Exception: An error occurred loading the TAC.
-    """
-    try:
-        return np.array(np.loadtxt(filename).T, dtype=float, order='C', **kwargs)
-    except Exception as e:
-        print(f"Couldn't read file {filename}. Error: {e}")
-        raise e
+            raise ValueError(f"Invalid method! Must be either 'srtm', 'frtm', 'mrtm-original', 'mrtm' or 'mrtm2'. Got {self.method}.")
 
 
 class RTMAnalysis:
@@ -1291,7 +1266,7 @@ class RTMAnalysis:
         self.method = method.lower()
         self.analysis_props: dict = self.init_analysis_props(self.method)
         self._has_analysis_been_run: bool = False
-        
+
     def init_analysis_props(self, method: str) -> dict:
         r"""
         Initializes the analysis properties dict based on the specified RTM analysis method.
@@ -1328,9 +1303,9 @@ class RTMAnalysis:
                 }
         else:
             raise ValueError(f"Invalid method! Must be either 'srtm', 'frtm', 'srtm2', 'frtm2', "
-                             f"'mrtm-original', 'mrtm' or 'mrtm2'")
+                             f"'mrtm-original', 'mrtm' or 'mrtm2'. Got {method}.")
         return props
-    
+
     def run_analysis(self,
                      bounds: Union[None, np.ndarray] = None,
                      t_thresh_in_mins: float = None,
@@ -1354,7 +1329,7 @@ class RTMAnalysis:
             None
         """
         self.validate_analysis_inputs(k2_prime=k2_prime, t_thresh_in_mins=t_thresh_in_mins)
-        
+
         fit_results = self.calculate_fit(bounds=bounds,
                                          t_thresh_in_mins=t_thresh_in_mins,
                                          k2_prime=k2_prime,
@@ -1363,7 +1338,7 @@ class RTMAnalysis:
                                       t_thresh_in_mins=t_thresh_in_mins,
                                       k2_prime=k2_prime)
         self._has_analysis_been_run = True
-    
+
     def validate_analysis_inputs(self, k2_prime, t_thresh_in_mins):
         r"""
         Validates the provided inputs for the RTM analysis.
@@ -1382,7 +1357,7 @@ class RTMAnalysis:
             raise ValueError("t_thresh_in_mins must be set for the MRTM analyses.")
         if self.method.endswith("2") and k2_prime is None:
             raise ValueError("k2_prime must be set for the modified RTM (MRTM2, FRTM2, and SRTM2) analyses.")
-    
+
     def calculate_fit(self,
                       bounds: Union[None, np.ndarray] = None,
                       t_thresh_in_mins: float = None,
@@ -1393,7 +1368,7 @@ class RTMAnalysis:
 
         This method executes the following sequence:
             1. :meth:`validate_analysis_inputs`
-            2. :meth:`_safe_load_tac` for both reference and ROI TACs
+            2. :meth:`safe_load_tac` for both reference and ROI TACs
             3. Creates a :class:`FitTACWithRTMs` instance and fits TAC to the model
 
         Args:
@@ -1406,9 +1381,9 @@ class RTMAnalysis:
             FitResults: Object containing fit results.
         """
         self.validate_analysis_inputs(k2_prime=k2_prime, t_thresh_in_mins=t_thresh_in_mins)
-        
-        ref_tac_times, ref_tac_vals = _safe_load_tac(filename=self.ref_tac_path, **tac_load_kwargs)
-        tgt_tac_times, tgt_tac_vals = _safe_load_tac(filename=self.roi_tac_path, **tac_load_kwargs)
+
+        ref_tac_times, ref_tac_vals = safe_load_tac(filename=self.ref_tac_path, **tac_load_kwargs)
+        _tgt_tac_times, tgt_tac_vals = safe_load_tac(filename=self.roi_tac_path, **tac_load_kwargs)
         analysis_obj = FitTACWithRTMs(target_tac_vals=tgt_tac_vals,
                                       reference_tac_times=ref_tac_times,
                                       reference_tac_vals=ref_tac_vals,
@@ -1417,9 +1392,9 @@ class RTMAnalysis:
                                       t_thresh_in_mins=t_thresh_in_mins,
                                       k2_prime=k2_prime)
         analysis_obj.fit_tac_to_model()
-        
+
         return analysis_obj.fit_results
-    
+
     def calculate_fit_properties(self, fit_results: Union[np.ndarray, tuple[np.ndarray, np.ndarray]],
                                  t_thresh_in_mins: float = None,
                                  k2_prime: float = None):
@@ -1444,7 +1419,7 @@ class RTMAnalysis:
             self._calc_mrtm_fit_props(fit_results=fit_results,
                                       k2_prime=k2_prime,
                                       t_thresh_in_mins=t_thresh_in_mins)
-            
+
     def save_analysis(self):
         r"""
         Save the analysis results in JSON format.
@@ -1459,9 +1434,9 @@ class RTMAnalysis:
         file_name_prefix = os.path.join(self.output_directory,
                                         f"{self.output_filename_prefix}_analysis-{self.analysis_props['MethodName']}")
         analysis_props_file = f"{file_name_prefix}_props.json"
-        with open(analysis_props_file, 'w') as f:
+        with open(analysis_props_file, 'w',encoding='utf-8') as f:
             json.dump(obj=self.analysis_props, fp=f, indent=4)
-    
+
     def _calc_mrtm_fit_props(self, fit_results: np.ndarray,
                              k2_prime: float,
                              t_thresh_in_mins: float):
@@ -1488,14 +1463,14 @@ class RTMAnalysis:
         self.analysis_props["k2Prime"] = k2_val.round(5)
         self.analysis_props["BP"] = bp_val.round(5)
         self.analysis_props["RawFits"] = list(fit_results.round(5))
-        
-        ref_tac_times, _ = _safe_load_tac(filename=self.ref_tac_path)
+
+        ref_tac_times, _ = safe_load_tac(filename=self.ref_tac_path)
         t_thresh_index = get_index_from_threshold(times_in_minutes=ref_tac_times, t_thresh_in_minutes=t_thresh_in_mins)
         self.analysis_props['ThresholdTime'] = t_thresh_in_mins
         self.analysis_props['StartFrameTime'] = ref_tac_times[t_thresh_index]
         self.analysis_props['EndFrameTime'] = ref_tac_times[-1]
         self.analysis_props['NumberOfPointsFit'] = len(ref_tac_times[t_thresh_index:])
-    
+
     def _calc_frtm_or_srtm_fit_props(self, fit_results: tuple[np.ndarray, np.ndarray], k2_prime: float):
         r"""
         Internal function used to calculate additional fitting properties for 'frtm' and 'srtm' type analyses.
@@ -1509,12 +1484,12 @@ class RTMAnalysis:
         """
         fit_params, fit_covariances = fit_results
         fit_stderr = np.sqrt(np.diagonal(fit_covariances))
-        
+
         if self.method.startswith('srtm'):
             format_func =  self._get_pretty_srtm_fit_param_vals
         else:
             format_func = self._get_pretty_frtm_fit_param_vals
-        
+
         if self.method.endswith('2'):
             self.analysis_props["k2Prime"] = k2_prime
             self.analysis_props["FitValues"] = format_func(fit_params.round(5), True)
@@ -1522,7 +1497,7 @@ class RTMAnalysis:
         else:
             self.analysis_props["FitValues"] = format_func(fit_params.round(5), False)
             self.analysis_props["FitStdErr"] = format_func(fit_stderr.round(5), False)
-    
+
     @staticmethod
     def _get_pretty_srtm_fit_param_vals(param_fits: np.ndarray, reduced: bool = False) -> dict:
         r"""
@@ -1540,7 +1515,7 @@ class RTMAnalysis:
             return {name: val for name, val in zip(['R1', 'BP'], param_fits)}
         else:
             return {name: val for name, val in zip(['R1', 'k2', 'BP'], param_fits)}
-    
+
     @staticmethod
     def _get_pretty_frtm_fit_param_vals(param_fits: np.ndarray, reduced: bool = False) -> dict:
         r"""

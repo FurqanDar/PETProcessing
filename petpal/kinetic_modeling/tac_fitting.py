@@ -22,12 +22,13 @@ See Also:
 """
 import inspect
 import json
+import os
 from typing import Callable, Union
 import numpy as np
 from scipy.optimize import curve_fit as sp_cv_fit
 from . import tcms_as_convolutions as pet_tcms
 from ..input_function import blood_input as pet_bld
-import os
+from ..utils.image_io import safe_load_tac
 
 
 def _get_fitting_params_for_tcm_func(f: Callable) -> list:
@@ -188,20 +189,20 @@ class TACFitter(object):
                 Defaults to 2500.
                 
         """
-        
+
         self.max_func_evals: int = max_iters
         self.tcm_func: Callable = None
         self.fit_param_number: int = None
         self.fit_param_names: list = None
-        
+
         self.bounds: np.ndarray = None
         self.initial_guesses: np.ndarray = None
         self.bounds_lo: np.ndarray = None
         self.bounds_hi: np.ndarray = None
-        
+
         self.get_tcm_func_properties(tcm_func)
         self.set_bounds_and_initial_guesses(fit_bounds)
-        
+
         self.raw_p_tac: np.ndarray = pTAC.copy()
         self.raw_t_tac: np.ndarray = tTAC.copy()
         self.sanitized_t_tac: np.ndarray = None
@@ -210,16 +211,16 @@ class TACFitter(object):
         self.delta_t: float = None
         self.resampled_t_tac: np.ndarray = None
         self.resampled_p_tac: np.ndarray = None
-        
+
         self.resample_tacs_evenly(aif_fit_thresh_in_mins, resample_num)
-        
+
         self.weights: np.ndarray = None
         self.set_weights(weights)
-        
+
         self.p_tac_vals: np.ndarray = self.resampled_p_tac[1]
         self.tgt_tac_vals: np.ndarray = self.resampled_t_tac[1]
         self.fit_results = None
-    
+
     def set_bounds_and_initial_guesses(self, fit_bounds: np.ndarray) -> None:
         r"""
         Sets initial guesses for the fitting parameters, along with their lower and upper bounds.
@@ -258,15 +259,15 @@ class TACFitter(object):
             self.bounds = fit_bounds.copy()
         else:
             bounds = np.zeros((self.fit_param_number, 3), float)
-            for pid, param in enumerate(bounds[:-1]):
+            for pid, _param in enumerate(bounds[:-1]):
                 bounds[pid] = [0.1, 1.0e-8, 5.0]
             bounds[-1] = [0.1, 0.0, 1.0]
             self.bounds = bounds.copy()
-        
+
         self.initial_guesses = self.bounds[:, 0]
         self.bounds_lo = self.bounds[:, 1]
         self.bounds_hi = self.bounds[:, 2]
-    
+
     def resample_tacs_evenly(self, fit_thresh_in_mins: float, resample_num: int) -> None:
         r"""
         Resample pTAC and tTAC evenly with respect to time, and at the same times.
@@ -575,7 +576,7 @@ class TACFitterWithoutBloodVolume(TACFitter):
             "`tcm_func should be one of `pet_tcms.generate_tac_1tcm_c1_from_tac`, "
             "`pet_tcms.generate_tac_2tcm_with_k4zero_cpet_from_tac`, "
             "`pet_tcms.generate_tac_serial_2tcm_cpet_from_tac`")
-        
+
         self.tcm_func = tcm_func
         self.fit_param_names = _get_fitting_params_for_tcm_func(self.tcm_func)[:-1]
         self.fit_param_number = len(self.fit_param_names)
@@ -600,14 +601,14 @@ class TACFitterWithoutBloodVolume(TACFitter):
             self.bounds = fit_bounds.copy()
         else:
             bounds = np.zeros((self.fit_param_number, 3), float)
-            for pid, param in enumerate(bounds[:]):
+            for pid, _param in enumerate(bounds[:]):
                 bounds[pid] = [0.1, 1.0e-8, 5.0]
             self.bounds = bounds.copy()
-        
+
         self.initial_guesses = self.bounds[:, 0]
         self.bounds_lo = self.bounds[:, 1]
         self.bounds_hi = self.bounds[:, 2]
-    
+
     def fitting_func(self, x: np.ndarray, *params) -> np.ndarray:
         r"""
         Overridden method to fit the TCM model setting ``vb=0.0`` explicitly.
@@ -624,31 +625,6 @@ class TACFitterWithoutBloodVolume(TACFitter):
             with blood volume (``vb``) set to 0.
         """
         return self.tcm_func(x, self.p_tac_vals, *params, vb=0.0)[1]
-
-
-# TODO: Use the safe loading of TACs function from an IO module when it is implemented
-def _safe_load_tac(filename: str, **kwargs) -> np.ndarray:
-    """
-    Loads time-activity curves (TAC) from a file.
-
-    Tries to read a TAC from specified file and raises an exception if unable to do so. We assume that the file has two
-    columns, the first corresponding to time and second corresponding to activity.
-
-    Args:
-        filename (str): The name of the file to be loaded.
-
-    Returns:
-        np.ndarray: A numpy array containing the loaded TAC. The first index corresponds to the times, and the second
-        corresponds to the activity.
-
-    Raises:
-        Exception: An error occurred loading the TAC.
-    """
-    try:
-        return np.array(np.loadtxt(filename).T, dtype=float, order='C', **kwargs)
-    except Exception as e:
-        print(f"Couldn't read file {filename}. Error: {e}")
-        raise e
 
 
 class FitTCMToTAC(object):
@@ -738,7 +714,7 @@ class FitTCMToTAC(object):
         self.analysis_props: dict = self.init_analysis_props()
         self.fit_results: Union[None, tuple[np.ndarray, np.ndarray]] = None
         self._has_analysis_been_run: bool = False
-        
+
     def init_analysis_props(self):
         r"""
         Initialize the structure of the analysis properties dictionary. This dictionary can be saved as a JSON file for
@@ -776,9 +752,9 @@ class FitTCMToTAC(object):
                 'MaxIterations': self.max_func_iters,
                 }
             }
-        
+
         return props
-    
+
     @staticmethod
     def validated_tcm(compartment_model: str) -> str:
         r"""
@@ -802,7 +778,7 @@ class FitTCMToTAC(object):
         if tcm not in ['1tcm', '2tcm-k4zero', 'serial-2tcm']:
             raise ValueError("compartment_model must be one of '1tcm', '2tcm-k4zero', or 'serial-2tcm'")
         return tcm
-    
+
     @staticmethod
     def _get_tcm_function(compartment_model: str) -> Callable:
         """
@@ -830,9 +806,9 @@ class FitTCMToTAC(object):
                    '2tcm-k4zero': pet_tcms.generate_tac_2tcm_with_k4zero_cpet_from_tac,
                    'serial-2tcm': pet_tcms.generate_tac_serial_2tcm_cpet_from_tac
                     }
-        
+
         return tcm_funcs[compartment_model]
-    
+
     def run_analysis(self):
         r"""
         Runs the fitting analysis given the file-paths and method.
@@ -848,7 +824,7 @@ class FitTCMToTAC(object):
         self.calculate_fit()
         self.calculate_fit_properties()
         self._has_analysis_been_run = True
-    
+
     def save_analysis(self):
         r"""
         Saves the analysis properties to a json file in the prescribed output directory.
@@ -862,14 +838,14 @@ class FitTCMToTAC(object):
         """
         if not self._has_analysis_been_run:
             raise RuntimeError("'run_analysis' method must be run before running this method.")
-        
+
         file_name_prefix = os.path.join(self.output_directory,
                                         f"{self.output_filename_prefix}_analysis"
                                         f"-{self.analysis_props['TissueCompartmentModel']}")
         analysis_props_file = f"{file_name_prefix}_props.json"
-        with open(analysis_props_file, 'w') as f:
+        with open(analysis_props_file, 'w',encoding='utf-8') as f:
             json.dump(obj=self.analysis_props, fp=f, indent=4)
-    
+
     def calculate_fit_properties(self):
         r"""
         Calculates the fit properties and updates the analysis properties.
@@ -893,7 +869,7 @@ class FitTCMToTAC(object):
         Performs the fit and stores results to the instance.
 
         This method has a series of actions which it performs in the following order:
-            1. Loads TAC files using the :func:`_safe_load_tac` method, specific to the paths stored in instance
+            1. Loads TAC files using the :func:`safe_load_tac` method, specific to the paths stored in instance
                variables.
             2. Creates a fitting object with the relevant parameters and TACs.
             3. Runs the fit using the fitting object's ``run_fit`` method.
@@ -907,8 +883,8 @@ class FitTCMToTAC(object):
             * :class:`TACFitterWithoutBloodVolume`
         
         """
-        p_tac = _safe_load_tac(self.input_tac_path)
-        t_tac = _safe_load_tac(self.roi_tac_path)
+        p_tac = safe_load_tac(self.input_tac_path)
+        t_tac = safe_load_tac(self.roi_tac_path)
         self.fitting_obj = self.fitting_obj(pTAC=p_tac, tTAC=t_tac,
                                             weights=self.weights,
                                             tcm_func=self._tcm_func,
@@ -920,7 +896,7 @@ class FitTCMToTAC(object):
         self.fit_results = self.fitting_obj.fit_results
         if self.bounds is None:
             self.bounds = self.fitting_obj.bounds
-    
+
     def _generate_pretty_params(self, results: np.ndarray) -> dict:
         r"""
         Transforms array of results into a formatted dictionary.
@@ -942,9 +918,9 @@ class FitTCMToTAC(object):
             return k_vals
         else:
             k_vals = {f'k_{n + 1}': val for n, val in enumerate(results[:-1])}
-            vb = {f'vb': results[-1]}
+            vb = {'vb': results[-1]}
             return {**k_vals, **vb}
-    
+
     def _generate_pretty_bounds(self, bounds: Union[np.ndarray, None]) -> dict:
         r"""
         Transforms array of bounds into a formatted dictionary.
