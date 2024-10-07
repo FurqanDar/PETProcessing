@@ -17,11 +17,12 @@ TODOs:
 
 """
 import os
-from scipy.interpolate import interp1d
 from scipy.ndimage import center_of_mass
 import nibabel
 import numpy as np
+import ants
 from ..utils import image_io, math_lib
+from ..preproc import motion_corr
 
 
 def crop_image(input_image_path: str,
@@ -60,128 +61,57 @@ def crop_image(input_image_path: str,
     x_half = x_dim // 2
     y_half = y_dim // 2
 
-    cropped_image = image.slicer[center[0]-x_half:center[0]+x_half,center[1]-y_half:center[1]+y_half]
+    cropped_image = image.slicer[center[0]-x_half:center[0]+x_half,
+                                 center[1]-y_half:center[1]+y_half]
     nibabel.save(cropped_image,out_image_path)
     image_io.safe_copy_meta(input_image_path=input_image_path,
                             out_image_path=out_image_path)
     return cropped_image
 
 
-def weighted_series_sum(input_image_4d_path: str,
-                        out_image_path: str,
-                        half_life: float,
-                        verbose: bool,
-                        start_time: float=0,
-                        end_time: float=-1) -> np.ndarray:
-    r"""
-    Sum a 4D image series weighted based on time and re-corrected for decay correction.
-
-    First, a scaled image is produced by multiplying each frame by its length in seconds,
-    and dividing by the decay correction applied:
-
-    .. math::
-    
-        f_i'=f_i\times \frac{t_i}{d_i}
-
-    Where :math:`f_i,t_i,d_i` are the i-th frame, frame duration, and decay correction factor of
-    the PET series. This scaled image is summed over the time axis. Then, to get the output, we
-    multiply by a factor called ``total decay`` and divide by the full length of the image:
-
-    .. math::
-
-        d_{S} = \frac{\lambda*t_{S}}{(1-\exp(-\lambda*t_{S}))(\exp(\lambda*t_{0}))}
-
-    .. math::
-    
-        S(f) = \sum(f_i') * d_{S} / t_{S}
-
-    where :math:`\lambda=\log(2)/T_{1/2}` is the decay constant of the radio isotope,
-    :math:`t_0` is the start time of the first frame in the PET series, the subscript :math:`S`
-    indicates the total quantity computed over all frames, and :math:`S(f)` is the final weighted
-    sum image.
-
+def brain_mask(input_image_4d_path: str,
+               out_image_path: str,
+               atlas_image_path: str,
+               atlas_mask_path: str,
+               motion_target_option='mean_image',
+               half_life: float=None):
+    """
+    Create a brain mask for a PET image. Create target PET image, which is then warped to a
+    provided anatomical atlas. The transformation to atlas space is then applied to transform a
+    provided mask in atlas space into PET space. This mask can then by used in various operations.
 
     Args:
-        input_image_4d_path (str): Path to a .nii or .nii.gz file containing a 4D
-            PET image on which the weighted sum is calculated. Assume a metadata
-            file exists with the same path and file name, but with extension .json,
-            and follows BIDS standard.
-        out_image_path (str): Path to a .nii or .nii.gz file to which the weighted
-            sum is written.
-        half_life (float): Half life of the PET radioisotope in seconds.
-        verbose (bool): Set to ``True`` to output processing information.
-        start_time (float): Time, relative to scan start in seconds, at which
-            calculation begins. Must be used with ``end_time``. Default value 0.
-        end_time (float): Time, relative to scan start in seconds, at which
-            calculation ends. Use value ``-1`` to use all frames in image series.
-            If equal to ``start_time``, one frame at start_time is used. Default value -1.
-
-    Returns:
-        np.ndarray: 3D image array, in the same space as the input, with the weighted sum calculation applied.
-
-    Raises:
-        ValueError: If ``half_life`` is zero or negative.
+        input_image_4d_path (str): Path to input 4D PET image.
+        out_image_path (str): Path to which brain mask in PET space is written.
+        atlas_image_path (str): Path to anatomical atlas image.
+        atlas_mask_path (str): Path to brain mask in atlas space.
+        motion_target_option: Used to determine 3D target in PET space. Default 'mean_image'.
+    
+    Note:
+        Requires access to an anatomical atlas or scan with a corresponding brain mask on said
+        anatomical data. FSL users can use the MNI152 atlas and mask available at 
+        $FSLDIR/data/standard/.
     """
-    if half_life <= 0:
-        raise ValueError('(ImageOps4d): Radioisotope half life is zero or negative.')
-    pet_meta = image_io.load_metadata_for_nifty_with_same_filename(input_image_4d_path)
-    pet_image = nibabel.load(input_image_4d_path)
-    pet_series = pet_image.get_fdata()
-    frame_start = pet_meta['FrameTimesStart']
-    frame_duration = pet_meta['FrameDuration']
-
-    if 'DecayCorrectionFactor' in pet_meta.keys():
-        decay_correction = pet_meta['DecayCorrectionFactor']
-    elif 'DecayFactor' in pet_meta.keys():
-        decay_correction = pet_meta['DecayFactor']
-    else:
-        raise ValueError("Neither 'DecayCorrectionFactor' nor 'DecayFactor' exist in meta-data file")
-
-    if 'TracerRadionuclide' in pet_meta.keys():
-        tracer_isotope = pet_meta['TracerRadionuclide']
-        if verbose:
-            print(f"(ImageOps4d): Radio isotope is {tracer_isotope} "
-                f"with half life {half_life} s")
-
-    if end_time==-1:
-        pet_series_adjusted = pet_series
-        frame_start_adjusted = frame_start
-        frame_duration_adjusted = frame_duration
-        decay_correction_adjusted = decay_correction
-    else:
-        scan_start = frame_start[0]
-        nearest_frame = interp1d(x=frame_start,
-                                 y=range(len(frame_start)),
-                                 kind='nearest',
-                                 bounds_error=False,
-                                 fill_value='extrapolate')
-        calc_first_frame = int(nearest_frame(start_time+scan_start))
-        calc_last_frame = int(nearest_frame(end_time+scan_start))
-        if calc_first_frame==calc_last_frame:
-            calc_last_frame += 1
-        pet_series_adjusted = pet_series[:,:,:,calc_first_frame:calc_last_frame]
-        frame_start_adjusted = frame_start[calc_first_frame:calc_last_frame]
-        frame_duration_adjusted = frame_duration[calc_first_frame:calc_last_frame]
-        decay_correction_adjusted = decay_correction[calc_first_frame:calc_last_frame]
-
-    wsc = math_lib.weighted_sum_computation
-    image_weighted_sum = wsc(frame_duration=frame_duration_adjusted,
-                             half_life=half_life,
-                             pet_series=pet_series_adjusted,
-                             frame_start=frame_start_adjusted,
-                             decay_correction=decay_correction_adjusted)
-
-    pet_sum_image = nibabel.nifti1.Nifti1Image(dataobj=image_weighted_sum,
-                                               affine=pet_image.affine,
-                                               header=pet_image.header)
-    nibabel.save(pet_sum_image, out_image_path)
-    if verbose:
-        print(f"(ImageOps4d): weighted sum image saved to {out_image_path}")
-
-    image_io.safe_copy_meta(input_image_path=input_image_4d_path,
-                            out_image_path=out_image_path)
-
-    return pet_sum_image
+    atlas = ants.image_read(atlas_image_path)
+    atlas_mask = ants.image_read(atlas_mask_path)
+    pet_ref = ants.image_read(motion_corr.determine_motion_target(
+        motion_target_option=motion_target_option,
+        input_image_4d_path=input_image_4d_path,
+        half_life=half_life
+    ))
+    xfm = ants.registration(
+        fixed=atlas,
+        moving=pet_ref,
+        type_of_transform='SyN'
+    )
+    mask_on_pet = ants.apply_transforms(
+        fixed=pet_ref,
+        moving=atlas_mask,
+        transformlist=xfm['invtransforms'],
+        interpolator='nearestNeighbor'
+    )
+    mask = mask_on_pet.get_mask()
+    ants.image_write(image=mask,filename=out_image_path)
 
 
 def extract_tac_from_nifty_using_mask(input_image_4d_numpy: np.ndarray,
@@ -453,17 +383,21 @@ class SimpleAutoImageCropper(object):
                  copy_metadata: bool = True
                  ):
         r"""
-        Initializes the SimpleAutoImageCropper with input image path, output image path, and other parameters.
+        Initializes the SimpleAutoImageCropper with input image path, output image path, and other
+        parameters.
 
-        Loads the input image, generates the cropped image using the specified threshold, and saves it to the output path.
+        Loads the input image, generates the cropped image using the specified threshold, and saves
+        it to the output path.
 
         Args:
             input_image_path (str): The file path to the input image.
             out_image_path (str): The file path to save the cropped image.
             thresh_val (float, optional): The threshold value used to determine the boundaries.
-                                          Must be less than 0.5. Defaults to 1e-2.
-            verbose (bool, optional): If True, prints information about image shapes. Defaults to True.
-            copy_metadata (bool, optional): If True, copies metadata from the original image to the cropped image. Defaults to True.
+                Must be less than 0.5. Defaults to 1e-2.
+            verbose (bool, optional): If True, prints information about image shapes. Defaults to
+                True.
+            copy_metadata (bool, optional): If True, copies metadata from the original image to the
+                cropped image. Defaults to True.
 
         Raises:
             AssertionError: If the `thresh_val` is not less than 0.5.
@@ -489,18 +423,17 @@ class SimpleAutoImageCropper(object):
         self.verbose = verbose
         self.input_img_obj = nibabel.load(self.input_image_path)
         self.crop_img_obj = self.get_cropped_image(img_obj=self.input_img_obj, thresh=self.thresh)
-            
+
         nibabel.save(filename=self.out_image_path, img=self.crop_img_obj)
         if copy_metadata:
             image_io.safe_copy_meta(input_image_path=self.input_image_path,
                                     out_image_path=self.out_image_path)
-            
+
         if verbose:
             print(f"(info): Input image has shape:  {self.input_img_obj.shape}")
             print(f"(info): Output image has shape: {self.crop_img_obj.shape}")
-        
-        
-    
+
+
     @staticmethod
     def gen_line_profile(img_arr: np.ndarray, dim: str = 'x'):
         r"""
@@ -540,19 +473,20 @@ class SimpleAutoImageCropper(object):
             return np.mean(img_arr, axis=(0, 2))
         if tmp_dim == 'z':
             return np.mean(img_arr, axis=(0, 1))
-    
+
     @staticmethod
     def get_left_and_right_boundary_indices_for_threshold(line_prof: np.ndarray,
                                                           thresh: float = 1e-2):
         r"""
         Determines the left and right boundary indices above a threshold in a line profile.
 
-        This function identifies the indices where the normalized line profile crosses the specified threshold value,
-        indicating the boundaries of the region of interest.
+        This function identifies the indices where the normalized line profile crosses the 
+        specified threshold value, indicating the boundaries of the region of interest.
 
         Args:
             line_prof (np.ndarray): The input line profile as a 1D array.
-            thresh (float, optional): The threshold value for determining boundaries. Must be less than 0.5. Defaults to 1e-2.
+            thresh (float, optional): The threshold value for determining boundaries. Must be less
+                than 0.5. Defaults to 1e-2.
 
         Returns:
             tuple: A tuple containing the left and right boundary indices (left_index, right_index).
@@ -565,10 +499,11 @@ class SimpleAutoImageCropper(object):
             .. code-block:: python
             
                 import numpy as np
-                from petpal.preproc.image_operations_4d import SimpleAutoImageCropper
-    
+                from petpal.preproc.image_operations_4d import SimpleAutoImageCropper as Crop
+
                 line_prof = np.random.rand(100)  # Example normalized line profile
-                left_index, right_index = SimpleAutoImageCropper.get_left_and_right_boundary_indices_for_threshold(line_prof=line_prof, thresh=0.01)
+                boundaries = Crop.get_left_and_right_boundary_indices_for_threshold
+                left_index, right_index = boundaries(line_prof=line_prof, thresh=0.01)
                 print(left_index, right_index)
         
         """
@@ -610,7 +545,8 @@ class SimpleAutoImageCropper(object):
                 input_image_path = 'path/to/input_image.nii'
                 img_obj = nib.load(input_image_path)
     
-                boundaries = SimpleAutoImageCropper.get_index_pairs_for_all_dims(img_obj=img_obj, thresh=0.01)
+                boundaries = SimpleAutoImageCropper.get_index_pairs_for_all_dims(img_obj=img_obj,
+                                                                                 thresh=0.01)
                 print(boundaries)
         
         """
@@ -618,21 +554,21 @@ class SimpleAutoImageCropper(object):
             tmp_data = np.mean(img_obj.get_fdata(), axis=-1)
         else:
             tmp_data = img_obj.get_fdata()
-        
+
         prof_func = SimpleAutoImageCropper.gen_line_profile
         index_func = SimpleAutoImageCropper.get_left_and_right_boundary_indices_for_threshold
-        
+
         x_line_prof = prof_func(img_arr=tmp_data, dim='x')
         x_left, x_right = index_func(line_prof=x_line_prof, thresh=thresh)
-        
+
         y_line_prof = prof_func(img_arr=tmp_data, dim='y')
         y_left, y_right = index_func(line_prof=y_line_prof, thresh=thresh)
-        
+
         z_line_prof = prof_func(img_arr=tmp_data, dim='z')
         z_left, z_right = index_func(line_prof=z_line_prof, thresh=thresh)
-        
+
         return (x_left, x_right), (y_left, y_right), (z_left, z_right)
-    
+
     @staticmethod
     def get_cropped_image(img_obj: nibabel.Nifti1Image, thresh: float = 1e-2):
         r"""
@@ -673,5 +609,5 @@ class SimpleAutoImageCropper(object):
         """
         (x_l, x_r), (y_l, y_r), (z_l, z_r) = SimpleAutoImageCropper.get_index_pairs_for_all_dims(img_obj=img_obj,
                                                                                                  thresh=thresh)
-        
+
         return img_obj.slicer[x_l:x_r, y_l:y_r, z_l:z_r, ...]

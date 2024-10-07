@@ -20,14 +20,14 @@ dependencies = [
     "numba",
     "pandas",
     "nibabel",
-    "antspyx",
+    "antspyx == 0.4.2",
     "fslpy",
     "SimpleITK",
     "matplotlib",
     "sphinx",
     "pydata-sphinx-theme",
     "bids_validator",
-    "seaborn"
+    "seaborn",
 ]
 readme = "README.md"
 classifiers = [  # These are added to PyPI package when published; Used for searching
@@ -52,6 +52,7 @@ classifiers = [  # These are added to PyPI package when published; Used for sear
     petpal-rtms = "petpal.cli.cli_reference_tissue_models:main"
     petpal-vat-proc = "petpal.cli.cli_vat_processing:main"
     petpal-brier-fdg-pipeline = "petpal.cli.cli_brier_fdg_processing:main"
+    petpal-pib-proc = "petpal.cli.cli_pib_processing:main"
 
 [project.urls]
     Repository = "https://github.com/FurqanDar/PETProcessing.git"

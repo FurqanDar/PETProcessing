@@ -50,32 +50,6 @@ def convert_ctab_to_dseg(ctab_path: str,
     return label_map
 
 
-def load_tac(filename: str) -> np.ndarray:
-    """
-    Loads time-activity curves (TAC) from a file.
-
-    Tries to read a TAC from specified file and raises an exception if unable to do so. We assume that the file has two
-    columns, the first corresponding to time and second corresponding to activity. The file may have a single header
-    line including column names.
-
-    Args:
-        filename (str): The name of the file to be loaded.
-
-    Returns:
-        np.ndarray: A numpy array containing the loaded TAC. The first index corresponds to the times, and the second
-        corresponds to the activity.
-
-    Raises:
-        Exception: An error occurred loading the TAC.
-    """
-    try:
-        return np.array(np.loadtxt(filename).T, dtype=float, order='C')
-    except ValueError as e:
-        return np.array(np.loadtxt(filename,skiprows=1).T, dtype=float, order='C')
-    except Exception as e:
-        print(f"Couldn't read file {filename}. Error: {e}")
-        raise e
-
 def load_metadata_for_nifty_with_same_filename(image_path) -> dict:
     """
     Static method to load metadata. Assume same path as input image path.
@@ -103,6 +77,30 @@ def load_metadata_for_nifty_with_same_filename(image_path) -> dict:
     with open(meta_path, 'r', encoding='utf-8') as meta_file:
         image_meta = json.load(meta_file)
     return image_meta
+
+
+def safe_load_tac(filename: str, **kwargs) -> np.ndarray:
+    """
+    Loads time-activity curves (TAC) from a file.
+
+    Tries to read a TAC from specified file and raises an exception if unable to do so. We assume that the file has two
+    columns, the first corresponding to time and second corresponding to activity.
+
+    Args:
+        filename (str): The name of the file to be loaded.
+
+    Returns:
+        np.ndarray: A numpy array containing the loaded TAC. The first index corresponds to the times, and the second
+        corresponds to the activity.
+
+    Raises:
+        Exception: An error occurred loading the TAC.
+    """
+    try:
+        return np.array(np.loadtxt(filename).T, dtype=float, order='C', **kwargs)
+    except Exception as e:
+        print(f"Couldn't read file {filename}. Error: {e}")
+        raise e
 
 
 def safe_copy_meta(input_image_path: str,

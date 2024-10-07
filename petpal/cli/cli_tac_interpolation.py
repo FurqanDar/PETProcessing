@@ -34,35 +34,13 @@ TODO:
     
 """
 
-
+import os
 import argparse
 import numpy as np
 from ..kinetic_modeling import tac_interpolation as tac_intp
-import os
+from ..utils.image_io import safe_load_tac
 
 
-def _safe_load_tac(filename: str) -> np.ndarray:
-    """
-    Loads time-activity curves (TAC) from a file.
-
-    Tries to read a TAC from specified file and raises an exception if unable to do so. We assume that the file has two
-    columns, the first corresponding to time and second corresponding to activity.
-
-    Args:
-        filename (str): The name of the file to be loaded.
-
-    Returns:
-        np.ndarray: A numpy array containing the loaded TAC. The first index corresponds to the times, and the second
-        corresponds to the activity.
-
-    Raises:
-        Exception: An error occurred loading the TAC.
-    """
-    try:
-        return np.array(np.loadtxt(filename).T, dtype=float, order='C')
-    except Exception as e:
-        print(f"Couldn't read file {filename}. Error: {e}")
-        raise e
 
 
 def _safe_write_tac(tac_times: np.ndarray, tac_values: np.ndarray, filename: str) -> None:
@@ -109,7 +87,7 @@ def main():
     parser = argparse.ArgumentParser(prog="TAC Interpolation", description="Evenly resample TACs.",
                                      epilog="Example of usage: petpal-tac-interpolate -i /path/to/input/file.txt -o "
                                             "/path/to/output/file.txt --delta-time 0.1")
-    
+
     io_grp = parser.add_argument_group("I/O")
     io_grp.add_argument("-i", "--tac-path", help="Path to TAC file.", required=True)
     io_grp.add_argument("-o", "--out-tac-path", help="Path of output file.", required=True)
@@ -126,28 +104,28 @@ def main():
                             required=False)
     verb_group.add_argument("-v", "--verbose", action="store_true", help="Print the sizes of the input and output TACs",
                             required=False)
-    
+
     args = parser.parse_args()
     args.tac_path = os.path.abspath(args.tac_path)
     args.out_tac_path = os.path.abspath(args.out_tac_path)
-    
-    in_tac_times, in_tac_values = _safe_load_tac(args.tac_path)
-    
+
+    in_tac_times, in_tac_values = safe_load_tac(args.tac_path)
+
     if args.samples_before_max is not None:
         interpolator = tac_intp.EvenlyInterpolateWithMax(tac_times=in_tac_times, tac_values=in_tac_values,
                                                          samples_before_max=args.samples_before_max)
     else:
         interpolator = tac_intp.EvenlyInterpolate(tac_times=in_tac_times, tac_values=in_tac_values,
                                                   delta_time=args.delta_time)
-    
+
     resampled_times, resampled_values = interpolator.get_resampled_tac()
-    
+
     _safe_write_tac(tac_times=resampled_times, tac_values=resampled_values, filename=args.out_tac_path)
-    
+
     if args.verbose:
         print(f"Input TAC size:  {len(in_tac_values)}.")
         print(f"Output TAC size: {len(resampled_values)}.")
-    
+
     if args.print:
         _print_tac_to_screen(tac_times=resampled_times, tac_values=resampled_values)
 

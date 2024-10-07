@@ -23,7 +23,7 @@ class TACPlots(object):
     .. code-block:: python
 
         tac_plots = TACPlots()
-        tac_plots.add_tac(tac_times, tac_vals, label='TAC 1', pl_kwargs={'color': 'blue'})
+        tac_plots.add_tac(tac_times_in_minutes, tac_vals, label='TAC 1', pl_kwargs={'color': 'blue'})
         tac_plots.add_tac(tac_times_2, tac_vals_2, label='TAC 2', pl_kwargs={'color': 'red'})
         tac_plots.gen_legend()
         plt.show()

@@ -3,7 +3,7 @@ This module provides a Command-line interface (CLI) for preprocessing imaging da
 produce regional PET Time-Activity Curves (TACs) and prepare data for parametric imaging analysis.
 
 The user must provide:
-    * The sub-command. Options: 'weighted-sum', 'motion-correct', 'register', or 'write-tacs'.
+    * The sub-command. Options: 'weighted-sum', 'motion-correct', 'register-pet', or 'write-tacs'.
     * Path to PET input data in NIfTI format. This can be source data, or with some preprocessing
       such as registration or motion correction, depending on the chosen operation.
     * Directory to which the output is written.
@@ -24,7 +24,7 @@ Examples:
     
         .. code-block:: bash
     
-            petpal-preproc register --out-dir /path/to/output --prefix sub_001 --pet /path/to/pet.nii --anatomical /path/to/mri.nii --motion-target /path/to/pet/reference.nii
+            petpal-preproc register-pet --out-dir /path/to/output --prefix sub_001 --pet /path/to/pet.nii --anatomical /path/to/mri.nii --motion-target /path/to/pet/reference.nii
             
     * Motion Correction:
     
@@ -55,13 +55,11 @@ Examples:
   - Weighted Sum:
     petpal-preproc weighted-sum --out-dir /path/to/output --prefix sub_001 --pet /path/to/pet.nii --half-life 6586.26
   - Registration:
-    petpal-preproc register --out-dir /path/to/output --prefix sub_001 --pet /path/to/pet.nii --anatomical /path/to/mri.nii --motion-target /path/to/pet/reference.nii
+    petpal-preproc register-pet --out-dir /path/to/output --prefix sub_001 --pet /path/to/pet.nii --anatomical /path/to/mri.nii --motion-target /path/to/pet/reference.nii
   - Motion Correction:
     petpal-preproc motion-corr --out-dir /path/to/output --prefix sub_001 --pet /path/to/pet.nii --pet-reference /path/to/sum.nii
   - Writing TACs From Segmentation Masks:
     petpal-preproc write-tacs --out-dir /path/to/output --pet /path/to/pet.nii --segmentation /path/to/seg_masks.nii --label-map-path /path/to/dseg.tsv
-  - Verbose:
-    petpal-preproc -v [sub-command] [arguments]
 """)
 
 
@@ -127,7 +125,7 @@ def _generate_args() -> argparse.Namespace:
                             type=str)
     parser_reg.add_argument('-t', '--motion-target', default=None, nargs='+',
                             help="Motion target option. Can be an image path, "
-                                 "'weighted_series_sum' or a tuple.")
+                                 "'weighted_series_sum' or a tuple (i.e. '-t 0 600' for first ten minutes).")
     parser_reg.add_argument('-l', '--half-life', help='Half life of radioisotope in seconds.',
                             type=float)
 
@@ -135,7 +133,7 @@ def _generate_args() -> argparse.Namespace:
     _add_common_args(parser_moco)
     parser_moco.add_argument('-t', '--motion-target', default=None, nargs='+',
                             help="Motion target option. Can be an image path, "
-                                 "'weighted_series_sum' or a tuple.")
+                                 "'weighted_series_sum' or a tuple (i.e. '-t 0 600' for first ten minutes).")
     parser_moco.add_argument('-l', '--half-life', help='Half life of radioisotope in seconds.',
                             type=float)
 
@@ -144,7 +142,7 @@ def _generate_args() -> argparse.Namespace:
     parser_tac.add_argument('-s', '--segmentation', required=True,
                             help='Path to segmentation image in anatomical space.')
     parser_tac.add_argument('-l', '--label-map-path', required=True, help='Path to label map dseg.tsv')
-    parser_tac.add_argument('-k', '--time-frame-keyword', required=False, help='Time keyword used for frame timing',default='FrameTimeReference')
+    parser_tac.add_argument('-k', '--time-frame-keyword', required=False, help='Time keyword used for frame timing',default='FrameReferenceTime')
 
     parser_warp = subparsers.add_parser('warp-pet-atlas',help='Perform nonlinear warp on PET to atlas.')
     _add_common_args(parser_warp)
@@ -214,6 +212,8 @@ def main():
         preproc_props['BlurSize'] = args.blur_size_mm
     if 'time_frame_keyword' in args.__dict__.keys():
         preproc_props['TimeFrameKeyword'] = args.time_frame_keyword
+    if 'ref-region' in args.__dict__.keys():
+        preproc_props['RefRegion'] = args.ref_region
 
     command = str(args.command).replace('-','_')
 

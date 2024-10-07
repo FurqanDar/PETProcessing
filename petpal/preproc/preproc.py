@@ -9,10 +9,12 @@ TODO:
 
 """
 import os
+
+import petpal.utils.useful_functions
 from ..visualizations import qc_plots
 from . import register, image_operations_4d, motion_corr, segmentation_tools
 
-weighted_series_sum = image_operations_4d.weighted_series_sum
+weighted_series_sum = petpal.utils.useful_functions.weighted_series_sum
 write_tacs = image_operations_4d.write_tacs
 roi_tac = image_operations_4d.roi_tac
 resample_segmentation = segmentation_tools.resample_segmentation
@@ -209,6 +211,25 @@ class PreProc():
         self.preproc_props = updated_props
         return updated_props
 
+    def _check_input_paths_exist(self,
+                                 method_name: str) -> None:
+        """
+        Verify that all filepaths in ``preproc_props`` exist for a given method.
+
+        Args: method_name (str): Name of method to be checked for necessary input files.
+
+        Raises: FileNotFoundError if any necessary files don't exist.
+
+        """
+        filepath_keys = [key for key in _REQUIRED_KEYS_[method_name] if key.startswith('FilePath')]
+        errored_paths = []
+        for key in filepath_keys:
+            if self.preproc_props[key] is not None:
+                if not os.path.exists(self.preproc_props[key]):
+                    errored_paths.append(self.preproc_props[key])
+
+        if len(errored_paths) > 0:
+            raise FileNotFoundError(f"Input file(s) not found for the following path(s):\n{errored_paths}")
 
     def _check_method_props_exist(self,
                                   method_name: str) -> None:
@@ -231,7 +252,7 @@ class PreProc():
 
         for key in required_keys:
             if preproc_props[key] is None:
-                raise ValueError(f"Preprocessing method requires property"
+                raise ValueError(f"Preprocessing method {method_name} requires property"
                                  f" {key}, however {key} was not found in "
                                  "processing properties. Existing properties "
                                  f"are: {existing_keys}, while needed keys to "
@@ -252,12 +273,12 @@ class PreProc():
             extension (str): File type extension to return. Defaults to
                 'nii.gz'.
             modality (str, optional): Modality of the image. Should be one of 'pet', 't1w', 'mpr', 'flair', 't2w'
-            
+
         Returns:
             If modality is None, we return 'output_dir/fileprefix_{method_short}.{extension}'. Else, we return
             output_dir/fileprefix_desc-{method_short}_{modality}.{extension}
         """
-        
+
         if modality is None:
             output_file_name = f'{self.output_filename_prefix}_{method_short}.{extension}'
         else:
@@ -278,6 +299,7 @@ class PreProc():
         """
         preproc_props = self.preproc_props
         self._check_method_props_exist(method_name=method_name)
+        self._check_input_paths_exist(method_name=method_name)
 
         if method_name=='weighted_series_sum':
             outfile = self._generate_outfile_path(method_short='wss', modality=modality)
@@ -403,14 +425,14 @@ class PreProc():
                 wm_ref_segmentation_path=out_ref_region,
                 out_image_path=outfile
             )
-        
+
         elif method_name=='thresh_crop':
             outfile = self._generate_outfile_path(method_short='threshcropped', modality=modality)
             thresh_crop(input_image_path=preproc_props['FilePathCropInput'],
                         out_image_path=outfile,
                         thresh_val=preproc_props['CropThreshold'],
                         verbose=preproc_props['Verbose'],
-                        copy_metadata=True)  
+                        copy_metadata=True)
 
         elif method_name=='crop_image':
             outfile = self._generate_outfile_path(method_short='crop')

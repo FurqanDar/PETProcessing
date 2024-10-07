@@ -354,7 +354,7 @@ def resample_blood_data_on_scanner_times(pet4d_path: str,
     """
     image_meta_data = image_io.load_metadata_for_nifty_with_same_filename(image_path=pet4d_path)
     frame_times = np.asarray(image_meta_data['FrameReferenceTime']) / 60.0
-    blood_times, blood_activity = image_io.load_tac(filename=raw_blood_tac)
+    blood_times, blood_activity = image_io.safe_load_tac(filename=raw_blood_tac)
     blood_intp = BloodInputFunction(time=blood_times, activity=blood_activity, thresh_in_mins=lin_fit_thresh_in_mins)
     resampled_blood = blood_intp.calc_blood_input_function(t=frame_times)
     resampled_tac = np.asarray([frame_times, resampled_blood], dtype=float)

@@ -16,6 +16,7 @@ TODO:
 
 import numba
 import numpy as np
+from scipy.signal import convolve as sp_conv
 
 
 def calc_convolution_with_check(f: np.ndarray, g: np.ndarray, dt: float) -> np.ndarray:
@@ -42,7 +43,7 @@ def calc_convolution_with_check(f: np.ndarray, g: np.ndarray, dt: float) -> np.n
         
     """
     assert len(f) == len(g), f"The provided arrays must have the same lengths! f:{len(f):<6} and g:{len(g):<6}."
-    vals = np.convolve(f, g, mode='full')
+    vals = sp_conv(f, g, mode='full')
     return vals[:len(f)] * dt
 
 
