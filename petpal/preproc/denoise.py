@@ -1,6 +1,7 @@
 """ Provides functions for denoising PET images. """
 import logging
 import os
+import math
 
 import numpy as np
 from nibabel.filebasedimages import FileBasedImage
@@ -18,11 +19,51 @@ def denoise_image(pet_image: np.ndarray,
     pass
 
 
-def apply_k_means_clustering(data: np.ndarray,
-                             num_clusters: int or list[int],
-                             **kwargs) -> [np.ndarray, np.ndarray]:
-    """Separate data into num_clusters clusters using Lloyd's algorithm implemented in sklearn, with recursive option"""
-    pass
+def apply_3_tier_k_means_clustering(data: np.ndarray,
+                                    num_clusters: list[int],
+                                    **kwargs) -> [np.ndarray, np.ndarray]:
+    """Separate data into num_clusters clusters using Lloyd's algorithm implemented in sklearn."""
+
+    # Verify format of inputs
+    if len(num_clusters) != 3:
+        raise IndexError(
+            'num_clusters must be a list of length 3, where num_clusters[0] is the number of clusters at the top-level,'
+            ' num_clusters[1] is the number of clusters to separate each of the top-level clusters into, and so on.')
+
+    if data.ndim != 2:
+        raise IndexError('data input MUST be a 2-D numpy array, where the first dimension corresponds to the samples, '
+                         'and the second dimension corresponds to the features')
+
+    # Dimensions will be (# of clusters, # of features)
+    centroids = np.zeros(shape=(np.prod(num_clusters), data.shape[1]))
+    _, cluster_ids, _ = k_means(X=data,
+                                n_clusters=num_clusters[0],
+                                **kwargs)
+
+    cluster_ids_2 = np.zeros(shape=cluster_ids.shape)
+    for cluster in range(num_clusters[0]):
+        print(f'ClusterID: {cluster}')
+        cluster_data = data[cluster_ids == cluster, :]
+        print(f'{cluster_data}\n{cluster_data.shape}')
+        _, cluster_ids_temp, _ = k_means(X=cluster_data,
+                                         n_clusters=num_clusters[1],
+                                         **kwargs)
+        print(f'cluster_ids_temp\n{cluster_ids_temp}\n{cluster_ids_temp.shape}')
+        cluster_ids_2[cluster_ids == cluster] = cluster_ids[cluster_ids == cluster] * num_clusters[1] + cluster_ids_temp
+
+    cluster_ids_3 = np.zeros(shape=cluster_ids.shape)
+    for cluster in range(num_clusters[0] * num_clusters[1]):
+        print(f'ClusterID: {cluster}')
+        cluster_data = data[cluster_ids_2 == cluster, :]
+        centroids_temp, cluster_ids_temp, _ = k_means(X=cluster_data,
+                                                      n_clusters=num_clusters[2],
+                                                      **kwargs)
+        cluster_ids_3[cluster_ids_2 == cluster] = cluster_ids_temp + num_clusters[2] * cluster
+        print(f'Centroids for cluster {cluster}\n{centroids_temp}\n{centroids_temp.shape}')
+
+    cluster_ids = cluster_ids + cluster_ids_3
+
+    return cluster_ids
 
 
 def rearrange_voxels_to_wheel_space():
@@ -45,6 +86,7 @@ def _prepare_inputs(path_to_pet: str,
                     path_to_freesurfer_segmentation: str) -> [np.ndarray]:
     """Read images from files into ndarrays, and ensure all images have the same dimensions as PET."""
 
+    logger.debug("Logger Attached")
     images_loaded = []
     images_failed_to_load = []
     errors = []
