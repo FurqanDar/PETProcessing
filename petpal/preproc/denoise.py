@@ -5,8 +5,10 @@ import math
 
 import numpy as np
 from sklearn.cluster import k_means
+from scipy.ndimage import convolve, binary_fill_holes
 
 from ..utils.image_io import ImageIO
+from ..preproc.image_operations_4d import threshold_binary
 
 logger = logging.getLogger(__name__)
 
@@ -102,16 +104,36 @@ def apply_smoothing_in_sinogram_space():
     pass
 
 
-def temporal_pca(flattened_pet_data: np.ndarray):
-    """Run principal component analysis on spatially-flattened PET and return PC1, 2, 3 scores per index
+def temporal_pca(flattened_pet_data: np.ndarray,
+                 flattened_head_mask: np.ndarray) -> np.ndarray:
+    """Run principal component analysis on spatially-flattened PET and return PC1, 2, 3 scores per index"""
 
-    """
+
     pass
 
+
+def head_mask(wss_pet_data: np.ndarray,
+              thresh: float = 500.0) -> np.ndarray:
+    """Function to extract 3D head mask from weighted series sum of PET data using basic morphological methods"""
+    thresholded_data = threshold_binary(input_image_numpy=wss_pet_data, lower_bound=thresh)
+
+    kernel = np.ones(shape=(3,3,3))
+    neighbor_count = convolve(thresholded_data, kernel, mode='constant')
+    thresholded_data[neighbor_count < 14] = 0
+    mask_image = binary_fill_holes(thresholded_data)
+
+    return mask_image
+
+
+def add_nonbrain_features_to_segmentation():
+    """Cluster non-brain and add labels to existing segmentation"""
+
+
 def flatten_pet_spatially(pet_data: np.ndarray) -> np.ndarray:
-    """Flatten spatial dimensions of 4D PET and return 2D version"""
-    spatial_dim = np.prod(pet_data.shape[:-1])
-    flattened_pet_data = pet_data.reshape(spatial_dim, -1)
+    """Flatten spatial dimensions (using C index order) of 4D PET and return 2D version"""
+
+    num_voxels = np.prod(pet_data.shape[:-1])
+    flattened_pet_data = pet_data.reshape(num_voxels, -1)
 
     return flattened_pet_data
 
