@@ -4,13 +4,14 @@ import os
 import math
 
 import numpy as np
-from nibabel.filebasedimages import FileBasedImage
 from sklearn.cluster import k_means
 
 from ..utils.image_io import ImageIO
 
 logger = logging.getLogger(__name__)
 
+class Denoiser:
+    """Wrapper class for handling inputs, outputs, and logging for denoising."""
 
 def denoise_image(pet_image: np.ndarray,
                   t1_image: np.ndarray,
@@ -19,10 +20,33 @@ def denoise_image(pet_image: np.ndarray,
     pass
 
 
-def apply_3_tier_k_means_clustering(data: np.ndarray,
+def apply_3_tier_k_means_clustering(flattened_feature_data: np.ndarray,
                                     num_clusters: list[int],
-                                    **kwargs) -> [np.ndarray, np.ndarray]:
-    """Separate data into num_clusters clusters using Lloyd's algorithm implemented in sklearn."""
+                                    **kwargs) -> (np.ndarray, np.ndarray):
+    """Separate data into num_clusters clusters using Lloyd's algorithm implemented in sklearn.
+
+    This function performs k-means clustering "recursively" on feature data from a (PET) image. The input data should be 2D,
+    where one dimension corresponds to all the voxels in a single 3D PET Frame, and the other dimension corresponds to
+    the feature values for those voxels. Example features include Temporal PCA components from PET, T1 or T2 MRI
+    intensity, freesurfer segmentation. Note that MRI and segmentation data must be registered to native PET space.
+    This input data is clustered with k-means 3 successive times, with each cluster from the first tier being passed
+    into the second tier, and so on for the third tier. The final number of clusters is considered to be the product of
+    num_cluster's elements, since the final tier's cluster outputs are returned.
+
+    Args:
+        flattened_feature_data (np.ndarray): Feature data from PET (and other sources) to cluster. Must be 2D, where one
+            dimension corresponds to all the voxels in a single 3D PET Frame, and the other dimension corresponds to the
+            feature values for those voxels.
+        num_clusters (list[int]): Number of clusters to use in each tier of k_means clustering. num_clusters must have
+            a length of 3, where the value at the first index is the number of clusters in the first tier, and so on.
+        **kwargs: Additional keyword arguments passed to the `sklearn.cluster.k_means` method.
+
+    Returns:
+        Tuple[np.ndarray, np.ndarray]: First array contains the feature centroids for each cluster, and the second
+        contains the cluster labels for each "voxel" in the input data. See sklearn.cluster.k_means documentation for
+        more details.
+
+    """
 
     # Verify format of inputs
     if len(num_clusters) != 3:
@@ -30,40 +54,42 @@ def apply_3_tier_k_means_clustering(data: np.ndarray,
             'num_clusters must be a list of length 3, where num_clusters[0] is the number of clusters at the top-level,'
             ' num_clusters[1] is the number of clusters to separate each of the top-level clusters into, and so on.')
 
-    if data.ndim != 2:
-        raise IndexError('data input MUST be a 2-D numpy array, where the first dimension corresponds to the samples, '
+    if flattened_feature_data.ndim != 2:
+        raise IndexError('flattened_feature_data input MUST be a 2-D numpy array, where the first dimension corresponds to the samples, '
                          'and the second dimension corresponds to the features')
 
     # Dimensions will be (# of clusters, # of features)
-    centroids = np.zeros(shape=(np.prod(num_clusters), data.shape[1]))
-    _, cluster_ids, _ = k_means(X=data,
+    centroids = np.zeros(shape=(np.prod(num_clusters), flattened_feature_data.shape[1]))
+    _, cluster_ids, _ = k_means(X=flattened_feature_data,
                                 n_clusters=num_clusters[0],
                                 **kwargs)
 
     cluster_ids_2 = np.zeros(shape=cluster_ids.shape)
     for cluster in range(num_clusters[0]):
-        print(f'ClusterID: {cluster}')
-        cluster_data = data[cluster_ids == cluster, :]
-        print(f'{cluster_data}\n{cluster_data.shape}')
+        logger.debug(f'Top-Level Cluster ID: {cluster}')
+        cluster_data = flattened_feature_data[cluster_ids == cluster, :]
+        logger.debug(f'{cluster_data}\n{cluster_data.shape}')
         _, cluster_ids_temp, _ = k_means(X=cluster_data,
                                          n_clusters=num_clusters[1],
                                          **kwargs)
-        print(f'cluster_ids_temp\n{cluster_ids_temp}\n{cluster_ids_temp.shape}')
+        logger.debug(f'cluster_ids_temp\n{cluster_ids_temp}\n{cluster_ids_temp.shape}')
         cluster_ids_2[cluster_ids == cluster] = cluster_ids[cluster_ids == cluster] * num_clusters[1] + cluster_ids_temp
 
     cluster_ids_3 = np.zeros(shape=cluster_ids.shape)
     for cluster in range(num_clusters[0] * num_clusters[1]):
-        print(f'ClusterID: {cluster}')
-        cluster_data = data[cluster_ids_2 == cluster, :]
+        logger.debug(f'Mid-Level Cluster ID: {cluster}')
+        cluster_data = flattened_feature_data[cluster_ids_2 == cluster, :]
         centroids_temp, cluster_ids_temp, _ = k_means(X=cluster_data,
                                                       n_clusters=num_clusters[2],
                                                       **kwargs)
         cluster_ids_3[cluster_ids_2 == cluster] = cluster_ids_temp + num_clusters[2] * cluster
-        print(f'Centroids for cluster {cluster}\n{centroids_temp}\n{centroids_temp.shape}')
+        logger.debug(f'Centroids for cluster {cluster}\n{centroids_temp}\n{centroids_temp.shape}')
+        for sub_cluster in range(num_clusters[2]):
+            centroids[cluster * num_clusters[2] + sub_cluster, :] = centroids_temp[sub_cluster]
 
     cluster_ids = cluster_ids + cluster_ids_3
 
-    return cluster_ids
+    return centroids, cluster_ids
 
 
 def rearrange_voxels_to_wheel_space():
@@ -76,17 +102,25 @@ def apply_smoothing_in_sinogram_space():
     pass
 
 
-def temporal_pca():
-    """Run principal component analysis on spatially-flattened PET dataset and return PC1, 2, and 3 scores for each index."""
+def temporal_pca(flattened_pet_data: np.ndarray):
+    """Run principal component analysis on spatially-flattened PET and return PC1, 2, 3 scores per index
+
+    """
     pass
+
+def flatten_pet_spatially(pet_data: np.ndarray) -> np.ndarray:
+    """Flatten spatial dimensions of 4D PET and return 2D version"""
+    spatial_dim = np.prod(pet_data.shape[:-1])
+    flattened_pet_data = pet_data.reshape(spatial_dim, -1)
+
+    return flattened_pet_data
 
 
 def _prepare_inputs(path_to_pet: str,
                     path_to_mri: str,
-                    path_to_freesurfer_segmentation: str) -> [np.ndarray]:
+                    path_to_freesurfer_segmentation: str) -> (np.ndarray, np.ndarray, np.ndarray):
     """Read images from files into ndarrays, and ensure all images have the same dimensions as PET."""
 
-    logger.debug("Logger Attached")
     images_loaded = []
     images_failed_to_load = []
     errors = []
@@ -110,6 +144,10 @@ def _prepare_inputs(path_to_pet: str,
     segmentation_data = image_loader.extract_image_from_nii_as_numpy(images_loaded[2])
     pet_data_3d_shape = pet_data.shape[:-1]
 
+    if pet_data.ndim != 4:
+        raise Exception(f'PET data has {pet_data.ndim} dimensions, but 4 is expected. Ensure that you are loading a '
+                        f'4DPET dataset, not a single frame')
+
     if mri_data.shape != pet_data_3d_shape or segmentation_data.shape != pet_data_3d_shape:
         raise Exception(f'MRI and/or Segmentation has different dimensions from 3D PET image:\n'
                         f'PET Frame Shape: {pet_data_3d_shape}\n'
@@ -117,4 +155,4 @@ def _prepare_inputs(path_to_pet: str,
                         f'MRI Shape: {mri_data.shape}.\n'
                         f'Ensure that all non-PET data is registered to PET space')
 
-    return [pet_data, mri_data, segmentation_data]
+    return pet_data, mri_data, segmentation_data
