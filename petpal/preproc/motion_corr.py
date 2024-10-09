@@ -53,9 +53,13 @@ def determine_motion_target(motion_target_option: Union[str,tuple,list],
             transformations on.
 
     Raises:
-        ValueError: If ``motion_target_option`` does not match an acceptable option.
+        ValueError: If ``motion_target_option`` does not match an acceptable option, or if half_life is not specified
+        when necessary
         TypeError: If start and end time are incompatible with ``float`` type.
     """
+    if motion_target_option != 'mean_image' and half_life is None:
+        raise ValueError('half_life must be specified if not using "mean_image" for motion_target_option')
+
     if isinstance(motion_target_option,str):
         if os.path.exists(motion_target_option):
             return motion_target_option

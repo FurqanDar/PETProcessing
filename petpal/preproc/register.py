@@ -13,13 +13,15 @@ from . import motion_corr
 
 determine_motion_target = motion_corr.determine_motion_target
 
-def register_pet(input_reg_image_path: str,
-                 reference_image_path: str,
-                 motion_target_option: Union[str,tuple],
+
+def register_pet(pet_image_path: str,
+                 anat_image_path: str,
+                 pet_motion_target_option: Union[str, tuple],
                  out_image_path: str,
-                 verbose: bool,
-                 type_of_transform: str='DenseRigid',
-                 half_life: float=None,
+                 verbose: bool = False,
+                 type_of_transform: str = 'DenseRigid',
+                 half_life: float = None,
+                 reverse: bool = False,
                  **kwargs):
     """
     Computes and runs rigid registration of 4D PET image series to 3D anatomical image, typically
@@ -27,11 +29,11 @@ def register_pet(input_reg_image_path: str,
     inputs. Will upsample PET image to the resolution of anatomical imaging.
 
     Args:
-        input_reg_image_path (str): Path to a .nii or .nii.gz file containing a 4D
+        pet_image_path (str): Path to a .nii or .nii.gz file containing a 4D
             PET image to be registered to anatomical space.
-        reference_image_path (str): Path to a .nii or .nii.gz file containing a 3D
+        anat_image_path (str): Path to a .nii or .nii.gz file containing a 3D
             anatomical image to which PET image is registered.
-        motion_target_option (str | tuple): Target image for computing
+        pet_motion_target_option (str | tuple): Target image for computing
             transformation. See :meth:`determine_motion_target`.
         type_of_transform (str): Type of transform to perform on the PET image, must be one of antspy's
             transformation types, i.e. 'DenseRigid' or 'Translation'. Any transformation type that uses
@@ -39,14 +41,16 @@ def register_pet(input_reg_image_path: str,
         out_image_path (str): Path to a .nii or .nii.gz file to which the registered PET series
             is written.
         verbose (bool): Set to ``True`` to output processing information.
+        half_life (float): Half-life of PET tracer in seconds.
+        reverse (bool): If True, register anatomical image onto PET space
         kwargs (keyword arguments): Additional arguments passed to :py:func:`ants.registration`.
     """
-    motion_target = determine_motion_target(motion_target_option=motion_target_option,
-                                                input_image_4d_path=input_reg_image_path,
-                                                half_life=half_life)
+    motion_target = determine_motion_target(motion_target_option=pet_motion_target_option,
+                                            input_image_4d_path=pet_image_path,
+                                            half_life=half_life)
     motion_target_image = ants.image_read(motion_target)
-    mri_image = ants.image_read(reference_image_path)
-    pet_image_ants = ants.image_read(input_reg_image_path)
+    mri_image = ants.image_read(anat_image_path)
+    pet_image_ants = ants.image_read(pet_image_path)
     xfm_output = ants.registration(moving=motion_target_image,
                                    fixed=mri_image,
                                    type_of_transform=type_of_transform,
@@ -54,26 +58,35 @@ def register_pet(input_reg_image_path: str,
                                    **kwargs)
     if verbose:
         print(f'Registration computed transforming image {motion_target} to '
-              f'{reference_image_path} space')
+              f'{anat_image_path} space')
 
-    if pet_image_ants.dimension==4:
+    if pet_image_ants.dimension == 4:
         dim = 3
     else:
         dim = 0
 
-    xfm_apply = ants.apply_transforms(moving=pet_image_ants,
-                                      fixed=mri_image,
-                                      transformlist=xfm_output['fwdtransforms'],
-                                      interpolator='linear',
-                                      imagetype=dim)
+    if not reverse:
+        xfm_apply = ants.apply_transforms(moving=pet_image_ants,
+                                          fixed=mri_image,
+                                          transformlist=xfm_output['fwdtransforms'],
+                                          interpolator='linear',
+                                          imagetype=dim)
+
+    else:
+        xfm_apply = ants.apply_transforms(moving=mri_image,
+                                          fixed=pet_image_ants,
+                                          transformlist=xfm_output['invtransforms'],
+                                          interpolator='linear',
+                                          imagetype=dim)
+
     if verbose:
-        print(f'Registration applied to {input_reg_image_path}')
+        print(f'Registration applied to {pet_image_path}')
 
     ants.image_write(xfm_apply, out_image_path)
     if verbose:
         print(f'Transformed image saved to {out_image_path}')
 
-    image_io.safe_copy_meta(input_image_path=input_reg_image_path,out_image_path=out_image_path)
+    image_io.safe_copy_meta(input_image_path=pet_image_path, out_image_path=out_image_path)
 
 
 def warp_pet_atlas(input_image_path: str,
@@ -81,7 +94,7 @@ def warp_pet_atlas(input_image_path: str,
                    atlas_image_path: str,
                    out_image_path: str,
                    verbose: bool,
-                   type_of_transform: str='SyN',
+                   type_of_transform: str = 'SyN',
                    **kwargs):
     """
     Compute and apply a warp on a 3D or 4D image in anatomical space
@@ -115,23 +128,25 @@ def warp_pet_atlas(input_image_path: str,
 
     pet_image_ants = ants.image_read(input_image_path)
 
-    if pet_image_ants.dimension==4:
+    if pet_image_ants.dimension == 4:
         dim = 3
     else:
         dim = 0
 
     pet_atlas_xfm = ants.apply_transforms(fixed=atlas_image_ants,
                                           moving=pet_image_ants,
-                                          transformlist=xfm_to_apply,verbose=True,
+                                          transformlist=xfm_to_apply,
+                                          verbose=True,
                                           imagetype=dim)
 
     if verbose:
         print('Computed transform, saving to file.')
-    ants.image_write(pet_atlas_xfm,out_image_path)
+    ants.image_write(pet_atlas_xfm, out_image_path)
 
-    image_io.safe_copy_meta(input_image_path=input_image_path,out_image_path=out_image_path)
+    image_io.safe_copy_meta(input_image_path=input_image_path, out_image_path=out_image_path)
 
     return xfm_to_apply
+
 
 def apply_xfm_ants(input_image_path: str,
                    ref_image_path: str,
@@ -152,7 +167,7 @@ def apply_xfm_ants(input_image_path: str,
     pet_image_ants = ants.image_read(input_image_path)
     ref_image_ants = ants.image_read(ref_image_path)
 
-    if pet_image_ants.dimension==4:
+    if pet_image_ants.dimension == 4:
         dim = 3
     else:
         dim = 0
@@ -160,19 +175,19 @@ def apply_xfm_ants(input_image_path: str,
     xfm_image = ants.apply_transforms(fixed=ref_image_ants,
                                       moving=pet_image_ants,
                                       transformlist=xfm_paths,
-                                      imagetype=dim-1)
+                                      imagetype=dim - 1)
 
-    ants.image_write(xfm_image,out_image_path)
+    ants.image_write(xfm_image, out_image_path)
 
-    image_io.safe_copy_meta(input_image_path=input_image_path,out_image_path=out_image_path)
+    image_io.safe_copy_meta(input_image_path=input_image_path, out_image_path=out_image_path)
 
 
 def apply_xfm_fsl(input_image_path: str,
                   ref_image_path: str,
                   out_image_path: str,
-                  warp_path: str=None,
-                  premat_path: str='',
-                  postmat_path: str='',
+                  warp_path: str = None,
+                  premat_path: str = '',
+                  postmat_path: str = '',
                   **kwargs):
     """
     Applies existing transforms in FSL format to an input image, onto a
@@ -193,20 +208,20 @@ def apply_xfm_fsl(input_image_path: str,
         kwargs (keyword arguments): Additional arguments passed to
             :py:func:`fsl.wrappers.applywarp`.
     """
-    if premat_path=='' and postmat_path=='':
+    if premat_path == '' and postmat_path == '':
         fsl.wrappers.applywarp(src=input_image_path,
                                ref=ref_image_path,
                                out=out_image_path,
                                warp=warp_path,
                                **kwargs)
-    elif premat_path=='' and postmat_path!='':
+    elif premat_path == '' and postmat_path != '':
         fsl.wrappers.applywarp(src=input_image_path,
                                ref=ref_image_path,
                                out=out_image_path,
                                warp=warp_path,
                                postmat=postmat_path,
                                **kwargs)
-    elif premat_path!='' and postmat_path=='':
+    elif premat_path != '' and postmat_path == '':
         fsl.wrappers.applywarp(src=input_image_path,
                                ref=ref_image_path,
                                out=out_image_path,
@@ -222,7 +237,8 @@ def apply_xfm_fsl(input_image_path: str,
                                postmat=postmat_path,
                                **kwargs)
 
-    image_io.safe_copy_meta(input_image_path=input_image_path,out_image_path=out_image_path)
+    image_io.safe_copy_meta(input_image_path=input_image_path, out_image_path=out_image_path)
+
 
 def resample_nii_4dfp(input_image_path: str,
                       resampled_image_path: str,
@@ -249,15 +265,15 @@ def resample_nii_4dfp(input_image_path: str,
     mpr_image = nibabel.load(mpr_image_path)
     input_image_resampled = resample_from_to(
         from_img=input_image,
-        to_vox_map=(resampled_image.shape[:3],resampled_image.affine)
+        to_vox_map=(resampled_image.shape[:3], resampled_image.affine)
     )
     image_resampled_array = input_image_resampled.get_fdata()
-    resampled_swapped = np.swapaxes(np.swapaxes(image_resampled_array,0,2),1,2)
-    resampled_swapped_flipped = np.flip(np.flip(np.flip(resampled_swapped,1),2),0)
+    resampled_swapped = np.swapaxes(np.swapaxes(image_resampled_array, 0, 2), 1, 2)
+    resampled_swapped_flipped = np.flip(np.flip(np.flip(resampled_swapped, 1), 2), 0)
     input_on_mpr = nibabel.nifti1.Nifti1Image(
         dataobj=resampled_swapped_flipped,
         affine=mpr_image.affine,
         header=mpr_image.header
     )
-    nibabel.save(input_on_mpr,out_image_path)
-    image_io.safe_copy_meta(input_image_path=input_image_path,out_image_path=out_image_path)
+    nibabel.save(input_on_mpr, out_image_path)
+    image_io.safe_copy_meta(input_image_path=input_image_path, out_image_path=out_image_path)

@@ -5,6 +5,7 @@ import math
 
 import numpy as np
 from sklearn.cluster import k_means
+from sklearn.decomposition import PCA
 from scipy.ndimage import convolve, binary_fill_holes
 
 from ..utils.image_io import ImageIO
@@ -12,14 +13,70 @@ from ..preproc.image_operations_4d import threshold_binary
 
 logger = logging.getLogger(__name__)
 
+
 class Denoiser:
     """Wrapper class for handling inputs, outputs, and logging for denoising."""
 
-def denoise_image(pet_image: np.ndarray,
-                  t1_image: np.ndarray,
-                  freesurfer_segmentation: np.ndarray) -> np.ndarray:
-    """Use Hamed Yousefi's method to denoise a PET image."""
-    pass
+    def __init__(self,
+                 path_to_pet: str,
+                 path_to_mri: str,
+                 path_to_segmentation: str):
+        try:
+            self.pet_data, self.mri_data, self.segmentation_data = self._prepare_inputs(path_to_pet=path_to_pet,
+                                                                                        path_to_mri=path_to_mri,
+                                                                                        path_to_freesurfer_segmentation=path_to_segmentation)
+        except OSError as e:
+            raise OSError(e)
+        except Exception as e:
+            raise Exception(e)
+
+    def run(self):
+        """Denoise Image"""
+        pass
+
+    @staticmethod
+    def _prepare_inputs(path_to_pet: str,
+                        path_to_mri: str,
+                        path_to_freesurfer_segmentation: str) -> (np.ndarray, np.ndarray, np.ndarray):
+        """Read images from files into ndarrays, and ensure all images have the same dimensions as PET."""
+
+        images_loaded = []
+        images_failed_to_load = []
+        errors = []
+        image_loader = ImageIO()
+
+        # Verify that all files can be loaded and saved as ndarrays.
+        for path in [path_to_pet, path_to_mri, path_to_freesurfer_segmentation]:
+            try:
+                images_loaded.append(image_loader.load_nii(path))
+            except (FileNotFoundError, OSError) as e:
+                images_failed_to_load.append(path)
+                errors.append(e)
+
+        # Log errors if any images couldn't be loaded
+        if len(images_failed_to_load) > 0:
+            raise OSError(
+                f'{len(images_failed_to_load)} images could not be loaded. See errors below.\n{print(errors)}')
+
+        # Extract ndarrays from each image.
+        pet_data = image_loader.extract_image_from_nii_as_numpy(images_loaded[0])
+        mri_data = image_loader.extract_image_from_nii_as_numpy(images_loaded[1])
+        segmentation_data = image_loader.extract_image_from_nii_as_numpy(images_loaded[2])
+        pet_data_3d_shape = pet_data.shape[:-1]
+
+        if pet_data.ndim != 4:
+            raise Exception(
+                f'PET data has {pet_data.ndim} dimensions, but 4 is expected. Ensure that you are loading a '
+                f'4DPET dataset, not a single frame')
+
+        if mri_data.shape != pet_data_3d_shape or segmentation_data.shape != pet_data_3d_shape:
+            raise Exception(f'MRI and/or Segmentation has different dimensions from 3D PET image:\n'
+                            f'PET Frame Shape: {pet_data_3d_shape}\n'
+                            f'Segmentation Shape: {segmentation_data.shape}\n'
+                            f'MRI Shape: {mri_data.shape}.\n'
+                            f'Ensure that all non-PET data is registered to PET space')
+
+        return pet_data, mri_data, segmentation_data
 
 
 def apply_3_tier_k_means_clustering(flattened_feature_data: np.ndarray,
@@ -57,8 +114,9 @@ def apply_3_tier_k_means_clustering(flattened_feature_data: np.ndarray,
             ' num_clusters[1] is the number of clusters to separate each of the top-level clusters into, and so on.')
 
     if flattened_feature_data.ndim != 2:
-        raise IndexError('flattened_feature_data input MUST be a 2-D numpy array, where the first dimension corresponds to the samples, '
-                         'and the second dimension corresponds to the features')
+        raise IndexError(
+            'flattened_feature_data input MUST be a 2-D numpy array, where the first dimension corresponds to the samples, '
+            'and the second dimension corresponds to the features')
 
     # Dimensions will be (# of clusters, # of features)
     centroids = np.zeros(shape=(np.prod(num_clusters), flattened_feature_data.shape[1]))
@@ -94,39 +152,18 @@ def apply_3_tier_k_means_clustering(flattened_feature_data: np.ndarray,
     return centroids, cluster_ids
 
 
-def rearrange_voxels_to_wheel_space():
-    """Use voxelwise distances from cluster feature averages to arrange voxel indices onto 2D 'wheel' space."""
-    pass
-
-
-def apply_smoothing_in_sinogram_space():
-    """Smooth clustered feature image on its sinogram space using radon transform and predefined smoothing kernel."""
-    pass
-
-
-def temporal_pca(flattened_pet_data: np.ndarray,
-                 flattened_head_mask: np.ndarray) -> np.ndarray:
-    """Run principal component analysis on spatially-flattened PET and return PC1, 2, 3 scores per index"""
-
-
-    pass
-
-
-def head_mask(wss_pet_data: np.ndarray,
+def head_mask(pet_data: np.ndarray,
               thresh: float = 500.0) -> np.ndarray:
-    """Function to extract 3D head mask from weighted series sum of PET data using basic morphological methods"""
-    thresholded_data = threshold_binary(input_image_numpy=wss_pet_data, lower_bound=thresh)
+    """Function to extract 3D head mask PET data using basic morphological methods"""
 
-    kernel = np.ones(shape=(3,3,3))
+    mean_slice = np.mean(pet_data, axis=3)
+    thresholded_data = threshold_binary(input_image_numpy=mean_slice, lower_bound=thresh)
+    kernel = np.ones(shape=(3, 3, 3))
     neighbor_count = convolve(thresholded_data, kernel, mode='constant')
     thresholded_data[neighbor_count < 14] = 0
     mask_image = binary_fill_holes(thresholded_data)
 
     return mask_image
-
-
-def add_nonbrain_features_to_segmentation():
-    """Cluster non-brain and add labels to existing segmentation"""
 
 
 def flatten_pet_spatially(pet_data: np.ndarray) -> np.ndarray:
@@ -138,43 +175,34 @@ def flatten_pet_spatially(pet_data: np.ndarray) -> np.ndarray:
     return flattened_pet_data
 
 
-def _prepare_inputs(path_to_pet: str,
-                    path_to_mri: str,
-                    path_to_freesurfer_segmentation: str) -> (np.ndarray, np.ndarray, np.ndarray):
-    """Read images from files into ndarrays, and ensure all images have the same dimensions as PET."""
+def temporal_pca(flattened_pet_data: np.ndarray,
+                 flattened_head_mask: np.ndarray) -> np.ndarray:
+    """Run principal component analysis on spatially-flattened PET and return PC1, 2, 3 scores per index"""
+    # head_data = flattened_pet_data[flattened_head_mask, :]
+    # pca = PCA(n_components=2).fit(X=head_data)
 
-    images_loaded = []
-    images_failed_to_load = []
-    errors = []
-    image_loader = ImageIO()
+    pass
 
-    # Verify that all files can be loaded and saved as ndarrays.
-    for path in [path_to_pet, path_to_mri, path_to_freesurfer_segmentation]:
-        try:
-            images_loaded.append(image_loader.load_nii(path))
-        except (FileNotFoundError, OSError) as e:
-            images_failed_to_load.append(path)
-            errors.append(e)
 
-    # Log errors if any images couldn't be loaded
-    if len(images_failed_to_load) > 0:
-        raise OSError(f'{len(images_failed_to_load)} images could not be loaded. See errors below.\n{print(errors)}')
+def add_nonbrain_features_to_segmentation(segmentation_data: np.ndarray,
+                                          spatially_flattened_pet_data: np.ndarray,
+                                          head_mask_data: np.ndarray) -> np.ndarray:
+    """Cluster non-brain and add labels to existing segmentation"""
+    pass
 
-    # Extract ndarrays from each image.
-    pet_data = image_loader.extract_image_from_nii_as_numpy(images_loaded[0])
-    mri_data = image_loader.extract_image_from_nii_as_numpy(images_loaded[1])
-    segmentation_data = image_loader.extract_image_from_nii_as_numpy(images_loaded[2])
-    pet_data_3d_shape = pet_data.shape[:-1]
 
-    if pet_data.ndim != 4:
-        raise Exception(f'PET data has {pet_data.ndim} dimensions, but 4 is expected. Ensure that you are loading a '
-                        f'4DPET dataset, not a single frame')
+def denoise_image_data(pet_data: np.ndarray,
+                       t1_mri_data: np.ndarray,
+                       segmentation_data: np.ndarray) -> np.ndarray:
+    """Use Hamed Yousefi's method to denoise a PET image."""
+    pass
 
-    if mri_data.shape != pet_data_3d_shape or segmentation_data.shape != pet_data_3d_shape:
-        raise Exception(f'MRI and/or Segmentation has different dimensions from 3D PET image:\n'
-                        f'PET Frame Shape: {pet_data_3d_shape}\n'
-                        f'Segmentation Shape: {segmentation_data.shape}\n'
-                        f'MRI Shape: {mri_data.shape}.\n'
-                        f'Ensure that all non-PET data is registered to PET space')
 
-    return pet_data, mri_data, segmentation_data
+def rearrange_voxels_to_wheel_space():
+    """Use voxelwise distances from cluster feature averages to arrange voxel indices onto 2D 'wheel' space."""
+    pass
+
+
+def apply_smoothing_in_sinogram_space():
+    """Smooth clustered feature image on its sinogram space using radon transform and predefined smoothing kernel."""
+    pass
