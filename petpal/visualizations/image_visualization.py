@@ -18,10 +18,10 @@ import os
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.animation as mpl_animation
-from ..kinetic_modeling import parametric_images as pet_pim
+from ..utils import image_io as pet_pim
 from typing import Iterable
 
-nifty_loader = pet_pim._safe_load_4dpet_nifty
+nifty_loader = pet_pim.safe_load_4dpet_nifti
 
 
 class NiftiGifCreator:

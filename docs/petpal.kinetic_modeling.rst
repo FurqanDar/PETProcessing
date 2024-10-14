@@ -13,4 +13,5 @@ Submodules
    petpal.kinetic_modeling.tac_fitting
    petpal.kinetic_modeling.tac_interpolation
    petpal.kinetic_modeling.tcms_as_convolutions
-
+   petpal.kinetic_modeling.rtm_analysis
+   petpal.kinetic_modeling.fit_tac_with_rtms

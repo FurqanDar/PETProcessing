@@ -25,7 +25,7 @@ def write_dict_to_json(meta_data_dict: dict, out_path: str):
 
 def convert_ctab_to_dseg(ctab_path: str,
                          dseg_path: str,
-                         column_names: list[str]=['mapping','name','r','g','b','a','ttype']):
+                         column_names: list[str]=None):
     """
     Convert a FreeSurfer compatible color table into a BIDS compatible label
     map ``dseg.tsv``.
@@ -36,15 +36,18 @@ def convert_ctab_to_dseg(ctab_path: str,
         column_names (list[str]): List of columns present in color table. Must
             include 'mapping' and 'name'.
     """
+    if column_names==None:
+        column_names = ['mapping','name','r','g','b','a','ttype']
     fs_ctab = pd.read_csv(ctab_path,
                           delim_whitespace=True,
                           header=None,
                           comment='#',
                           names=column_names)
-    label_map = pd.DataFrame(columns=['name','abbreviation','mapping']).rename_axis('index')
-    label_map['name'] = fs_ctab['name']
-    label_map['mapping'] = fs_ctab['mapping']
-    label_map['abbreviation'] = useful_functions.build_label_map(fs_ctab['name'])
+    label_names = {'name': fs_ctab['name'],
+                   'mapping': fs_ctab['mapping'],
+                   'abbreviation': useful_functions.build_label_map(fs_ctab['name'])}
+    label_map = pd.DataFrame(data=label_names,
+                             columns=['name','abbreviation','mapping']).rename_axis('index')
     label_map = label_map.sort_values(by=['mapping'])
     label_map.to_csv(dseg_path,sep='\t')
     return label_map
@@ -82,25 +85,28 @@ def load_metadata_for_nifty_with_same_filename(image_path) -> dict:
 def safe_load_tac(filename: str, **kwargs) -> np.ndarray:
     """
     Loads time-activity curves (TAC) from a file.
-
     Tries to read a TAC from specified file and raises an exception if unable to do so. We assume that the file has two
     columns, the first corresponding to time and second corresponding to activity.
-
     Args:
         filename (str): The name of the file to be loaded.
-
     Returns:
         np.ndarray: A numpy array containing the loaded TAC. The first index corresponds to the times, and the second
         corresponds to the activity.
-
     Raises:
         Exception: An error occurred loading the TAC.
     """
     try:
-        return np.array(np.loadtxt(filename).T, dtype=float, order='C', **kwargs)
+        tac_data = np.asarray(np.loadtxt(filename, **kwargs).T, dtype=float, order='C')
+    except ValueError:
+        tac_data = np.asarray(np.loadtxt(filename, skiprows=1, **kwargs).T, dtype=float, order='C')
     except Exception as e:
         print(f"Couldn't read file {filename}. Error: {e}")
         raise e
+
+    if np.max(tac_data[0]) >= 300:
+        tac_data[0] /= 60.0
+
+    return tac_data
 
 
 def safe_copy_meta(input_image_path: str,
@@ -296,3 +302,32 @@ class ImageIO():
         label_map = pd.read_csv(label_map_file,sep='\t')
 
         return label_map
+
+
+def safe_load_4dpet_nifti(filename: str) -> nibabel.nifti1.Nifti1Image:
+    """
+    Safely load a 4D PET NIfTI file.
+
+    This function checks if the given file has a '.nii' or '.nii.gz' extension, then tries to load
+    it as a NIfTI file using the nibabel library. If the file cannot be loaded, it raises an
+    exception.
+
+    Args:
+        filename (str): The path of the NIfTI file to be loaded.
+
+    Returns:
+        Nifti1Image: The loaded NIfTI 4D PET image.
+
+    Raises:
+        ValueError: If the file does not have a '.nii' or '.nii.gz' extension.
+        Exception:  If an error occurred while loading the NIfTI file.
+    """
+    if not filename.endswith(('.nii', '.nii.gz')):
+        raise ValueError(
+            "Invalid file extension. Only '.nii' and '.nii.gz' are supported.")
+
+    try:
+        return nibabel.load(filename=filename)
+    except Exception as e:
+        print(f"Couldn't read file {filename}. Error: {e}")
+        raise e
