@@ -177,18 +177,6 @@ def threshold(input_image_numpy: np.ndarray,
     return bounded_image
 
 
-def threshold_binary(input_image_numpy: np.ndarray,
-              lower_bound: float=-np.inf,
-              upper_bound: float=np.inf):
-    """
-    Threshold an image above and/or below a pair of values, and return a binary mask.
-    """
-    bounded_image = np.zeros(input_image_numpy.shape)
-    bounded_image_where = (input_image_numpy > lower_bound) & (input_image_numpy < upper_bound)
-    bounded_image[bounded_image_where] = 1
-    return bounded_image
-
-
 def suvr(input_image_path: str,
          segmentation_image_path: str,
          ref_region: int,
