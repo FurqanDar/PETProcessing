@@ -2,6 +2,7 @@
 Provides tools to register PET images to anatomical or atlas space. Wrapper for
 ANTs and FSL registration software.
 """
+import os.path
 from typing import Union
 import logging
 import numpy as np
@@ -22,8 +23,8 @@ def register_pet(pet_image_path: str,
                  type_of_transform: str = 'DenseRigid',
                  half_life: float = None,
                  reverse: bool = False,
-                 extra_images_in_paths: tuple[str] = (),
-                 extra_images_out_paths: tuple[str] = (),
+                 in_seg_path: str = None,
+                 out_seg_path: str = None,
                  **kwargs):
     """
     Computes and runs rigid registration of 4D PET image series to 3D anatomical image, typically
@@ -45,19 +46,18 @@ def register_pet(pet_image_path: str,
         verbose (bool): Set to ``True`` to output processing information.
         half_life (float): Half-life of PET tracer in seconds.
         reverse (bool): If True, register anatomical image onto PET space
-        extra_images_in_paths (list[str]): List of images to register using the same transform computed for
+        in_seg_path (list[str]): List of images to register using the same transform computed for
             out_image. Note that all extra images must be in the space of the "moving" image (PET unless reverse is
             True). extra_images_paths must be passed as well if this argument is not None.
-        extra_images_out_paths (list[str]): List of paths to write output from images in extra_images_to_register. Must be
+        out_seg_path (list[str]): List of paths to write output from images in extra_images_to_register. Must be
             specified if extra_images_to_register is given.
         kwargs (keyword arguments): Additional arguments passed to :py:func:`ants.registration`.
     """
     if verbose:
         logger.setLevel(logging.INFO)
 
-    if len(extra_images_out_paths) != len(extra_images_in_paths):
-        raise ValueError("If extra_images_in_paths is specified, a tuple of equal length must be passed "
-                         "to extra_images_out_paths")
+    if bool(out_seg_path) != bool(in_seg_path): # logical XOR; either both or neither paths should be passed
+        raise ValueError("If in_seg_path is specified, out_seg_path must also be specified.")
 
     motion_target = determine_motion_target(motion_target_option=pet_motion_target_option,
                                             input_image_4d_path=pet_image_path,
@@ -66,43 +66,54 @@ def register_pet(pet_image_path: str,
     mri_image = ants.image_read(anat_image_path)
     pet_image_ants = ants.image_read(pet_image_path)
 
-    images_in_paths = []
-    images_out_paths = []
-
-    if extra_images_in_paths is not None:
-        images_in_paths = [path for path in extra_images_in_paths]
-        images_out_paths = [path for path in extra_images_out_paths]
-
-    images_in_paths.append(mri_image if reverse else pet_image_ants)
-    images_out_paths.append(out_image_path)
-
-    xfm_output = ants.registration(moving=motion_target_image,
+    transforms = ants.registration(moving=motion_target_image,
                                    fixed=mri_image,
                                    type_of_transform=type_of_transform,
                                    write_composite_transform=True,
                                    **kwargs)
-    logger.info(f'Transform computed to register {motion_target} to '
-                f'{anat_image_path} space')
 
     if pet_image_ants.dimension == 4:
         dim = 3
     else:
         dim = 0
 
-    for in_path, out_path in zip(images_in_paths, images_out_paths): # Iterate through both lists in parallel
-        xfm_apply = ants.apply_transforms(moving=ants.image_read(in_path), # TODO: Don't read pet/mri twice
-                                          fixed=pet_image_ants if reverse else mri_image,
-                                          transformlist=xfm_output['invtransforms'] if reverse else xfm_output['fwdtransforms'],
-                                          interpolator='linear',
-                                          imagetype=dim)
+    input_image = pet_image_ants if not reverse else mri_image
+    input_path = pet_image_path if not reverse else anat_image_path
+    fixed_image = mri_image if not reverse else pet_image_ants
+    transform = transforms['fwdtransforms'] if not reverse else transforms['invtransforms']
 
-        logger.info(f'Registration applied to {in_path}')
+    registered_image = ants.apply_transforms(moving=input_image,
+                                             fixed=fixed_image,
+                                             transformlist=transform,
+                                             interpolator='linear',
+                                             imagetype=dim)
+    logger.info(f'Registration applied to {pet_image_path if not reverse else anat_image_path}')
 
-        ants.image_write(xfm_apply, out_path)
+    ants.image_write(registered_image, out_image_path)
+    logger.info(f'Transformed image saved to {out_image_path}')
 
-        logger.info(f'Transformed image saved to {out_path}')
+    image_io.safe_copy_meta(input_image_path=input_path, out_image_path=out_image_path)
 
-        image_io.safe_copy_meta(input_image_path=in_path, out_image_path=out_path)
+    if in_seg_path is not None:
+        registered_segmentation = register_segmentation(in_seg_path=in_seg_path,
+                                                        ants_transform=transform,
+                                                        fixed_image=fixed_image)
+        logger.info(f'Registration applied to {in_seg_path}')
+        ants.image_write(registered_segmentation, out_seg_path)
+        logger.info(f'Transformed segmentation saved to {out_seg_path}')
+
+
+def register_segmentation(in_seg_path: str,
+                          ants_transform: list,
+                          fixed_image: np.ndarray) -> np.ndarray:
+    """Helper function to apply registration transform to segmentation."""
+    segmentation_image = ants.image_read(in_seg_path)
+    registered_image = ants.apply_transforms(moving=segmentation_image,
+                                             fixed=fixed_image,
+                                             transformlist=ants_transform,
+                                             interpolator='genericLabel',
+                                             imagetype=0)
+    return registered_image
 
 
 def warp_pet_atlas(input_image_path: str,
