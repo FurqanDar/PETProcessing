@@ -72,14 +72,16 @@ def register_pet(pet_image_path: str,
                                    write_composite_transform=True,
                                    **kwargs)
 
-    if pet_image_ants.dimension == 4:
+
+    input_image = pet_image_ants if not reverse else mri_image
+    input_path = pet_image_path if not reverse else anat_image_path
+    fixed_image = mri_image if not reverse else motion_target_image
+
+    if input_image.dimension == 4:
         dim = 3
     else:
         dim = 0
 
-    input_image = pet_image_ants if not reverse else mri_image
-    input_path = pet_image_path if not reverse else anat_image_path
-    fixed_image = mri_image if not reverse else pet_image_ants
     transform = transforms['fwdtransforms'] if not reverse else transforms['invtransforms']
 
     registered_image = ants.apply_transforms(moving=input_image,
@@ -111,7 +113,7 @@ def register_segmentation(in_seg_path: str,
     registered_image = ants.apply_transforms(moving=segmentation_image,
                                              fixed=fixed_image,
                                              transformlist=ants_transform,
-                                             interpolator='genericLabel',
+                                             interpolator='nearestNeighbor',
                                              imagetype=0)
     return registered_image
 
