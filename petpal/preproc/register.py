@@ -46,11 +46,11 @@ def register_pet(pet_image_path: str,
         verbose (bool): Set to ``True`` to output processing information.
         half_life (float): Half-life of PET tracer in seconds.
         reverse (bool): If True, register anatomical image onto PET space
-        in_seg_path (list[str]): List of images to register using the same transform computed for
-            out_image. Note that all extra images must be in the space of the "moving" image (PET unless reverse is
-            True). extra_images_paths must be passed as well if this argument is not None.
-        out_seg_path (list[str]): List of paths to write output from images in extra_images_to_register. Must be
-            specified if extra_images_to_register is given.
+        in_seg_path (str): Segmentation to register using the same transform computed for
+            out_image. Segmentation must be in the space of the moving image. If specified, out_seg_path must also
+            be specified.
+        out_seg_path (str): Path to write registered segmentation found at in_seg_path. If specified, in_seg_path must
+            also be specified.
         kwargs (keyword arguments): Additional arguments passed to :py:func:`ants.registration`.
     """
     if verbose:
@@ -113,7 +113,7 @@ def register_segmentation(in_seg_path: str,
     registered_image = ants.apply_transforms(moving=segmentation_image,
                                              fixed=fixed_image,
                                              transformlist=ants_transform,
-                                             interpolator='nearestNeighbor',
+                                             interpolator='genericLabel',
                                              imagetype=0)
     return registered_image
 
