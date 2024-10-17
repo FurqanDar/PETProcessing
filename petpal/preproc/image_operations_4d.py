@@ -177,6 +177,26 @@ def threshold(input_image_numpy: np.ndarray,
     return bounded_image
 
 
+def binarize_image_with_threshold(input_image_numpy: np.ndarray,
+                                  lower_bound: float=-np.inf,
+                                  upper_bound: float=np.inf):
+    """
+    Threshold an image above and/or below a pair of values, and return a binary mask.
+
+    Args:
+        input_image_numpy (np.ndarray): Input image data to binarize with threshold (upper and/or lower).
+        lower_bound (float): Lower bound of the threshold.
+        upper_bound (float): Upper bound of the threshold.
+
+    Returns:
+        bounded_image (np.ndarray): Binary mask of original image where voxels within threshold are 1, and 0 elsewhere.
+    """
+    bounded_image = np.zeros(input_image_numpy.shape)
+    bounded_image_where = (input_image_numpy > lower_bound) & (input_image_numpy < upper_bound)
+    bounded_image[bounded_image_where] = 1
+    return bounded_image
+
+
 def suvr(input_image_path: str,
          segmentation_image_path: str,
          ref_region: int,
