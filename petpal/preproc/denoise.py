@@ -1,13 +1,11 @@
 """ Provides functions for denoising PET images. """
 import logging
-import os
-import math
 
 import numpy as np
 from sklearn.cluster import k_means
-from sklearn.decomposition import PCA
 from scipy.ndimage import convolve, binary_fill_holes
 
+from ..utils.useful_functions import weighted_series_sum
 from ..utils.image_io import ImageIO
 from ..preproc.image_operations_4d import binarize_image_with_threshold
 
@@ -16,6 +14,10 @@ logger = logging.getLogger(__name__)
 
 class Denoiser:
     """Wrapper class for handling inputs, outputs, and logging for denoising."""
+
+    pet_data = None
+    mri_data = None
+    segmentation_data = None
 
     def __init__(self,
                  path_to_pet: str,
@@ -33,6 +35,13 @@ class Denoiser:
     def __call__(self, *args, **kwargs):
         """Denoise Image"""
         pass
+
+    def run_single_iteration(self):
+        """"""
+
+
+    def run(self):
+        """"""
 
     @staticmethod
     def _prepare_inputs(path_to_pet: str,
@@ -153,10 +162,18 @@ class Denoiser:
         return centroids, cluster_ids
 
 
-    def extract_cluster_distances(self):
-        """Calculate distances from centroids in feature space and 'ring' space for each voxel assigned to a cluster"""
+    def extract_distances_to_cluster_centroids(self,
+                                               cluster_data: np.ndarray,
+                                               num_total_clusters: int,
+                                               num_features: int) -> (np.ndarray, np.ndarray):
+        """Calculate distances from centroids in feature space for each voxel assigned to a cluster"""
+
+        cluster_feature_distances = np.zeros(shape=(cluster_data.shape[:], num_total_clusters, num_features))
+
         pass
 
+    def extract_distances_in_ring_space(self):
+        """Calculate distances from every cluster's assigned location (not centroid) for each pixel in the ring space"""
 
     def add_nonbrain_features_to_segmentation(self,
                                               segmentation_data: np.ndarray,
