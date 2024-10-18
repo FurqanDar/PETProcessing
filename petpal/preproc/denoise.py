@@ -9,7 +9,7 @@ from sklearn.decomposition import PCA
 from scipy.ndimage import convolve, binary_fill_holes
 
 from ..utils.image_io import ImageIO
-from ..preproc.image_operations_4d import threshold_binary
+from ..preproc.image_operations_4d import binarize_image_with_threshold
 
 logger = logging.getLogger(__name__)
 
@@ -197,7 +197,7 @@ def head_mask(pet_data: np.ndarray,
     """Function to extract 3D head mask PET data using basic morphological methods"""
 
     mean_slice = np.mean(pet_data, axis=3) # TODO: Use weighted series sum instead; more reliable
-    thresholded_data = threshold_binary(input_image_numpy=mean_slice, lower_bound=thresh)
+    thresholded_data = binarize_image_with_threshold(input_image_numpy=mean_slice, lower_bound=thresh)
     kernel = np.ones(shape=(3, 3, 3))
     neighbor_count = convolve(thresholded_data, kernel, mode='constant')
     thresholded_data[neighbor_count < 14] = 0
