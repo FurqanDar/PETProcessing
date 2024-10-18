@@ -30,7 +30,7 @@ class Denoiser:
         except Exception as e:
             raise Exception(e)
 
-    def run(self):
+    def __call__(self, *args, **kwargs):
         """Denoise Image"""
         pass
 
