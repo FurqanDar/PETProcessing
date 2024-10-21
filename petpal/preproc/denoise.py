@@ -4,8 +4,10 @@ import math
 
 import numpy as np
 from sklearn.cluster import k_means
-from scipy.ndimage import convolve, binary_fill_holes
 from sklearn.decomposition import PCA
+from scipy.ndimage import convolve, binary_fill_holes
+from scipy.stats import zscore
+
 
 from ..utils.useful_functions import weighted_series_sum
 from ..utils.image_io import ImageIO
@@ -20,8 +22,10 @@ class Denoiser:
     pet_data = None
     mri_data = None
     segmentation_data = None
+    updated_segmentation_data = None
     head_mask = None
     non_brain_mask = None
+
 
     def __init__(self,
                  path_to_pet: str,
@@ -194,13 +198,18 @@ class Denoiser:
         """Calculate distances from every cluster's assigned location (not centroid) for each pixel in the ring space"""
 
 
-    def add_nonbrain_features_to_segmentation(self) -> np.ndarray:
+    def add_nonbrain_features_to_segmentation(self):
         """Cluster non-brain and add labels to existing segmentation"""
+        self._generate_non_brain_mask()
+        segmentation_data = self.segmentation_data
+        non_brain_features = self._extract_non_brain_features()
+        _, cluster_ids, _ = k_means(X=non_brain_features,
+                n_clusters=5)
+        start_label = np.max(segmentation_data) + 1
+        segmentation_data[self.non_brain_mask] = start_label + cluster_ids.reshape(segmentation_data.shape[0], segmentation_data.shape[1], segmentation_data.shape[2])
 
+        self.updated_segmentation_data = segmentation_data
 
-
-
-        pass
 
     def _extract_non_brain_features(self) -> np.ndarray:
         """
@@ -219,6 +228,7 @@ class Denoiser:
         mri_plus_pca_data = np.zeros(shape=(pca_data.shape[0], pca_data.shape[1]+1))
         mri_plus_pca_data[:, :-1] = pca_data
         mri_plus_pca_data[:, -1] = flat_mri_data[spatially_flat_non_brain_mask]
+        mri_plus_pca_data = zscore(mri_plus_pca_data, axis=0) # TODO: Verify that this is the right axis with data
 
         return mri_plus_pca_data
 
