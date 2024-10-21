@@ -173,21 +173,16 @@ class Denoiser:
             all_cluster_centroids (np.ndarray): 2D array of size (number of total clusters, number of features). Each
                 cluster's feature centroids (mean scores) are stored.
 
+        Returns:
+            np.ndarray: 2D array of size
+                (number of voxels in cluster, number of total clusters). For each voxel in the cluster, contains the
+                SSD (sum of squared differences) from the feature centroids of all clusters.
         """
 
-        cluster_feature_distances = np.zeros(shape=(cluster_data.shape[0], all_cluster_centroids.shape[0]))
         calculate_ssd = lambda features: np.sum((all_cluster_centroids - features.T) ** 2, axis=1)
         cluster_feature_distances = np.apply_along_axis(calculate_ssd, axis=1, arr=cluster_data)
         return cluster_feature_distances
 
-    def _extract_voxel_ssd_from_all_cluster_feature_centroids(self,
-                                                              feature_data: np.ndarray,
-                                                              all_cluster_centroids: np.ndarray) -> np.ndarray:
-        """"""
-        squared_differences = (all_cluster_centroids - feature_data.T)**2
-        ssd = np.sum(squared_differences, axis=1)
-
-        return ssd
 
     def extract_distances_in_ring_space(self):
         """Calculate distances from every cluster's assigned location (not centroid) for each pixel in the ring space"""
