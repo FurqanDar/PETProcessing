@@ -5,6 +5,7 @@ import math
 import numpy as np
 from sklearn.cluster import k_means
 from scipy.ndimage import convolve, binary_fill_holes
+from sklearn.decomposition import PCA
 
 from ..utils.useful_functions import weighted_series_sum
 from ..utils.image_io import ImageIO
@@ -40,7 +41,8 @@ class Denoiser:
 
     def run_single_iteration(self):
         """"""
-
+        self.head_mask_data = head_mask(self.pet_data)
+        flattened_pet_data = flatten_pet_spatially(self.pet_data)
 
     def run(self):
         """"""
@@ -191,11 +193,20 @@ class Denoiser:
         """Calculate distances from every cluster's assigned location (not centroid) for each pixel in the ring space"""
 
 
-    def add_nonbrain_features_to_segmentation(self,
-                                              segmentation_data: np.ndarray,
-                                              spatially_flattened_pet_data: np.ndarray,
-                                              head_mask_data: np.ndarray) -> np.ndarray:
+    def add_nonbrain_features_to_segmentation(self) -> np.ndarray:
         """Cluster non-brain and add labels to existing segmentation"""
+        segmentation_data = self.segmentation_data
+        head_mask_data = self.head_mask_data
+        segmentation_data_bool = segmentation_data[segmentation_data > 0]
+        non_brain_mask_data = head_mask_data - segmentation_data_bool
+        spatially_flat_non_brain = non_brain_mask_data.flatten()
+        spatially_flat_pet = flatten_pet_spatially(self.pet_data)
+
+        non_brain_pet_data = spatially_flat_pet[spatially_flat_non_brain]
+        pca_scores = PCA(n_components=4).fit(X=non_brain_pet_data)
+
+
+
         pass
 
 
@@ -203,9 +214,8 @@ class Denoiser:
         """Use voxelwise distances from cluster feature centroids to arrange voxels onto 2D 'ring map'."""
         pass
 
-
-    def generate_empty_ring_space(self,
-                                  num_voxels_in_cluster: int) -> np.ndarray:
+    @staticmethod
+    def _generate_empty_ring_space(num_voxels_in_cluster: int) -> np.ndarray:
         """Use the number of voxels in a cluster to create an empty 'ring space' that can contain the cluster data."""
         ring_space_dimensions = (math.floor(math.sqrt(2)*math.sqrt(num_voxels_in_cluster+1)) + 4
                                 - math.floor(math.sqrt(num_voxels_in_cluster+1)) % 4)
