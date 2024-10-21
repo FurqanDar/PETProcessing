@@ -48,6 +48,7 @@ class Denoiser:
         """"""
         self.head_mask = generate_head_mask(self.pet_data)
         flattened_pet_data = flatten_pet_spatially(self.pet_data)
+        self.add_nonbrain_features_to_segmentation()
 
     def run(self):
         """"""
@@ -240,7 +241,8 @@ class Denoiser:
         """
         segmentation_data = self.segmentation_data
         head_mask_data = self.head_mask
-        segmentation_data_bool = segmentation_data[segmentation_data > 0]
+        segmentation_data_bool = np.where(segmentation_data > 0, 1, 0)
+
         non_brain_mask_data = head_mask_data - segmentation_data_bool
 
         self.non_brain_mask = non_brain_mask_data
