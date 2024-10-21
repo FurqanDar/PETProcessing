@@ -20,7 +20,8 @@ class Denoiser:
     pet_data = None
     mri_data = None
     segmentation_data = None
-    head_mask_data = None
+    head_mask = None
+    non_brain_mask = None
 
     def __init__(self,
                  path_to_pet: str,
@@ -41,7 +42,7 @@ class Denoiser:
 
     def run_single_iteration(self):
         """"""
-        self.head_mask_data = head_mask(self.pet_data)
+        self.head_mask = generate_head_mask(self.pet_data)
         flattened_pet_data = flatten_pet_spatially(self.pet_data)
 
     def run(self):
@@ -195,20 +196,44 @@ class Denoiser:
 
     def add_nonbrain_features_to_segmentation(self) -> np.ndarray:
         """Cluster non-brain and add labels to existing segmentation"""
-        segmentation_data = self.segmentation_data
-        head_mask_data = self.head_mask_data
-        segmentation_data_bool = segmentation_data[segmentation_data > 0]
-        non_brain_mask_data = head_mask_data - segmentation_data_bool
-        spatially_flat_non_brain = non_brain_mask_data.flatten()
-        spatially_flat_pet = flatten_pet_spatially(self.pet_data)
 
-        non_brain_pet_data = spatially_flat_pet[spatially_flat_non_brain]
-        pca_scores = PCA(n_components=4).fit(X=non_brain_pet_data)
 
 
 
         pass
 
+    def _extract_non_brain_features(self) -> np.ndarray:
+        """
+
+        Returns:
+
+        """
+        non_brain_mask_data = self.non_brain_mask
+        spatially_flat_non_brain_mask = non_brain_mask_data.flatten()
+        flat_mri_data = self.mri_data.flatten()
+        spatially_flat_pet = flatten_pet_spatially(self.pet_data)
+
+        non_brain_pet_data = spatially_flat_pet[spatially_flat_non_brain_mask]
+        pca_data = PCA(n_components=4).fit_transform(X=non_brain_pet_data)
+
+        mri_plus_pca_data = np.zeros(shape=(pca_data.shape[0], pca_data.shape[1]+1))
+        mri_plus_pca_data[:, :-1] = pca_data
+        mri_plus_pca_data[:, -1] = flat_mri_data[spatially_flat_non_brain_mask]
+
+        return mri_plus_pca_data
+
+    def _generate_non_brain_mask(self):
+        """
+
+        Returns:
+
+        """
+        segmentation_data = self.segmentation_data
+        head_mask_data = self.head_mask
+        segmentation_data_bool = segmentation_data[segmentation_data > 0]
+        non_brain_mask_data = head_mask_data - segmentation_data_bool
+
+        self.non_brain_mask = non_brain_mask_data
 
     def map_to_ring_space(self):
         """Use voxelwise distances from cluster feature centroids to arrange voxels onto 2D 'ring map'."""
@@ -244,8 +269,8 @@ def flatten_pet_spatially(pet_data: np.ndarray) -> np.ndarray:
     return flattened_pet_data
 
 
-def head_mask(pet_data: np.ndarray,
-              thresh: float = 500.0) -> np.ndarray:
+def generate_head_mask(pet_data: np.ndarray,
+                       thresh: float = 500.0) -> np.ndarray:
     """Function to extract 3D head mask PET data using basic morphological methods"""
 
     mean_slice = np.mean(pet_data, axis=3) # TODO: Use weighted series sum instead; more reliable
