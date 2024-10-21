@@ -1,5 +1,6 @@
 """ Provides functions for denoising PET images. """
 import logging
+import math
 
 import numpy as np
 from sklearn.cluster import k_means
@@ -184,8 +185,11 @@ class Denoiser:
         return cluster_feature_distances
 
 
-    def extract_distances_in_ring_space(self):
+    def extract_distances_in_ring_space(self,
+                                        cluster_locations: np.ndarray,
+                                        ring_space_shape: (int, int)) -> np.ndarray:
         """Calculate distances from every cluster's assigned location (not centroid) for each pixel in the ring space"""
+
 
     def add_nonbrain_features_to_segmentation(self,
                                               segmentation_data: np.ndarray,
@@ -195,9 +199,18 @@ class Denoiser:
         pass
 
 
-    def map_to_wheel_space(self):
+    def map_to_ring_space(self):
         """Use voxelwise distances from cluster feature centroids to arrange voxels onto 2D 'ring map'."""
         pass
+
+
+    def generate_empty_ring_space(self,
+                                  num_voxels_in_cluster: int) -> np.ndarray:
+        """Use the number of voxels in a cluster to create an empty 'ring space' that can contain the cluster data."""
+        ring_space_dimensions = (math.floor(math.sqrt(2)*math.sqrt(num_voxels_in_cluster+1)) + 4
+                                - math.floor(math.sqrt(num_voxels_in_cluster+1)) % 4)
+
+        return np.zeros(shape=(ring_space_dimensions, ring_space_dimensions))
 
 
     def apply_smoothing_in_sinogram_space(self,
