@@ -30,7 +30,17 @@ class Denoiser:
     def __init__(self,
                  path_to_pet: str,
                  path_to_mri: str,
-                 path_to_segmentation: str):
+                 path_to_segmentation: str,
+                 verbosity: int = 0):
+
+        if verbosity in [-2, -1, 0, 1, 2]:
+            logger.setLevel(level=30-(10*verbosity))
+        else:
+            raise ValueError("Verbosity argument must be an int from -2 to 2. The default (0) corresponds to the "
+                             "default logging level (warning). A higher value increases the verbosity and a lower "
+                             f"value decreases it. Verbosity given was {verbosity}. See python's logging documentation "
+                             "for more information.")
+
         try:
             self.pet_data, self.mri_data, self.segmentation_data = self._prepare_inputs(path_to_pet=path_to_pet,
                                                                                         path_to_mri=path_to_mri,
@@ -204,7 +214,6 @@ class Denoiser:
         self._generate_non_brain_mask()
         segmentation_data = self.segmentation_data
         non_brain_features = self._extract_non_brain_features()
-        print(non_brain_features)
         _, cluster_ids, _ = k_means(X=non_brain_features,
                 n_clusters=5)
 
@@ -230,27 +239,29 @@ class Denoiser:
         flat_mri_data = self.mri_data.flatten()
         spatially_flat_pet = flatten_pet_spatially(self.pet_data)
 
-        print(f'Original: \nmri_data shape {self.mri_data.shape}\nnon_brain_mask shape {self.non_brain_mask.shape}'
+        logger.debug(f'Original: \nmri_data shape {self.mri_data.shape}\nnon_brain_mask shape {self.non_brain_mask.shape}'
               f'\npet_data shape {self.pet_data.shape}\n')
 
-        print(f'Flat: \nmri_data shape | type {flat_mri_data.shape} | {flat_mri_data.dtype}'
+        logger.debug(f'Flat: \nmri_data shape | type {flat_mri_data.shape} | {flat_mri_data.dtype}'
               f'\nnon_brain_mask shape | type {spatially_flat_non_brain_mask.shape} | {spatially_flat_non_brain_mask.dtype}'
               f'\npet_data shape | type {spatially_flat_pet.shape} | {spatially_flat_pet.dtype}\n')
 
         non_brain_pet_data = spatially_flat_pet[spatially_flat_non_brain_mask, :]
 
-        print(f'PCA input shape: {non_brain_pet_data.shape}\n')
+        logger.debug(f'PCA input shape: {non_brain_pet_data.shape}\n')
 
         pca_data = PCA(n_components=4).fit_transform(X=non_brain_pet_data)
 
-        print(f'flat_mri_data for non_brain region shape {flat_mri_data[spatially_flat_non_brain_mask].shape}\n')
-        print(f'PCA results shape: {pca_data.shape}\n')
+        logger.debug(f'Flat MRI Data for non-brain region shape {flat_mri_data[spatially_flat_non_brain_mask].shape}\n')
+        logger.debug(f'Flat MRI Data for non-brain region {flat_mri_data[spatially_flat_non_brain_mask]}\n')
+        logger.debug(f'PCA results shape: {pca_data.shape}\n')
 
         mri_plus_pca_data = np.zeros(shape=(pca_data.shape[0], pca_data.shape[1]+1))
         mri_plus_pca_data[:, :-1] = pca_data
         mri_plus_pca_data[:, -1] = flat_mri_data[spatially_flat_non_brain_mask]
         mri_plus_pca_data = zscore(mri_plus_pca_data, axis=0) # TODO: Verify that this is the right axis with data
 
+        logger.debug(f'Non-brain features: \n{mri_plus_pca_data}\n')
         return mri_plus_pca_data
 
     def _generate_non_brain_mask(self):
