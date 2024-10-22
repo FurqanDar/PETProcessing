@@ -204,12 +204,19 @@ class Denoiser:
         self._generate_non_brain_mask()
         segmentation_data = self.segmentation_data
         non_brain_features = self._extract_non_brain_features()
+        print(non_brain_features)
         _, cluster_ids, _ = k_means(X=non_brain_features,
                 n_clusters=5)
-        start_label = np.max(segmentation_data) + 1
-        segmentation_data[self.non_brain_mask] = start_label + cluster_ids.reshape(segmentation_data.shape[0], segmentation_data.shape[1], segmentation_data.shape[2])
 
-        self.updated_segmentation_data = segmentation_data
+        start_label = np.max(segmentation_data) + 1
+
+        flat_segmentation_data = segmentation_data.flatten()
+        flat_non_brain_mask = self.non_brain_mask.flatten()
+        flat_segmentation_data[flat_non_brain_mask] = start_label + cluster_ids
+
+        segmentation_data_with_non_brain = flat_segmentation_data.reshape(segmentation_data.shape)
+
+        self.updated_segmentation_data = segmentation_data_with_non_brain
 
 
     def _extract_non_brain_features(self) -> np.ndarray:
@@ -223,8 +230,21 @@ class Denoiser:
         flat_mri_data = self.mri_data.flatten()
         spatially_flat_pet = flatten_pet_spatially(self.pet_data)
 
-        non_brain_pet_data = spatially_flat_pet[spatially_flat_non_brain_mask]
+        print(f'Original: \nmri_data shape {self.mri_data.shape}\nnon_brain_mask shape {self.non_brain_mask.shape}'
+              f'\npet_data shape {self.pet_data.shape}\n')
+
+        print(f'Flat: \nmri_data shape | type {flat_mri_data.shape} | {flat_mri_data.dtype}'
+              f'\nnon_brain_mask shape | type {spatially_flat_non_brain_mask.shape} | {spatially_flat_non_brain_mask.dtype}'
+              f'\npet_data shape | type {spatially_flat_pet.shape} | {spatially_flat_pet.dtype}\n')
+
+        non_brain_pet_data = spatially_flat_pet[spatially_flat_non_brain_mask, :]
+
+        print(f'PCA input shape: {non_brain_pet_data.shape}\n')
+
         pca_data = PCA(n_components=4).fit_transform(X=non_brain_pet_data)
+
+        print(f'flat_mri_data for non_brain region shape {flat_mri_data[spatially_flat_non_brain_mask].shape}\n')
+        print(f'PCA results shape: {pca_data.shape}\n')
 
         mri_plus_pca_data = np.zeros(shape=(pca_data.shape[0], pca_data.shape[1]+1))
         mri_plus_pca_data[:, :-1] = pca_data
@@ -241,11 +261,10 @@ class Denoiser:
         """
         segmentation_data = self.segmentation_data
         head_mask_data = self.head_mask
-        segmentation_data_bool = np.where(segmentation_data > 0, 1, 0)
+        brain_mask_data = np.where(segmentation_data > 0, 1, 0)
+        non_brain_mask_data = head_mask_data - brain_mask_data
 
-        non_brain_mask_data = head_mask_data - segmentation_data_bool
-
-        self.non_brain_mask = non_brain_mask_data
+        self.non_brain_mask = non_brain_mask_data.astype(bool)
 
     def map_to_ring_space(self):
         """Use voxelwise distances from cluster feature centroids to arrange voxels onto 2D 'ring map'."""
