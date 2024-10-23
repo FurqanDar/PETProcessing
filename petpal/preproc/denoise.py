@@ -253,13 +253,16 @@ class Denoiser:
         pca_data = PCA(n_components=4).fit_transform(X=non_brain_pet_data)
 
         logger.debug(f'Flat MRI Data for non-brain region shape {flat_mri_data[spatially_flat_non_brain_mask].shape}\n')
-        logger.debug(f'Flat MRI Data for non-brain region {flat_mri_data[spatially_flat_non_brain_mask]}\n')
+        logger.debug(f'Flat MRI Data for non-brain region {flat_mri_data[spatially_flat_non_brain_mask].ptp()}\n')
         logger.debug(f'PCA results shape: {pca_data.shape}\n')
 
         mri_plus_pca_data = np.zeros(shape=(pca_data.shape[0], pca_data.shape[1]+1))
         mri_plus_pca_data[:, :-1] = pca_data
         mri_plus_pca_data[:, -1] = flat_mri_data[spatially_flat_non_brain_mask]
         mri_plus_pca_data = zscore(mri_plus_pca_data, axis=0) # TODO: Verify that this is the right axis with data
+
+        logger.debug(f'Means of z-scored nonbrain features (should be ~0): {mri_plus_pca_data.mean(axis=0)}\n')
+        logger.debug(f'SDs of z-scored nonbrain features (should be ~1): {mri_plus_pca_data.std(axis=0)}\n')
 
         logger.debug(f'Non-brain features: \n{mri_plus_pca_data}\n')
         return mri_plus_pca_data
