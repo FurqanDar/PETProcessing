@@ -57,8 +57,33 @@ class Denoiser:
     def run_single_iteration(self):
         """"""
         self.head_mask = generate_head_mask(self.pet_data)
+        flattened_head_mask = self.head_mask.flatten()
         flattened_pet_data = flatten_pet_spatially(self.pet_data)
         self.add_nonbrain_features_to_segmentation()
+        head_pet_data = flattened_pet_data[flattened_head_mask, :]
+        flattened_mri_data = self.mri_data.flatten()
+        flattened_segmentation_data = self.updated_segmentation_data.flatten()
+
+        feature_data = np.zeros(shape=(head_pet_data.shape[0], 6))
+        feature_data[:,:-2] = self._temporal_pca(spatially_flattened_pet_data=head_pet_data,
+                                                 num_components=4)
+        feature_data[:,-2] = flattened_mri_data[flattened_head_mask]
+        feature_data[:,-1] = flattened_segmentation_data[flattened_head_mask]
+
+        feature_data = zscore(feature_data, axis=0)
+
+        # TODO: Probably ought to set object attribute values only in these run*() methods, rather than in other methods
+
+        centroids, cluster_ids = self.apply_3_tier_k_means_clustering(flattened_feature_data=feature_data,
+                                                                      num_clusters=[3,2,2])
+
+        logger.debug(f'Centroids: {centroids}\nCluster_ids: {np.unique(cluster_ids)}')
+
+        for cluster in range(12):
+            distances = self.extract_distances_to_cluster_centroids(cluster_data=feature_data[cluster_ids == cluster],
+                                                                    all_cluster_centroids=centroids)
+            logger.debug(f'Distances for cluster {cluster}: {distances}')
+
 
     def run(self):
         """"""
@@ -177,7 +202,7 @@ class Denoiser:
             for sub_cluster in range(num_clusters[2]):
                 centroids[cluster * num_clusters[2] + sub_cluster, :] = centroids_temp[sub_cluster]
 
-        cluster_ids = cluster_ids + cluster_ids_3
+        cluster_ids = cluster_ids_3
 
         return centroids, cluster_ids
 
@@ -193,12 +218,11 @@ class Denoiser:
                 cluster's feature centroids (mean scores) are stored.
 
         Returns:
-            np.ndarray: 2D array of size
-                (number of voxels in cluster, number of total clusters). For each voxel in the cluster, contains the
-                SSD (sum of squared differences) from the feature centroids of all clusters.
+            np.ndarray: 2D array of size (number of voxels in cluster, number of total clusters). For each voxel in the
+                cluster, contains the SSD (sum of squared differences) from the feature centroids of all clusters.
         """
 
-        calculate_ssd = lambda features: np.sum((all_cluster_centroids - features.T) ** 2, axis=1)
+        calculate_ssd = lambda features: np.sum((all_cluster_centroids - features) ** 2, axis=1)
         cluster_feature_distances = np.apply_along_axis(calculate_ssd, axis=1, arr=cluster_data)
         return cluster_feature_distances
 
@@ -228,6 +252,23 @@ class Denoiser:
         self.updated_segmentation_data = segmentation_data_with_non_brain
 
 
+    @staticmethod
+    def _temporal_pca(spatially_flattened_pet_data: np.ndarray,
+                      num_components: int) -> np.ndarray:
+        """
+
+        Args:
+            spatially_flattened_pet_data:
+            num_components:
+
+        Returns:
+
+        """
+        pca_data = PCA(n_components=num_components).fit_transform(X=spatially_flattened_pet_data)
+
+        return pca_data
+
+
     def _extract_non_brain_features(self) -> np.ndarray:
         """
 
@@ -250,7 +291,7 @@ class Denoiser:
 
         logger.debug(f'PCA input shape: {non_brain_pet_data.shape}\n')
 
-        pca_data = PCA(n_components=4).fit_transform(X=non_brain_pet_data)
+        pca_data = self._temporal_pca(non_brain_pet_data, num_components=2)
 
         logger.debug(f'Flat MRI Data for non-brain region shape {flat_mri_data[spatially_flat_non_brain_mask].shape}\n')
         logger.debug(f'Flat MRI Data for non-brain region {flat_mri_data[spatially_flat_non_brain_mask].ptp()}\n')
