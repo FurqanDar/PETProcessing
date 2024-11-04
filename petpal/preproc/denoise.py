@@ -8,7 +8,6 @@ from sklearn.decomposition import PCA
 from scipy.ndimage import convolve, binary_fill_holes
 from scipy.stats import zscore
 
-
 from ..utils.useful_functions import weighted_series_sum
 from ..utils.image_io import ImageIO
 from ..preproc.image_operations_4d import binarize_image_with_threshold
@@ -26,7 +25,6 @@ class Denoiser:
     head_mask = None
     non_brain_mask = None
 
-
     def __init__(self,
                  path_to_pet: str,
                  path_to_mri: str,
@@ -34,7 +32,7 @@ class Denoiser:
                  verbosity: int = 0):
 
         if verbosity in [-2, -1, 0, 1, 2]:
-            logger.setLevel(level=30-(10*verbosity))
+            logger.setLevel(level=30 - (10 * verbosity))
         else:
             raise ValueError("Verbosity argument must be an int from -2 to 2. The default (0) corresponds to the "
                              "default logging level (warning). A higher value increases the verbosity and a lower "
@@ -54,7 +52,8 @@ class Denoiser:
         """Denoise Image"""
         pass
 
-    def run_single_iteration(self):
+    def run_single_iteration(self,
+                             num_clusters: list[int]):
         """"""
         self.head_mask = generate_head_mask(self.pet_data)
         flattened_head_mask = self.head_mask.flatten()
@@ -65,25 +64,24 @@ class Denoiser:
         flattened_segmentation_data = self.updated_segmentation_data.flatten()
 
         feature_data = np.zeros(shape=(head_pet_data.shape[0], 6))
-        feature_data[:,:-2] = self._temporal_pca(spatially_flattened_pet_data=head_pet_data,
-                                                 num_components=4)
-        feature_data[:,-2] = flattened_mri_data[flattened_head_mask]
-        feature_data[:,-1] = flattened_segmentation_data[flattened_head_mask]
+        feature_data[:, :-2] = self._temporal_pca(spatially_flattened_pet_data=head_pet_data,
+                                                  num_components=4)
+        feature_data[:, -2] = flattened_mri_data[flattened_head_mask]
+        feature_data[:, -1] = flattened_segmentation_data[flattened_head_mask]
 
         feature_data = zscore(feature_data, axis=0)
 
         # TODO: Probably ought to set object attribute values only in these run*() methods, rather than in other methods
 
         centroids, cluster_ids = self.apply_3_tier_k_means_clustering(flattened_feature_data=feature_data,
-                                                                      num_clusters=[3,2,2])
+                                                                      num_clusters=num_clusters)
 
         logger.debug(f'Centroids: {centroids}\nCluster_ids: {np.unique(cluster_ids)}')
 
-        for cluster in range(12):
+        for cluster in range(np.prod(num_clusters)):
             distances = self.extract_distances_to_cluster_centroids(cluster_data=feature_data[cluster_ids == cluster],
                                                                     all_cluster_centroids=centroids)
             logger.debug(f'Distances for cluster {cluster}: {distances}')
-
 
     def run(self):
         """"""
@@ -131,7 +129,6 @@ class Denoiser:
                             f'Ensure that all non-PET data is registered to PET space')
 
         return pet_data, mri_data, segmentation_data
-
 
     def apply_3_tier_k_means_clustering(self,
                                         flattened_feature_data: np.ndarray,
@@ -188,7 +185,8 @@ class Denoiser:
                                              n_clusters=num_clusters[1],
                                              **kwargs)
             logger.debug(f'cluster_ids_temp\n{cluster_ids_temp}\n{cluster_ids_temp.shape}')
-            cluster_ids_2[cluster_ids == cluster] = cluster_ids[cluster_ids == cluster] * num_clusters[1] + cluster_ids_temp
+            cluster_ids_2[cluster_ids == cluster] = cluster_ids[cluster_ids == cluster] * num_clusters[
+                1] + cluster_ids_temp
 
         cluster_ids_3 = np.zeros(shape=cluster_ids.shape)
         for cluster in range(num_clusters[0] * num_clusters[1]):
@@ -205,7 +203,6 @@ class Denoiser:
         cluster_ids = cluster_ids_3
 
         return centroids, cluster_ids
-
 
     def extract_distances_to_cluster_centroids(self,
                                                cluster_data: np.ndarray,
@@ -226,12 +223,10 @@ class Denoiser:
         cluster_feature_distances = np.apply_along_axis(calculate_ssd, axis=1, arr=cluster_data)
         return cluster_feature_distances
 
-
     def extract_distances_in_ring_space(self,
                                         cluster_locations: np.ndarray,
                                         ring_space_shape: (int, int)) -> np.ndarray:
         """Calculate distances from every cluster's assigned location (not centroid) for each pixel in the ring space"""
-
 
     def add_nonbrain_features_to_segmentation(self):
         """Cluster non-brain and add labels to existing segmentation"""
@@ -239,7 +234,7 @@ class Denoiser:
         segmentation_data = self.segmentation_data
         non_brain_features = self._extract_non_brain_features()
         _, cluster_ids, _ = k_means(X=non_brain_features,
-                n_clusters=5)
+                                    n_clusters=5)
 
         start_label = np.max(segmentation_data) + 1
 
@@ -250,7 +245,6 @@ class Denoiser:
         segmentation_data_with_non_brain = flat_segmentation_data.reshape(segmentation_data.shape)
 
         self.updated_segmentation_data = segmentation_data_with_non_brain
-
 
     @staticmethod
     def _temporal_pca(spatially_flattened_pet_data: np.ndarray,
@@ -268,7 +262,6 @@ class Denoiser:
 
         return pca_data
 
-
     def _extract_non_brain_features(self) -> np.ndarray:
         """
 
@@ -280,12 +273,13 @@ class Denoiser:
         flat_mri_data = self.mri_data.flatten()
         spatially_flat_pet = flatten_pet_spatially(self.pet_data)
 
-        logger.debug(f'Original: \nmri_data shape {self.mri_data.shape}\nnon_brain_mask shape {self.non_brain_mask.shape}'
-              f'\npet_data shape {self.pet_data.shape}\n')
+        logger.debug(
+            f'Original: \nmri_data shape {self.mri_data.shape}\nnon_brain_mask shape {self.non_brain_mask.shape}'
+            f'\npet_data shape {self.pet_data.shape}\n')
 
         logger.debug(f'Flat: \nmri_data shape | type {flat_mri_data.shape} | {flat_mri_data.dtype}'
-              f'\nnon_brain_mask shape | type {spatially_flat_non_brain_mask.shape} | {spatially_flat_non_brain_mask.dtype}'
-              f'\npet_data shape | type {spatially_flat_pet.shape} | {spatially_flat_pet.dtype}\n')
+                     f'\nnon_brain_mask shape | type {spatially_flat_non_brain_mask.shape} | {spatially_flat_non_brain_mask.dtype}'
+                     f'\npet_data shape | type {spatially_flat_pet.shape} | {spatially_flat_pet.dtype}\n')
 
         non_brain_pet_data = spatially_flat_pet[spatially_flat_non_brain_mask, :]
 
@@ -297,10 +291,10 @@ class Denoiser:
         logger.debug(f'Flat MRI Data for non-brain region {flat_mri_data[spatially_flat_non_brain_mask].ptp()}\n')
         logger.debug(f'PCA results shape: {pca_data.shape}\n')
 
-        mri_plus_pca_data = np.zeros(shape=(pca_data.shape[0], pca_data.shape[1]+1))
+        mri_plus_pca_data = np.zeros(shape=(pca_data.shape[0], pca_data.shape[1] + 1))
         mri_plus_pca_data[:, :-1] = pca_data
         mri_plus_pca_data[:, -1] = flat_mri_data[spatially_flat_non_brain_mask]
-        mri_plus_pca_data = zscore(mri_plus_pca_data, axis=0) # TODO: Verify that this is the right axis with data
+        mri_plus_pca_data = zscore(mri_plus_pca_data, axis=0)  # TODO: Verify that this is the right axis with data
 
         logger.debug(f'Means of z-scored nonbrain features (should be ~0): {mri_plus_pca_data.mean(axis=0)}\n')
         logger.debug(f'SDs of z-scored nonbrain features (should be ~1): {mri_plus_pca_data.std(axis=0)}\n')
@@ -328,11 +322,10 @@ class Denoiser:
     @staticmethod
     def _generate_empty_ring_space(num_voxels_in_cluster: int) -> np.ndarray:
         """Use the number of voxels in a cluster to create an empty 'ring space' that can contain the cluster data."""
-        ring_space_dimensions = (math.floor(math.sqrt(2)*math.sqrt(num_voxels_in_cluster+1)) + 4
-                                - math.floor(math.sqrt(num_voxels_in_cluster+1)) % 4)
+        ring_space_dimensions = (math.floor(math.sqrt(2) * math.sqrt(num_voxels_in_cluster + 1)) + 4
+                                 - math.floor(math.sqrt(num_voxels_in_cluster + 1)) % 4)
 
         return np.zeros(shape=(ring_space_dimensions, ring_space_dimensions))
-
 
     def apply_smoothing_in_sinogram_space(self,
                                           image_data: np.ndarray,
@@ -359,7 +352,7 @@ def generate_head_mask(pet_data: np.ndarray,
                        thresh: float = 500.0) -> np.ndarray:
     """Function to extract 3D head mask PET data using basic morphological methods"""
 
-    mean_slice = np.mean(pet_data, axis=3) # TODO: Use weighted series sum instead; more reliable
+    mean_slice = np.mean(pet_data, axis=3)  # TODO: Use weighted series sum instead; more reliable
     thresholded_data = binarize_image_with_threshold(input_image_numpy=mean_slice, lower_bound=thresh)
     kernel = np.ones(shape=(3, 3, 3))
     neighbor_count = convolve(thresholded_data, kernel, mode='constant')
