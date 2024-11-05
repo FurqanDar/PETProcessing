@@ -83,6 +83,11 @@ class Denoiser:
                                                                     all_cluster_centroids=centroids)
             logger.debug(f'Distances for cluster {cluster}: {distances}')
 
+            num_voxels_in_cluster = len(feature_data[cluster_ids == cluster])
+            ring_space = self._generate_empty_ring_space(num_voxels_in_cluster=num_voxels_in_cluster)
+
+
+
     def run(self):
         """"""
 
@@ -224,9 +229,37 @@ class Denoiser:
         return cluster_feature_distances
 
     def extract_distances_in_ring_space(self,
-                                        cluster_locations: np.ndarray,
+                                        num_clusters: int,
+                                        cluster_locations: np.ndarray[int],
                                         ring_space_shape: (int, int)) -> np.ndarray:
         """Calculate distances from every cluster's assigned location (not centroid) for each pixel in the ring space"""
+        pixel_cluster_distances = np.zeros(shape=(ring_space_shape[0], ring_space_shape[1], num_clusters))
+
+        # TODO: Find a more pythonic (and probably faster) way to do this
+        for x in range(ring_space_shape[0]):
+            for y in range(ring_space_shape[1]):
+                pixel_cluster_distances[x][y] = np.asarray([np.linalg.norm([x,y], loc) for loc in cluster_locations])
+
+        logger.debug(f'Finished extracting ring space distances for num_clusters {num_clusters} and ring_space_shape '
+                     f'{ring_space_shape}')
+        return pixel_cluster_distances
+
+    def define_cluster_locations(self,
+                                 num_clusters: int,
+                                 ring_space_side_length: int) -> np.ndarray:
+        """Given the dimensions of a 'ring space' and the number of clusters, return the location of each cluster"""
+
+        cluster_locations = np.zeros(shape=(num_clusters, 2))
+        center = (ring_space_side_length + 1)/ 2
+        cluster_locations[0] = [math.floor(center), math.floor(center)]
+        cluster_angle_increment = 2*math.pi / (num_clusters - 1)
+
+        for i in range(1, num_clusters):
+            x_location = math.floor(center + center * math.cos(i*cluster_angle_increment))
+            y_location = math.floor(center + center * math.sin(i*cluster_angle_increment))
+            cluster_locations[i] = [x_location, y_location]
+
+        return cluster_locations
 
     def add_nonbrain_features_to_segmentation(self):
         """Cluster non-brain and add labels to existing segmentation"""
