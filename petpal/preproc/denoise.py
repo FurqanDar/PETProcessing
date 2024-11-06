@@ -400,11 +400,29 @@ class Denoiser:
     def populate_ring_space_using_map(self,
                                       ring_space_map: np.ndarray,
                                       ring_space_shape: (int, int)) -> np.ndarray:
+        """Fill pixels in ring space with original PET values using a map.
+
+        Args:
+            ring_space_map (np.ndarray): Map of voxel coordinates to pixel coordinates.
+            ring_space_shape (tuple): Shape of ring space.
+
+        Returns:
+            np.ndarray: Image containing all PET data in a cluster rearranged into ring space.
+
+        """
         pass
 
     @staticmethod
     def _calculate_ring_space_dimension(num_voxels_in_cluster: int) -> int:
-        """Use the number of voxels in a cluster to create an empty 'ring space' that can contain the cluster data."""
+        """Determine necessary ring space dimensions to contain all cluster data in the ring.
+
+        Args:
+            num_voxels_in_cluster (int): Total number of voxels assigned to the cluster.
+
+        Returns:
+            int: The side length of the ring space that can accommodate the cluster data.
+
+        """
         ring_space_dimensions = (math.floor(math.sqrt(2) * math.sqrt(num_voxels_in_cluster + 1)) + 4
                                  - math.floor(math.sqrt(num_voxels_in_cluster + 1)) % 4)
 
