@@ -1,23 +1,31 @@
-""" Provides functions for denoising PET images. """
+""" Provides Denoiser Class to run cluster-based denoising on PET images.
+
+TODO: Credit Hamed Yousefi and his publication formally once it's published.
+
+"""
+
+# Import Python Standard Libraries
 import logging
 import math
 
+# Import other libraries
 import numpy as np
 from sklearn.cluster import k_means
 from sklearn.decomposition import PCA
 from scipy.ndimage import convolve, binary_fill_holes
 from scipy.stats import zscore
 
-from ..utils.useful_functions import weighted_series_sum
+# Import from petpal
 from ..utils.image_io import ImageIO
 from ..preproc.image_operations_4d import binarize_image_with_threshold
 
+# Initialize logger
 logger = logging.getLogger(__name__)
-
 
 class Denoiser:
     """Wrapper class for handling inputs, outputs, and logging for denoising."""
 
+    # Class attributes; The fewer the better with respect to memory.
     pet_data = None
     mri_data = None
     segmentation_data = None
@@ -54,11 +62,14 @@ class Denoiser:
 
     def run_single_iteration(self,
                              num_clusters: list[int]):
-        """"""
+        """Generate a denoised image using one iteration of the method, to be weighted with others downstream."""
+
+        # TODO: Move these somewhere so they're only called once.
         self.head_mask = generate_head_mask(self.pet_data)
         flattened_head_mask = self.head_mask.flatten()
         flattened_pet_data = flatten_pet_spatially(self.pet_data)
-        self.add_nonbrain_features_to_segmentation()
+        non_brain_mask = self._generate_non_brain_mask()
+        self.updated_segmentation_data = self.add_nonbrain_features_to_segmentation(non_brain_mask=non_brain_mask)
         head_pet_data = flattened_pet_data[flattened_head_mask, :]
         flattened_mri_data = self.mri_data.flatten()
         flattened_segmentation_data = self.updated_segmentation_data.flatten()
@@ -271,23 +282,24 @@ class Denoiser:
 
         return cluster_locations
 
-    def add_nonbrain_features_to_segmentation(self):
+    def add_nonbrain_features_to_segmentation(self,
+                                              non_brain_mask: np.ndarray[bool]) -> np.ndarray:
         """Cluster non-brain and add labels to existing segmentation"""
-        self._generate_non_brain_mask()
+
         segmentation_data = self.segmentation_data
-        non_brain_features = self._extract_non_brain_features()
+        non_brain_features = self._extract_non_brain_features(non_brain_mask_data=non_brain_mask)
         _, cluster_ids, _ = k_means(X=non_brain_features,
                                     n_clusters=5)
 
         start_label = np.max(segmentation_data) + 1
 
         flat_segmentation_data = segmentation_data.flatten()
-        flat_non_brain_mask = self.non_brain_mask.flatten()
+        flat_non_brain_mask = non_brain_mask.flatten()
         flat_segmentation_data[flat_non_brain_mask] = start_label + cluster_ids
 
         segmentation_data_with_non_brain = flat_segmentation_data.reshape(segmentation_data.shape)
 
-        self.updated_segmentation_data = segmentation_data_with_non_brain
+        return segmentation_data_with_non_brain
 
     @staticmethod
     def _temporal_pca(spatially_flattened_pet_data: np.ndarray,
@@ -305,13 +317,14 @@ class Denoiser:
 
         return pca_data
 
-    def _extract_non_brain_features(self) -> np.ndarray:
+    def _extract_non_brain_features(self,
+                                    non_brain_mask_data: np.ndarray) -> np.ndarray:
         """
 
         Returns:
 
         """
-        non_brain_mask_data = self.non_brain_mask
+
         spatially_flat_non_brain_mask = non_brain_mask_data.flatten()
         flat_mri_data = self.mri_data.flatten()
         spatially_flat_pet = flatten_pet_spatially(self.pet_data)
@@ -345,7 +358,7 @@ class Denoiser:
         logger.debug(f'Non-brain features: \n{mri_plus_pca_data}\n')
         return mri_plus_pca_data
 
-    def _generate_non_brain_mask(self):
+    def _generate_non_brain_mask(self) -> np.ndarray[bool]:
         """
 
         Returns:
@@ -356,7 +369,7 @@ class Denoiser:
         brain_mask_data = np.where(segmentation_data > 0, 1, 0)
         non_brain_mask_data = head_mask_data - brain_mask_data
 
-        self.non_brain_mask = non_brain_mask_data.astype(bool)
+        return non_brain_mask_data.astype(bool)
 
     def generate_ring_space_map(self,
                                 cluster_voxel_indices: np.ndarray,
@@ -387,6 +400,7 @@ class Denoiser:
     def populate_ring_space_using_map(self,
                                       ring_space_map: np.ndarray,
                                       ring_space_shape: (int, int)) -> np.ndarray:
+        pass
 
     @staticmethod
     def _calculate_ring_space_dimension(num_voxels_in_cluster: int) -> int:
@@ -396,20 +410,29 @@ class Denoiser:
 
         return ring_space_dimensions
 
-    def apply_smoothing_in_sinogram_space(self,
-                                          image_data: np.ndarray,
-                                          kernel: np.ndarray,
-                                          **kwargs) -> np.ndarray:
-        """Transform image to sinogram space, apply smoothing, and transform back to original domain"""
+    def apply_smoothing_in_radon_space(self,
+                                       image_data: np.ndarray,
+                                       kernel: np.ndarray,
+                                       **kwargs) -> np.ndarray:
+        """Radon transform image, apply smoothing, and transform back to original domain"""
         pass
 
     def weighted_sum_smoothed_image_iterations(self):
-        """Weight smoothed images (one from each iteration) by cluster 'belongingness' with respect to MRI. """
+        """Weight smoothed images (one from each iteration) by cluster 'belongingness' with respect to MRI."""
         pass
 
 
 def flatten_pet_spatially(pet_data: np.ndarray) -> np.ndarray:
-    """Flatten spatial dimensions (using C index order) of 4D PET and return 2D array (numVoxels x numFrames)"""
+    """Flatten spatial dimensions (using C index order) of 4D PET and return 2D array (numVoxels x numFrames).
+
+    Args:
+        pet_data (np.ndarray): 4D PET data.
+
+    Returns:
+        np.ndarray: Array of size (M,N) where M is total number of voxels in a 3D frame of the PET and N is the number
+            of frames.
+
+    """
 
     num_voxels = np.prod(pet_data.shape[:-1])
     flattened_pet_data = pet_data.reshape(num_voxels, -1)
@@ -418,11 +441,21 @@ def flatten_pet_spatially(pet_data: np.ndarray) -> np.ndarray:
 
 
 def generate_head_mask(pet_data: np.ndarray,
-                       thresh: float = 500.0) -> np.ndarray:
-    """Function to extract 3D head mask PET data using basic morphological methods"""
+                       threshold: float = 500.0) -> np.ndarray:
+    """
+    Function to extract 3D head mask PET data using basic morphological methods.
+
+    Args:
+        pet_data (np.ndarray): 4D PET data.
+        threshold (float): Lower threshold to segment all PET data corresponding to head and neck
+            (i.e. eliminate background).
+
+    Returns:
+        np.ndarray: 3D binary mask corresponding to the head voxels.
+    """
 
     mean_slice = np.mean(pet_data, axis=3)  # TODO: Use weighted series sum instead; more reliable
-    thresholded_data = binarize_image_with_threshold(input_image_numpy=mean_slice, lower_bound=thresh)
+    thresholded_data = binarize_image_with_threshold(input_image_numpy=mean_slice, lower_bound=threshold)
     kernel = np.ones(shape=(3, 3, 3))
     neighbor_count = convolve(thresholded_data, kernel, mode='constant')
     thresholded_data[neighbor_count < 14] = 0
