@@ -358,7 +358,7 @@ class Denoiser:
         logger.debug(f'Non-brain features: \n{mri_plus_pca_data}\n')
         return mri_plus_pca_data
 
-    def _generate_non_brain_mask(self) -> np.ndarray[bool]:
+    def _generate_non_brain_mask(self) -> np.ndarray:
         """
 
         Returns:
@@ -369,13 +369,29 @@ class Denoiser:
         brain_mask_data = np.where(segmentation_data > 0, 1, 0)
         non_brain_mask_data = head_mask_data - brain_mask_data
 
-        return non_brain_mask_data.astype(bool)
+        return non_brain_mask_data
 
     def generate_ring_space_map(self,
                                 cluster_voxel_indices: np.ndarray,
                                 feature_distances: np.ndarray,
                                 ring_space_distances: np.ndarray) -> np.ndarray:
-        """Use voxelwise distances from cluster feature centroids to create map to arrange voxels onto 2D 'ring map'."""
+        """
+        Use voxelwise distances from cluster feature centroids to create map to arrange voxels onto 2D 'ring map'.
+
+        Args:
+            cluster_voxel_indices (np.ndarray): Array of flattened voxel indices corresponding to PET data assigned to a
+                cluster.
+            feature_distances (np.ndarray): Array of size (Number of Voxels in Cluster, Number of Clusters) containing
+                distances from cluster feature centroids. Each distance must be the sum of squared differences for all
+                features.
+            ring_space_distances (np.ndarray): Vector of length (Number of Clusters) containing the euclidean distances
+                from each cluster's assigned location in the ring space.
+
+        Returns:
+            np.ndarray: Array containing the voxel indices of the voxel assigned to each pixel in the ring map. Note
+                that not all pixels are filled; these are set to np.nan.
+
+        """
         distance_to_origin_cluster_flat = ring_space_distances[:, :, 0].reshape(
             ring_space_distances.shape[0] * ring_space_distances.shape[1])
 
@@ -400,7 +416,8 @@ class Denoiser:
     def populate_ring_space_using_map(self,
                                       ring_space_map: np.ndarray,
                                       ring_space_shape: (int, int)) -> np.ndarray:
-        """Fill pixels in ring space with original PET values using a map.
+        """
+        Fill pixels in ring space with original PET values using a map.
 
         Args:
             ring_space_map (np.ndarray): Map of voxel coordinates to pixel coordinates.
@@ -414,7 +431,8 @@ class Denoiser:
 
     @staticmethod
     def _calculate_ring_space_dimension(num_voxels_in_cluster: int) -> int:
-        """Determine necessary ring space dimensions to contain all cluster data in the ring.
+        """
+        Determine necessary ring space dimensions to contain all cluster data in the ring.
 
         Args:
             num_voxels_in_cluster (int): Total number of voxels assigned to the cluster.
@@ -432,16 +450,19 @@ class Denoiser:
                                        image_data: np.ndarray,
                                        kernel: np.ndarray,
                                        **kwargs) -> np.ndarray:
-        """Radon transform image, apply smoothing, and transform back to original domain"""
+        """
+        Radon transform image, apply smoothing, and transform back to original domain"""
         pass
 
     def weighted_sum_smoothed_image_iterations(self):
-        """Weight smoothed images (one from each iteration) by cluster 'belongingness' with respect to MRI."""
+        """
+        Weight smoothed images (one from each iteration) by cluster 'belongingness' with respect to MRI."""
         pass
 
 
 def flatten_pet_spatially(pet_data: np.ndarray) -> np.ndarray:
-    """Flatten spatial dimensions (using C index order) of 4D PET and return 2D array (numVoxels x numFrames).
+    """
+    Flatten spatial dimensions (using C index order) of 4D PET and return 2D array (numVoxels x numFrames).
 
     Args:
         pet_data (np.ndarray): 4D PET data.
