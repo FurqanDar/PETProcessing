@@ -107,7 +107,7 @@ class Denoiser:
         logger.debug(f'Feature distances for cluster {cluster}: {feature_distances}')
 
         num_voxels_in_cluster = len(cluster_ids[cluster_ids == cluster])
-        cluster_voxel_indices = np.argwhere(cluster_ids == cluster)
+        cluster_voxel_indices = np.argwhere(cluster_ids == cluster).T[0]
         ring_space_side_length = self._calculate_ring_space_dimension(num_voxels_in_cluster=num_voxels_in_cluster)
         cluster_locations = self._define_cluster_locations(num_clusters=final_num_clusters,
                                                            ring_space_side_length=ring_space_side_length)
@@ -310,9 +310,10 @@ class Denoiser:
             pixel_ring_space_distances = ring_space_distances[pixel_coordinates[0], pixel_coordinates[1], :]
             normalized_ring_space_distances = (pixel_ring_space_distances / np.linalg.norm(pixel_ring_space_distances))[
                                               :, np.newaxis]
+            result = np.matmul(normalized_feature_distances, normalized_ring_space_distances)
             best_candidate_voxel_index = np.argmax(
                 np.matmul(normalized_feature_distances, normalized_ring_space_distances))
-            normalized_feature_distances[best_candidate_voxel_index][:] = 0
+            normalized_feature_distances[best_candidate_voxel_index][:] = -10
             image_to_ring_map[pixel_flat_index] = cluster_voxel_indices[best_candidate_voxel_index]
 
         return image_to_ring_map
