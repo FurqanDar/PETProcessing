@@ -23,6 +23,7 @@ from ..preproc.image_operations_4d import binarize_image_with_threshold
 # Initialize logger
 logger = logging.getLogger(__name__)
 
+
 class Denoiser:
     """Wrapper class for handling inputs, outputs, and logging for denoising."""
 
@@ -91,33 +92,35 @@ class Denoiser:
         logger.debug(f'Centroids: {centroids}\nCluster_ids: {np.unique(cluster_ids)}')
 
         final_num_clusters = np.prod(num_clusters)
-        for cluster in range(final_num_clusters):
-            logger.debug(f'Cluster {cluster}\n-------------------------------------------------------\n\n\n')
-            cluster_data = feature_data[cluster_ids == cluster]
-            centroids_temp = np.roll(centroids, shift=-cluster, axis=0)
-            feature_distances = self.extract_distances_to_cluster_centroids(
-                cluster_data=cluster_data,
-                all_cluster_centroids=centroids_temp)
-            logger.debug(f'Feature distances for cluster {cluster}: {feature_distances}')
 
-            num_voxels_in_cluster = len(cluster_ids[cluster_ids == cluster])
-            cluster_voxel_indices = np.argwhere(cluster_ids == cluster)
-            ring_space_side_length = self._calculate_ring_space_dimension(num_voxels_in_cluster=num_voxels_in_cluster)
-            cluster_locations = self.define_cluster_locations(num_clusters=final_num_clusters,
-                                                              ring_space_side_length=ring_space_side_length)
-            ring_space_distances = self.extract_distances_in_ring_space(num_clusters=final_num_clusters,
-                                                                        cluster_locations=cluster_locations,
-                                                                        ring_space_shape=(
+        # for cluster in range(final_num_clusters):
+
+        cluster = 8
+
+        logger.debug(f'Cluster {cluster}\n-------------------------------------------------------\n\n\n')
+        cluster_data = feature_data[cluster_ids == cluster]
+        centroids_temp = np.roll(centroids, shift=-cluster, axis=0)
+        feature_distances = self.extract_distances_to_cluster_centroids(
+            cluster_data=cluster_data,
+            all_cluster_centroids=centroids_temp)
+        logger.debug(f'Feature distances for cluster {cluster}: {feature_distances}')
+
+        num_voxels_in_cluster = len(cluster_ids[cluster_ids == cluster])
+        cluster_voxel_indices = np.argwhere(cluster_ids == cluster)
+        ring_space_side_length = self._calculate_ring_space_dimension(num_voxels_in_cluster=num_voxels_in_cluster)
+        cluster_locations = self.define_cluster_locations(num_clusters=final_num_clusters,
+                                                          ring_space_side_length=ring_space_side_length)
+        ring_space_distances = self.extract_distances_in_ring_space(num_clusters=final_num_clusters,
+                                                                    cluster_locations=cluster_locations,
+                                                                    ring_space_shape=(
                                                                         ring_space_side_length, ring_space_side_length))
-            ring_space_map = self.generate_ring_space_map(cluster_voxel_indices=cluster_voxel_indices,
-                                                          feature_distances=feature_distances,
-                                                          ring_space_distances=ring_space_distances)
+        ring_space_map = self.generate_ring_space_map(cluster_voxel_indices=cluster_voxel_indices,
+                                                      feature_distances=feature_distances,
+                                                      ring_space_distances=ring_space_distances)
 
-            logger.debug(f'Ring space map: {ring_space_map}')
+        logger.debug(f'Ring space map: {ring_space_map}')
 
         return
-
-
 
     def run(self):
         """"""
@@ -269,7 +272,8 @@ class Denoiser:
         # TODO: Find a more pythonic (and probably faster) way to do this
         for x in range(ring_space_shape[0]):
             for y in range(ring_space_shape[1]):
-                pixel_cluster_distances[x][y] = np.asarray([np.linalg.norm(np.array([x, y]) - loc) for loc in cluster_locations])
+                pixel_cluster_distances[x][y] = np.asarray(
+                    [np.linalg.norm(np.array([x, y]) - loc) for loc in cluster_locations])
 
         logger.debug(f'Finished extracting ring space distances for num_clusters {num_clusters} and ring_space_shape '
                      f'{ring_space_shape}')
@@ -420,13 +424,14 @@ class Denoiser:
             pixel_coordinates = np.unravel_index(indices=pixel_flat_index,
                                                  shape=(ring_space_distances.shape[0], ring_space_distances.shape[1]))
             pixel_ring_space_distances = ring_space_distances[pixel_coordinates[0], pixel_coordinates[1], :]
-            normalized_ring_space_distances = (pixel_ring_space_distances / np.linalg.norm(pixel_ring_space_distances))[:, np.newaxis]
-            best_candidate_voxel_index = np.argmax(np.matmul(normalized_feature_distances,normalized_ring_space_distances))
+            normalized_ring_space_distances = (pixel_ring_space_distances / np.linalg.norm(pixel_ring_space_distances))[
+                                              :, np.newaxis]
+            best_candidate_voxel_index = np.argmax(
+                np.matmul(normalized_feature_distances, normalized_ring_space_distances))
             normalized_feature_distances[best_candidate_voxel_index][:] = 0
             image_to_ring_map[pixel_flat_index] = cluster_voxel_indices[best_candidate_voxel_index]
 
         return image_to_ring_map
-
 
     def populate_ring_space_using_map(self,
                                       ring_space_map: np.ndarray,
