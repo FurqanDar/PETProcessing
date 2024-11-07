@@ -25,7 +25,7 @@ logger = logging.getLogger(__name__)
 
 
 class Denoiser:
-    """Wrapper class for handling inputs, outputs, and logging for denoising."""
+    """Wrapper class for handling inputs, outputs, and logging for denoising, as well as the main pipeline functions"""
 
     # Class attributes; The fewer the better with respect to memory.
     pet_data = None
@@ -58,20 +58,22 @@ class Denoiser:
         except Exception as e:
             raise Exception(e)
 
+    # Should run the entire process; Probably just call run()
     def __call__(self, *args, **kwargs):
         """Denoise Image"""
         pass
 
+    # "Pipeline" Functions: Functions that string a number of other functions.
     def run_single_iteration(self,
                              num_clusters: list[int]):
         """Generate a denoised image using one iteration of the method, to be weighted with others downstream."""
 
-        # TODO: Move these somewhere so they're only called once.
+        # TODO: Move these somewhere else (i.e. run()) so they're only called once.
         self.head_mask = generate_head_mask(self.pet_data)
         flattened_head_mask = self.head_mask.flatten()
         flattened_pet_data = flatten_pet_spatially(self.pet_data)
         self.non_brain_mask = self._generate_non_brain_mask()
-        self.updated_segmentation_data = self.add_nonbrain_features_to_segmentation(non_brain_mask=self.non_brain_mask)
+        self.updated_segmentation_data = self._add_nonbrain_features_to_segmentation(non_brain_mask=self.non_brain_mask)
         head_pet_data = flattened_pet_data[flattened_head_mask, :]
         flattened_mri_data = self.mri_data.flatten()
         flattened_segmentation_data = self.updated_segmentation_data.flatten()
@@ -95,7 +97,7 @@ class Denoiser:
 
         # for cluster in range(final_num_clusters):
 
-        cluster = 8
+        cluster = 8 # TODO: Reset this to a loop; using just one for testing.
 
         logger.debug(f'Cluster {cluster}\n-------------------------------------------------------\n\n\n')
         cluster_data = feature_data[cluster_ids == cluster]
@@ -125,11 +127,19 @@ class Denoiser:
     def run(self):
         """"""
 
+    # Static Methods
     @staticmethod
     def _prepare_inputs(path_to_pet: str,
                         path_to_mri: str,
                         path_to_freesurfer_segmentation: str) -> (np.ndarray, np.ndarray, np.ndarray):
-        """Read images from files into ndarrays, and ensure all images have the same dimensions as PET."""
+        """
+        Read images from files into ndarrays, and ensure all images have the same dimensions as PET.
+
+        Args:
+            path_to_pet (str):
+            path_to_mri (str):
+            path_to_freesurfer_segmentation (str):
+        """
 
         images_loaded = []
         images_failed_to_load = []
@@ -169,11 +179,46 @@ class Denoiser:
 
         return pet_data, mri_data, segmentation_data
 
-    def apply_3_tier_k_means_clustering(self,
-                                        flattened_feature_data: np.ndarray,
+    @staticmethod
+    def _temporal_pca(spatially_flattened_pet_data: np.ndarray,
+                      num_components: int) -> np.ndarray:
+        """
+
+
+        Args:
+            spatially_flattened_pet_data:
+            num_components:
+
+        Returns:
+
+        """
+        pca_data = PCA(n_components=num_components).fit_transform(X=spatially_flattened_pet_data)
+
+        return pca_data
+
+    @staticmethod
+    def _calculate_ring_space_dimension(num_voxels_in_cluster: int) -> int:
+        """
+        Determine necessary ring space dimensions to contain all cluster data in the ring.
+
+        Args:
+            num_voxels_in_cluster (int): Total number of voxels assigned to the cluster.
+
+        Returns:
+            int: The side length of the ring space that can accommodate the cluster data.
+
+        """
+        ring_space_dimensions = (math.floor(math.sqrt(2) * math.sqrt(num_voxels_in_cluster + 1)) + 4
+                                 - math.floor(math.sqrt(num_voxels_in_cluster + 1)) % 4)
+
+        return ring_space_dimensions
+
+    @staticmethod
+    def apply_3_tier_k_means_clustering(flattened_feature_data: np.ndarray,
                                         num_clusters: list[int],
                                         **kwargs) -> (np.ndarray, np.ndarray):
-        """Separate data into num_clusters clusters using Lloyd's algorithm implemented in sklearn.
+        """
+        Separate data into num_clusters clusters using Lloyd's algorithm implemented in sklearn.
 
         This function performs k-means clustering "recursively" on feature data from a (PET) image. The input data should be 2D,
         where one dimension corresponds to all the voxels in a single 3D PET Frame, and the other dimension corresponds to
@@ -243,8 +288,8 @@ class Denoiser:
 
         return centroids, cluster_ids
 
-    def extract_distances_to_cluster_centroids(self,
-                                               cluster_data: np.ndarray,
+    @staticmethod
+    def extract_distances_to_cluster_centroids(cluster_data: np.ndarray,
                                                all_cluster_centroids: np.ndarray) -> np.ndarray:
         """Calculate distances from centroids in feature space for each voxel assigned to a cluster.
 
@@ -262,8 +307,8 @@ class Denoiser:
         cluster_feature_distances = np.apply_along_axis(calculate_ssd, axis=1, arr=cluster_data)
         return cluster_feature_distances
 
-    def extract_distances_in_ring_space(self,
-                                        num_clusters: int,
+    @staticmethod
+    def extract_distances_in_ring_space(num_clusters: int,
                                         cluster_locations: np.ndarray,
                                         ring_space_shape: (int, int)) -> np.ndarray:
         """Calculate distances from every cluster's assigned location (not centroid) for each pixel in the ring space"""
@@ -282,8 +327,8 @@ class Denoiser:
                      )
         return pixel_cluster_distances
 
-    def define_cluster_locations(self,
-                                 num_clusters: int,
+    @staticmethod
+    def define_cluster_locations(num_clusters: int,
                                  ring_space_side_length: int) -> np.ndarray:
         """Given the dimensions of a 'ring space' and the number of clusters, return the location of each cluster"""
 
@@ -301,8 +346,51 @@ class Denoiser:
 
         return cluster_locations
 
-    def add_nonbrain_features_to_segmentation(self,
-                                              non_brain_mask: np.ndarray[bool]) -> np.ndarray:
+    @staticmethod
+    def generate_ring_space_map(cluster_voxel_indices: np.ndarray,
+                                feature_distances: np.ndarray,
+                                ring_space_distances: np.ndarray) -> np.ndarray:
+        """
+        Use voxelwise distances from cluster feature centroids to create map to arrange voxels onto 2D 'ring map'.
+
+        Args:
+            cluster_voxel_indices (np.ndarray): Array of flattened voxel indices corresponding to PET data assigned to a
+                cluster.
+            feature_distances (np.ndarray): Array of size (Number of Voxels in Cluster, Number of Clusters) containing
+                distances from cluster feature centroids. Each distance must be the sum of squared differences for all
+                features.
+            ring_space_distances (np.ndarray): Vector of length (Number of Clusters) containing the euclidean distances
+                from each cluster's assigned location in the ring space.
+
+        Returns:
+            np.ndarray: Array containing the voxel indices of the voxel assigned to each pixel in the ring map. Note
+                that not all pixels are filled; these are set to np.nan.
+
+        """
+        distance_to_origin_cluster_flat = ring_space_distances[:, :, 0].reshape(
+            ring_space_distances.shape[0] * ring_space_distances.shape[1])
+
+        pixels_emanating_from_center = np.argsort(distance_to_origin_cluster_flat)
+        normalized_feature_distances = feature_distances / np.linalg.norm(feature_distances, axis=1)[:, np.newaxis]
+        image_to_ring_map = np.full_like(distance_to_origin_cluster_flat,
+                                         fill_value=np.nan, dtype=np.int64)
+
+        for i in range(len(cluster_voxel_indices)):
+            pixel_flat_index = pixels_emanating_from_center[i]
+            pixel_coordinates = np.unravel_index(indices=pixel_flat_index,
+                                                 shape=(ring_space_distances.shape[0], ring_space_distances.shape[1]))
+            pixel_ring_space_distances = ring_space_distances[pixel_coordinates[0], pixel_coordinates[1], :]
+            normalized_ring_space_distances = (pixel_ring_space_distances / np.linalg.norm(pixel_ring_space_distances))[
+                                              :, np.newaxis]
+            best_candidate_voxel_index = np.argmax(
+                np.matmul(normalized_feature_distances, normalized_ring_space_distances))
+            normalized_feature_distances[best_candidate_voxel_index][:] = 0
+            image_to_ring_map[pixel_flat_index] = cluster_voxel_indices[best_candidate_voxel_index]
+
+        return image_to_ring_map
+
+    def _add_nonbrain_features_to_segmentation(self,
+                                               non_brain_mask: np.ndarray) -> np.ndarray:
         """Cluster non-brain and add labels to existing segmentation"""
 
         segmentation_data = self.segmentation_data
@@ -319,22 +407,6 @@ class Denoiser:
         segmentation_data_with_non_brain = flat_segmentation_data.reshape(segmentation_data.shape)
 
         return segmentation_data_with_non_brain
-
-    @staticmethod
-    def _temporal_pca(spatially_flattened_pet_data: np.ndarray,
-                      num_components: int) -> np.ndarray:
-        """
-
-        Args:
-            spatially_flattened_pet_data:
-            num_components:
-
-        Returns:
-
-        """
-        pca_data = PCA(n_components=num_components).fit_transform(X=spatially_flattened_pet_data)
-
-        return pca_data
 
     def _extract_non_brain_features(self,
                                     non_brain_mask_data: np.ndarray) -> np.ndarray:
@@ -390,52 +462,10 @@ class Denoiser:
 
         return non_brain_mask_data.astype(bool)
 
-    def generate_ring_space_map(self,
-                                cluster_voxel_indices: np.ndarray,
-                                feature_distances: np.ndarray,
-                                ring_space_distances: np.ndarray) -> np.ndarray:
-        """
-        Use voxelwise distances from cluster feature centroids to create map to arrange voxels onto 2D 'ring map'.
-
-        Args:
-            cluster_voxel_indices (np.ndarray): Array of flattened voxel indices corresponding to PET data assigned to a
-                cluster.
-            feature_distances (np.ndarray): Array of size (Number of Voxels in Cluster, Number of Clusters) containing
-                distances from cluster feature centroids. Each distance must be the sum of squared differences for all
-                features.
-            ring_space_distances (np.ndarray): Vector of length (Number of Clusters) containing the euclidean distances
-                from each cluster's assigned location in the ring space.
-
-        Returns:
-            np.ndarray: Array containing the voxel indices of the voxel assigned to each pixel in the ring map. Note
-                that not all pixels are filled; these are set to np.nan.
-
-        """
-        distance_to_origin_cluster_flat = ring_space_distances[:, :, 0].reshape(
-            ring_space_distances.shape[0] * ring_space_distances.shape[1])
-
-        pixels_emanating_from_center = np.argsort(distance_to_origin_cluster_flat)
-        normalized_feature_distances = feature_distances / np.linalg.norm(feature_distances, axis=1)[:, np.newaxis]
-        image_to_ring_map = np.full_like(distance_to_origin_cluster_flat,
-                                         fill_value=np.nan)
-
-        for i in range(len(cluster_voxel_indices)):
-            pixel_flat_index = pixels_emanating_from_center[i]
-            pixel_coordinates = np.unravel_index(indices=pixel_flat_index,
-                                                 shape=(ring_space_distances.shape[0], ring_space_distances.shape[1]))
-            pixel_ring_space_distances = ring_space_distances[pixel_coordinates[0], pixel_coordinates[1], :]
-            normalized_ring_space_distances = (pixel_ring_space_distances / np.linalg.norm(pixel_ring_space_distances))[
-                                              :, np.newaxis]
-            best_candidate_voxel_index = np.argmax(
-                np.matmul(normalized_feature_distances, normalized_ring_space_distances))
-            normalized_feature_distances[best_candidate_voxel_index][:] = 0
-            image_to_ring_map[pixel_flat_index] = cluster_voxel_indices[best_candidate_voxel_index]
-
-        return image_to_ring_map
-
-    def populate_ring_space_using_map(self,
-                                      ring_space_map: np.ndarray,
-                                      ring_space_shape: (int, int)) -> np.ndarray:
+    def _populate_ring_space_using_map(self,
+                                       spatially_flattened_pet_data: np.ndarray,
+                                       ring_space_map: np.ndarray,
+                                       ring_space_shape: (int, int)) -> np.ndarray:
         """
         Fill pixels in ring space with original PET values using a map.
 
@@ -447,24 +477,12 @@ class Denoiser:
             np.ndarray: Image containing all PET data in a cluster rearranged into ring space.
 
         """
-        pass
+        populate_pixel_with_pet = lambda a: spatially_flattened_pet_data[a][24] if not np.isnan(a) else 0 # TODO: Make this do all timeframes
 
-    @staticmethod
-    def _calculate_ring_space_dimension(num_voxels_in_cluster: int) -> int:
-        """
-        Determine necessary ring space dimensions to contain all cluster data in the ring.
+        populated_ring_map = np.array([populate_pixel_with_pet(i) for i in ring_space_map])
+        ring_image = populated_ring_map.reshape(ring_space_shape)
 
-        Args:
-            num_voxels_in_cluster (int): Total number of voxels assigned to the cluster.
-
-        Returns:
-            int: The side length of the ring space that can accommodate the cluster data.
-
-        """
-        ring_space_dimensions = (math.floor(math.sqrt(2) * math.sqrt(num_voxels_in_cluster + 1)) + 4
-                                 - math.floor(math.sqrt(num_voxels_in_cluster + 1)) % 4)
-
-        return ring_space_dimensions
+        return ring_image
 
     def apply_smoothing_in_radon_space(self,
                                        image_data: np.ndarray,
@@ -478,6 +496,7 @@ class Denoiser:
         """
         Weight smoothed images (one from each iteration) by cluster 'belongingness' with respect to MRI."""
         pass
+
 
 
 def flatten_pet_spatially(pet_data: np.ndarray) -> np.ndarray:
