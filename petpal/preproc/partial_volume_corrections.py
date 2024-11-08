@@ -84,6 +84,7 @@ class PetPvc:
         """
         pet_4d_filepath = os.path.abspath(pet_4d_filepath)
         output_filepath = os.path.abspath(output_filepath)
+        docker_mask_input = None
         if mask_filepath:
             mask_filepath = os.path.abspath(mask_filepath)
 

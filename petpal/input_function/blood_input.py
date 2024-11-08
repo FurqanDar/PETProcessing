@@ -124,7 +124,7 @@ class BloodInputFunction(object):
         :return: A callable function that takes x-data as an input to compute the line values
         """
         
-        popt, _ = sp_fit(f=BloodInputFunction._linear_function, xdata=x_data, ydata=y_data)
+        popt, _, _, _, _ = sp_fit(f=BloodInputFunction._linear_function, xdata=x_data, ydata=y_data)
         
         def fitted_line_function(x):
             return BloodInputFunction._linear_function(x, *popt)

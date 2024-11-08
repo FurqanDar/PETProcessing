@@ -185,17 +185,17 @@ def main():
         'FilePathCropInput': path_to_pet,
         'FilePathAnat': path_to_mri,
         'FilePathSeg': path_to_seg,
-        'FilePathWSSInput': subject._generate_outfile_path(method_short='reg', modality='pet'),
-        'FilePathMocoInp': subject._generate_outfile_path(method_short='threshcropped', modality='pet'),
+        'FilePathWSSInput': subject.generate_outfile_path(method_short='reg', modality='pet'),
+        'FilePathMocoInp': subject.generate_outfile_path(method_short='threshcropped', modality='pet'),
         'HalfLife': half_life,
         'CropThreshold': .01,
         'Verbose': verbose,
         'MotionTarget': (0, 600),  # Use the summed first 10 minutes as motion target
-        'FilePathRegInp': subject._generate_outfile_path(method_short='moco', modality='pet'),
-        'FilePathTACInput': subject._generate_outfile_path(method_short='reg', modality='pet'),
+        'FilePathRegInp': subject.generate_outfile_path(method_short='moco', modality='pet'),
+        'FilePathTACInput': subject.generate_outfile_path(method_short='reg', modality='pet'),
         'FilePathLabelMap': label_map_path,
         'TimeFrameKeyword': 'FrameTimesStart',
-        'FilePathSUVRInput': subject._generate_outfile_path(method_short='wss', modality='pet'),
+        'FilePathSUVRInput': subject.generate_outfile_path(method_short='wss', modality='pet'),
         'RefRegion': 8,  # TODO: Make a function for combining ROIs
         'StartTimeWSS': 1800,
         'EndTimeWSS': 3600

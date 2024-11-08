@@ -14,6 +14,52 @@ from .graphical_analysis import get_index_from_threshold
 from .graphical_analysis import cumulative_trapezoidal_integral as cum_trapz
 from . import tcms_as_convolutions as tcms_conv
 
+def weight_tac_simple(tac_durations_in_minutes: np.ndarray,
+                      tac_vals: np.ndarray) -> np.ndarray:
+    """
+    Weight a Time Activity Curve (TAC) based on variance. This function applies the simple frame
+    time length to activity ratio found in
+    http://www.turkupetcentre.net/petanalysis/model_weighting.html.
+
+    Args:
+        tac_durations_in_minutes (np.ndarray): Duration of each frame in the TAC in minutes.
+        tac_vals (np.ndarray): Activity values for each frame in the TAC.
+    
+    Returns:
+        tac_weights (np.ndarray): Weights to be applied to the TAC during fitting process.
+    """
+    tac_weights = tac_durations_in_minutes/tac_vals
+    tac_vals_where_zero = np.where(tac_vals==0)
+    tac_weights[tac_vals_where_zero] = 0
+    return tac_weights
+
+
+def weight_tac_decay(tac_durations_in_minutes: np.ndarray,
+                     tac_vals: np.ndarray,
+                     tac_times_in_minutes: np.ndarray,
+                     half_life_in_minutes: np.ndarray) -> np.ndarray:
+    """
+    Weight a Time Activity Curve (TAC) based on variance. This function applies the simple frame
+    time length to activity ratio found in
+    http://www.turkupetcentre.net/petanalysis/model_weighting.html with an extra factor for decay
+    correction.
+
+    Args:
+        tac_durations_in_minutes (np.ndarray): Duration of each frame in the TAC in minutes.
+        tac_vals (np.ndarray): Activity values for each frame in the TAC.
+        tac_times_in_minutes (np.ndarray): Frame times for the TAC in minutes.
+        half_life_in_minutes (np.ndarray): Half life of the radioisotope in minutes.
+    
+    Returns:
+        tac_weights (np.ndarray): Weights to be applied to the TAC during fitting process.
+    """
+    decay_factor = np.exp(-np.log(2) / half_life_in_minutes * tac_times_in_minutes)
+    tac_weights = tac_durations_in_minutes * decay_factor / tac_vals
+    tac_vals_where_zero = np.where(tac_vals==0)
+    tac_weights[tac_vals_where_zero] = 0
+    return tac_weights
+
+
 
 def calc_srtm_tac(tac_times_in_minutes: np.ndarray, ref_tac_vals: np.ndarray, r1: float, k2: float, bp: float) -> np.ndarray:
     r"""

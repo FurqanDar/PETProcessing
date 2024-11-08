@@ -172,7 +172,7 @@ def main():
             val = vals[param_name]
             err = errs[param_name]
             print(f"{param_name:<5} {val:<6.4f} +- {err:<6.4f} ({err / val * 100:>5.2f}%)|")
-    print("-" * len(title_str))
+        print("-" * len(title_str))
 
 
 if __name__ == "__main__":

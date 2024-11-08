@@ -7,9 +7,11 @@ import os
 import ants
 import nibabel
 from nibabel.filebasedimages import FileBasedHeader, FileBasedImage
+from typing import Union
 import numpy as np
 import pandas as pd
 from . import useful_functions
+
 
 def write_dict_to_json(meta_data_dict: dict, out_path: str):
     """
@@ -126,7 +128,7 @@ def safe_copy_meta(input_image_path: str,
 
 
 
-class ImageIO():
+class ImageIO:
     """
     :class:`ImageIO` to handle reading and writing imaging data and metadata.
 
@@ -152,7 +154,7 @@ class ImageIO():
         """
         self.verbose = verbose
 
-    def load_nii(self, image_path: str) -> FileBasedImage:
+    def load_nii(self, image_path: str) -> Union[nibabel.nifti1.Nifti1Image, nibabel.nifti2.Nifti2Image]:
         """
         Wrapper to load nifti from image_path.
 
@@ -173,6 +175,9 @@ class ImageIO():
             raise OSError(f"{image_path} does not have the extension .nii or .nii.gz")
 
         image = nibabel.load(image_path)
+
+        if not isinstance(image, (nibabel.nifti1.Nifti1Image, nibabel.nifti2.Nifti2Image)):
+            raise OSError(f'File at {image_path} is not in nifti1 or nifti2 format')
 
         if self.verbose:
             print(f"(ImageIO): {image_path} loaded")

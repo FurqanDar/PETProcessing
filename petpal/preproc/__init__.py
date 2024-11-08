@@ -4,7 +4,6 @@ from . import partial_volume_corrections
 from . import preproc
 from . import register
 from . import symmetric_geometric_transfer_matrix
-from . import toolbox_preproc
 from . import segmentation_tools
 
 
