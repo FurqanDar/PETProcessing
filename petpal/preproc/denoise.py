@@ -54,7 +54,7 @@ class Denoiser:
                              "for more information.")
 
         try:
-            self.pet_data, self.mri_data, self.segmentation_data, self.pet_affine = self._prepare_inputs(
+            self.pet_data, self.mri_data, self.segmentation_data, self.pet_affine, self.pet_header = self._prepare_inputs(
                 path_to_pet=path_to_pet,
                 path_to_mri=path_to_mri,
                 path_to_freesurfer_segmentation=path_to_segmentation)
@@ -434,7 +434,9 @@ class Denoiser:
 
         """
         image_io = ImageIO(verbose=True)
-        cluster_ids = cluster_ids.reshape(self.pet_data.shape[0], self.pet_data.shape[1], self.pet_data.shape[2])
+        head_mask_shape = self.head_mask.shape
+        placeholder_image = np.zeros_like(self.pet_data)
+        cluster_ids = cluster_ids.reshape(head_mask_shape[0], head_mask_shape[1], head_mask_shape[2])
         segmentation_image = image_io.extract_np_to_nibabel(image_array=cluster_ids,
                                                             header=self.pet_header,
                                                             affine=self.pet_affine)
