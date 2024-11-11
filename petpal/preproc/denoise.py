@@ -436,10 +436,13 @@ class Denoiser:
         image_io = ImageIO(verbose=True)
         head_mask_shape = self.head_mask.shape
         placeholder_image = np.zeros_like(self.pet_data)
+        logger.debug(f'PET Affine: \n{self.pet_affine}')
+        pet_affine_3d = self.pet_affine[0:2][0:2]
         cluster_ids = cluster_ids.reshape(head_mask_shape[0], head_mask_shape[1], head_mask_shape[2])
+        segmentation_image_data = placeholder_image[self.head_mask] = cluster_ids
         segmentation_image = image_io.extract_np_to_nibabel(image_array=cluster_ids,
                                                             header=self.pet_header,
-                                                            affine=self.pet_affine)
+                                                            affine=pet_affine_3d)
 
 
         nib.save(segmentation_image, output_path)
