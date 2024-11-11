@@ -59,7 +59,7 @@ class Denoiser:
             raise Exception(e)
 
     # Should run the entire process; Probably just call run()
-    def __call__(self, *args, **kwargs):
+    def __call__(self):
         """Denoise Image"""
         pass
 
@@ -242,7 +242,7 @@ class Denoiser:
         """Calculate distances from every cluster's assigned location (not centroid) for each pixel in the ring space"""
         pixel_cluster_distances = np.zeros(shape=(ring_space_shape[0], ring_space_shape[1], num_clusters))
 
-        # TODO: Find a more pythonic (and probably faster) way to do this
+        # TODO: Find a more pythonic (and probably faster) way to do this; ask gippity
         for x in range(ring_space_shape[0]):
             for y in range(ring_space_shape[1]):
                 pixel_cluster_distances[x][y] = np.asarray(
@@ -251,8 +251,7 @@ class Denoiser:
         logger.debug(f'Finished extracting ring space distances for num_clusters {num_clusters} and ring_space_shape '
                      f'{ring_space_shape}')
 
-        logger.debug(f'Ring Space Distances: {pixel_cluster_distances}'
-                     )
+        logger.debug(f'Ring Space Distances: {pixel_cluster_distances}')
         return pixel_cluster_distances
 
     @staticmethod
@@ -310,7 +309,6 @@ class Denoiser:
             pixel_ring_space_distances = ring_space_distances[pixel_coordinates[0], pixel_coordinates[1], :]
             normalized_ring_space_distances = (pixel_ring_space_distances / np.linalg.norm(pixel_ring_space_distances))[
                                               :, np.newaxis]
-            result = np.matmul(normalized_feature_distances, normalized_ring_space_distances)
             best_candidate_voxel_index = np.argmax(
                 np.matmul(normalized_feature_distances, normalized_ring_space_distances))
             normalized_feature_distances[best_candidate_voxel_index][:] = -10
@@ -333,8 +331,8 @@ class Denoiser:
             np.ndarray: Image containing all PET data in a cluster rearranged into ring space.
 
         """
-        populate_pixel_with_pet = lambda a: spatially_flattened_pet_data[a][24] if a != -1 else 0  # TODO: Make this do all timeframes
-
+        populate_pixel_with_pet = lambda a: spatially_flattened_pet_data[a][16] if a != -1 else 0  # TODO: Make this do all timeframes
+        # TODO: Use logical indexing instead of this
         populated_ring_map = np.array([populate_pixel_with_pet(i) for i in ring_space_map])
         ring_image = populated_ring_map.reshape(ring_space_shape)
 
