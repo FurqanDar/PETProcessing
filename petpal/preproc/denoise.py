@@ -8,6 +8,7 @@ TODO: Credit Hamed Yousefi and his publication formally once it's published.
 import logging
 import math
 import time
+from typing import Union
 
 # Import other libraries
 import numpy as np
@@ -31,6 +32,7 @@ class Denoiser:
     # Class attributes; The fewer the better with respect to memory.
     pet_data = None
     pet_affine = None
+    pet_header = None
     mri_data = None
     segmentation_data = None
     updated_segmentation_data = None
@@ -96,6 +98,8 @@ class Denoiser:
 
         logger.debug(f'Centroids: {centroids}\nCluster_ids: {np.unique(cluster_ids)}')
 
+        self.write_cluster_segmentation_to_file(cluster_ids=cluster_ids,
+                                                output_path="./cluster_img.nii.gz")
         final_num_clusters = np.prod(num_clusters)
 
         # for cluster in range(final_num_clusters):
@@ -137,7 +141,7 @@ class Denoiser:
     @staticmethod
     def _prepare_inputs(path_to_pet: str,
                         path_to_mri: str,
-                        path_to_freesurfer_segmentation: str) -> (np.ndarray, np.ndarray, np.ndarray, np.ndarray):
+                        path_to_freesurfer_segmentation: str) -> (np.ndarray, np.ndarray, np.ndarray, np.ndarray, Union[nib.nifti1.Nifti1Header, nib.nifti2.Nifti2Header]):
         """
         Read images from files into ndarrays, and ensure all images have the same dimensions as PET.
 
@@ -168,6 +172,7 @@ class Denoiser:
         # Extract ndarrays from each image.
         pet_data = image_loader.extract_image_from_nii_as_numpy(images_loaded[0])
         pet_affine = images_loaded[0].affine
+        pet_header = images_loaded[0].header
         mri_data = image_loader.extract_image_from_nii_as_numpy(images_loaded[1])
         segmentation_data = image_loader.extract_image_from_nii_as_numpy(images_loaded[2])
         pet_data_3d_shape = pet_data.shape[:-1]
@@ -184,7 +189,7 @@ class Denoiser:
                             f'MRI Shape: {mri_data.shape}.\n'
                             f'Ensure that all non-PET data is registered to PET space')
 
-        return pet_data, mri_data, segmentation_data, pet_affine
+        return pet_data, mri_data, segmentation_data, pet_affine, pet_header
 
     @staticmethod
     def _temporal_pca(spatially_flattened_pet_data: np.ndarray,
@@ -428,7 +433,16 @@ class Denoiser:
         Returns:
 
         """
-        nib.save(cluster_ids, output_path)
+        image_io = ImageIO(verbose=True)
+        cluster_ids = cluster_ids.reshape(self.pet_data.shape[0], self.pet_data.shape[1], self.pet_data.shape[2])
+        segmentation_image = image_io.extract_np_to_nibabel(image_array=cluster_ids,
+                                                            header=self.pet_header,
+                                                            affine=self.pet_affine)
+
+
+        nib.save(segmentation_image, output_path)
+
+        return
 
     def _add_nonbrain_features_to_segmentation(self,
                                                non_brain_mask: np.ndarray) -> np.ndarray:
