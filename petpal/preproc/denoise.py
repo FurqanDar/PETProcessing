@@ -15,6 +15,7 @@ from sklearn.cluster import k_means
 from sklearn.decomposition import PCA
 from scipy.ndimage import convolve, binary_fill_holes
 from scipy.stats import zscore
+import nibabel as nib
 
 # Import from petpal
 from ..utils.image_io import ImageIO
@@ -29,6 +30,7 @@ class Denoiser:
 
     # Class attributes; The fewer the better with respect to memory.
     pet_data = None
+    pet_affine = None
     mri_data = None
     segmentation_data = None
     updated_segmentation_data = None
@@ -50,9 +52,10 @@ class Denoiser:
                              "for more information.")
 
         try:
-            self.pet_data, self.mri_data, self.segmentation_data = self._prepare_inputs(path_to_pet=path_to_pet,
-                                                                                        path_to_mri=path_to_mri,
-                                                                                        path_to_freesurfer_segmentation=path_to_segmentation)
+            self.pet_data, self.mri_data, self.segmentation_data, self.pet_affine = self._prepare_inputs(
+                path_to_pet=path_to_pet,
+                path_to_mri=path_to_mri,
+                path_to_freesurfer_segmentation=path_to_segmentation)
         except OSError as e:
             raise OSError(e)
         except Exception as e:
@@ -97,7 +100,7 @@ class Denoiser:
 
         # for cluster in range(final_num_clusters):
 
-        cluster = 8 # TODO: Reset this to a loop; using just one for testing.
+        cluster = 8  # TODO: Reset this to a loop; using just one for testing.
 
         logger.debug(f'Cluster {cluster}\n-------------------------------------------------------\n\n\n')
         cluster_data = feature_data[cluster_ids == cluster]
@@ -134,7 +137,7 @@ class Denoiser:
     @staticmethod
     def _prepare_inputs(path_to_pet: str,
                         path_to_mri: str,
-                        path_to_freesurfer_segmentation: str) -> (np.ndarray, np.ndarray, np.ndarray):
+                        path_to_freesurfer_segmentation: str) -> (np.ndarray, np.ndarray, np.ndarray, np.ndarray):
         """
         Read images from files into ndarrays, and ensure all images have the same dimensions as PET.
 
@@ -164,6 +167,7 @@ class Denoiser:
 
         # Extract ndarrays from each image.
         pet_data = image_loader.extract_image_from_nii_as_numpy(images_loaded[0])
+        pet_affine = images_loaded[0].affine
         mri_data = image_loader.extract_image_from_nii_as_numpy(images_loaded[1])
         segmentation_data = image_loader.extract_image_from_nii_as_numpy(images_loaded[2])
         pet_data_3d_shape = pet_data.shape[:-1]
@@ -180,7 +184,7 @@ class Denoiser:
                             f'MRI Shape: {mri_data.shape}.\n'
                             f'Ensure that all non-PET data is registered to PET space')
 
-        return pet_data, mri_data, segmentation_data
+        return pet_data, mri_data, segmentation_data, pet_affine
 
     @staticmethod
     def _temporal_pca(spatially_flattened_pet_data: np.ndarray,
@@ -331,7 +335,8 @@ class Denoiser:
             np.ndarray: Image containing all PET data in a cluster rearranged into ring space.
 
         """
-        populate_pixel_with_pet = lambda a: spatially_flattened_pet_data[a][16] if a != -1 else 0  # TODO: Make this do all timeframes
+        populate_pixel_with_pet = lambda a: spatially_flattened_pet_data[a][
+            16] if a != -1 else 0  # TODO: Make this do all timeframes
         # TODO: Use logical indexing instead of this
         populated_ring_map = np.array([populate_pixel_with_pet(i) for i in ring_space_map])
         ring_image = populated_ring_map.reshape(ring_space_shape)
@@ -412,6 +417,18 @@ class Denoiser:
         cluster_ids = cluster_ids_3
 
         return centroids, cluster_ids
+
+    def write_cluster_segmentation_to_file(self,
+                                           cluster_ids: np.ndarray,
+                                           output_path) -> None:
+        """
+
+        Args:
+
+        Returns:
+
+        """
+        nib.save(cluster_ids, output_path)
 
     def _add_nonbrain_features_to_segmentation(self,
                                                non_brain_mask: np.ndarray) -> np.ndarray:
@@ -498,7 +515,6 @@ class Denoiser:
         """
         Weight smoothed images (one from each iteration) by cluster 'belongingness' with respect to MRI."""
         pass
-
 
 
 def flatten_pet_spatially(pet_data: np.ndarray) -> np.ndarray:
