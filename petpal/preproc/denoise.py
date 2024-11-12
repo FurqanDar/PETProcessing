@@ -98,8 +98,7 @@ class Denoiser:
 
         logger.debug(f'Centroids: {centroids}\nCluster_ids: {np.unique(cluster_ids)}')
 
-        self.write_cluster_segmentation_to_file(cluster_ids=cluster_ids,
-                                                output_path="./cluster_img.nii.gz")
+        self._write_cluster_segmentation_to_file(cluster_ids=cluster_ids, output_path="./cluster_img.nii.gz")
 
         final_num_clusters = np.prod(num_clusters)
 
@@ -218,8 +217,7 @@ class Denoiser:
             int: The side length of the ring space that can accommodate the cluster data.
 
         """
-        ring_space_dimensions = (math.floor(math.sqrt(2) * math.sqrt(num_voxels_in_cluster + 1)) + 4
-                                 - math.floor(math.sqrt(num_voxels_in_cluster + 1)) % 4)
+        ring_space_dimensions = math.ceil(math.sqrt(num_voxels_in_cluster))
 
         return ring_space_dimensions
 
@@ -423,9 +421,9 @@ class Denoiser:
 
         return centroids, cluster_ids
 
-    def write_cluster_segmentation_to_file(self,
-                                           cluster_ids: np.ndarray,
-                                           output_path) -> None:
+    def _write_cluster_segmentation_to_file(self,
+                                            cluster_ids: np.ndarray,
+                                            output_path) -> None:
         """
 
         Args:
