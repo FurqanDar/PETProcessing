@@ -103,37 +103,34 @@ class Denoiser:
 
         final_num_clusters = np.prod(num_clusters)
 
-        # for cluster in range(final_num_clusters):
+        for cluster in range(final_num_clusters):
+            logger.debug(f'Cluster {cluster}\n-------------------------------------------------------\n\n\n')
+            cluster_data = feature_data[cluster_ids == cluster]
+            centroids_temp = np.roll(centroids, shift=-cluster, axis=0)
+            feature_distances = self._extract_distances_to_cluster_centroids(cluster_data=cluster_data,
+                                                                             all_cluster_centroids=centroids_temp)
+            logger.debug(f'Feature distances for cluster {cluster}: {feature_distances}')
 
-        cluster = 8  # TODO: Reset this to a loop; using just one for testing.
+            num_voxels_in_cluster = len(cluster_ids[cluster_ids == cluster])
+            cluster_voxel_indices = np.argwhere(cluster_ids == cluster).T[0]
+            ring_space_side_length = self._calculate_ring_space_dimension(num_voxels_in_cluster=num_voxels_in_cluster)
+            cluster_locations = self._define_cluster_locations(num_clusters=final_num_clusters,
+                                                               ring_space_side_length=ring_space_side_length)
+            ring_space_distances = self._extract_distances_in_ring_space(num_clusters=final_num_clusters,
+                                                                         cluster_locations=cluster_locations,
+                                                                         ring_space_shape=(
+                                                                             ring_space_side_length,
+                                                                             ring_space_side_length))
+            ring_space_map = self._generate_ring_space_map(cluster_voxel_indices=cluster_voxel_indices,
+                                                           feature_distances=feature_distances,
+                                                           ring_space_distances=ring_space_distances)
 
-        logger.debug(f'Cluster {cluster}\n-------------------------------------------------------\n\n\n')
-        cluster_data = feature_data[cluster_ids == cluster]
-        centroids_temp = np.roll(centroids, shift=-cluster, axis=0)
-        feature_distances = self._extract_distances_to_cluster_centroids(cluster_data=cluster_data,
-                                                                         all_cluster_centroids=centroids_temp)
-        logger.debug(f'Feature distances for cluster {cluster}: {feature_distances}')
+            ring_space_image = self._populate_ring_space_using_map(spatially_flattened_pet_data=head_pet_data,
+                                                                   ring_space_map=ring_space_map,
+                                                                   ring_space_shape=(ring_space_side_length,
+                                                                                     ring_space_side_length))
 
-        num_voxels_in_cluster = len(cluster_ids[cluster_ids == cluster])
-        cluster_voxel_indices = np.argwhere(cluster_ids == cluster).T[0]
-        ring_space_side_length = self._calculate_ring_space_dimension(num_voxels_in_cluster=num_voxels_in_cluster)
-        cluster_locations = self._define_cluster_locations(num_clusters=final_num_clusters,
-                                                           ring_space_side_length=ring_space_side_length)
-        ring_space_distances = self._extract_distances_in_ring_space(num_clusters=final_num_clusters,
-                                                                     cluster_locations=cluster_locations,
-                                                                     ring_space_shape=(
-                                                                         ring_space_side_length,
-                                                                         ring_space_side_length))
-        ring_space_map = self._generate_ring_space_map(cluster_voxel_indices=cluster_voxel_indices,
-                                                       feature_distances=feature_distances,
-                                                       ring_space_distances=ring_space_distances)
-
-        ring_space_image = self._populate_ring_space_using_map(spatially_flattened_pet_data=head_pet_data,
-                                                               ring_space_map=ring_space_map,
-                                                               ring_space_shape=(ring_space_side_length,
-                                                                                 ring_space_side_length))
-
-        return ring_space_image
+        return
 
     def run(self):
         """"""
@@ -304,8 +301,10 @@ class Denoiser:
                 that not all pixels are filled; these are set to np.nan.
 
         """
+        x, y = ring_space_distances.shape
+
         distance_to_origin_cluster_flat = ring_space_distances[:, :, 0].reshape(
-            ring_space_distances.shape[0] * ring_space_distances.shape[1])
+            x * y)
 
         pixels_emanating_from_center = np.argsort(distance_to_origin_cluster_flat)
         normalized_feature_distances = feature_distances / np.linalg.norm(feature_distances, axis=1)[:, np.newaxis]
@@ -315,7 +314,7 @@ class Denoiser:
         for i in range(len(cluster_voxel_indices)):
             pixel_flat_index = pixels_emanating_from_center[i]
             pixel_coordinates = np.unravel_index(indices=pixel_flat_index,
-                                                 shape=(ring_space_distances.shape[0], ring_space_distances.shape[1]))
+                                                 shape=(x, y))
             pixel_ring_space_distances = ring_space_distances[pixel_coordinates[0], pixel_coordinates[1], :]
             normalized_ring_space_distances = (pixel_ring_space_distances / np.linalg.norm(pixel_ring_space_distances))[
                                               :, np.newaxis]
