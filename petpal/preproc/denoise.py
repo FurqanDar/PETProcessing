@@ -540,13 +540,20 @@ class Denoiser:
         proj_angle = np.linspace(-150, 150, 301)
         proj_position = np.linspace(-3, 3, 7)
         norm_angle = norm.pdf(proj_angle, loc=0, scale=100)
+        logger.debug(f"norm_angle: {norm_angle}")
         norm_angle = norm_angle/np.sum(norm_angle)
-        angle_smoothing = np.tile(norm_angle[:,np.newaxis], (6, 1))
+        angle_smoothing = np.tile(norm_angle[np.newaxis,:], (7, 1))
+
+        logger.debug(f"angle_smoothing shape: {angle_smoothing.shape}")
         norm_position = norm.pdf(proj_position, loc=0, scale=2)
+        logger.debug(f"norm_position: {norm_position}")
         norm_position = norm_position/np.sum(norm_position)
-        position_smoothing = np.tile(norm_position[np.newaxis,:], (1, 301))
+        position_smoothing = np.tile(norm_position[:,np.newaxis], (1, 301))
+        logger.debug(f"position_smoothing shape: {position_smoothing.shape}")
 
         kernel = angle_smoothing * position_smoothing
+
+        logger.debug(f"kernel dims: {kernel.shape}")
 
         return kernel
 
