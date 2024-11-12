@@ -31,8 +31,8 @@ class Denoiser:
 
     # Class attributes; The fewer the better with respect to memory.
     pet_data = None
-    pet_affine = None
-    pet_header = None
+    mri_affine = None
+    mri_header = None
     mri_data = None
     segmentation_data = None
     updated_segmentation_data = None
@@ -54,7 +54,7 @@ class Denoiser:
                              "for more information.")
 
         try:
-            self.pet_data, self.mri_data, self.segmentation_data, self.pet_affine, self.pet_header = self._prepare_inputs(
+            self.pet_data, self.mri_data, self.segmentation_data, self.mri_affine, self.mri_header = self._prepare_inputs(
                 path_to_pet=path_to_pet,
                 path_to_mri=path_to_mri,
                 path_to_freesurfer_segmentation=path_to_segmentation)
@@ -171,8 +171,8 @@ class Denoiser:
 
         # Extract ndarrays from each image.
         pet_data = image_loader.extract_image_from_nii_as_numpy(images_loaded[0])
-        pet_affine = images_loaded[0].affine
-        pet_header = images_loaded[0].header
+        mri_affine = images_loaded[1].affine
+        mri_header = images_loaded[1].header
         mri_data = image_loader.extract_image_from_nii_as_numpy(images_loaded[1])
         segmentation_data = image_loader.extract_image_from_nii_as_numpy(images_loaded[2])
         pet_data_3d_shape = pet_data.shape[:-1]
@@ -189,7 +189,7 @@ class Denoiser:
                             f'MRI Shape: {mri_data.shape}.\n'
                             f'Ensure that all non-PET data is registered to PET space')
 
-        return pet_data, mri_data, segmentation_data, pet_affine, pet_header
+        return pet_data, mri_data, segmentation_data, mri_affine, mri_header
 
     @staticmethod
     def _temporal_pca(spatially_flattened_pet_data: np.ndarray,
@@ -437,12 +437,11 @@ class Denoiser:
         head_mask_shape = self.head_mask.shape
         placeholder_image = np.zeros_like(self.pet_data)
         logger.debug(f'PET Affine: \n{self.pet_affine}')
-        pet_affine_3d = self.pet_affine[0:2][0:2]
         cluster_ids = cluster_ids.reshape(head_mask_shape[0], head_mask_shape[1], head_mask_shape[2])
-        segmentation_image_data = placeholder_image[self.head_mask] = cluster_ids
+        placeholder_image[self.head_mask] = cluster_ids
         segmentation_image = image_io.extract_np_to_nibabel(image_array=cluster_ids,
                                                             header=self.pet_header,
-                                                            affine=pet_affine_3d)
+                                                            affine=self.pet_affine)
 
 
         nib.save(segmentation_image, output_path)
