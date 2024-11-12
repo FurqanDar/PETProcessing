@@ -100,6 +100,7 @@ class Denoiser:
 
         self.write_cluster_segmentation_to_file(cluster_ids=cluster_ids,
                                                 output_path="./cluster_img.nii.gz")
+
         final_num_clusters = np.prod(num_clusters)
 
         # for cluster in range(final_num_clusters):
@@ -434,14 +435,16 @@ class Denoiser:
 
         """
         image_io = ImageIO(verbose=True)
-        head_mask_shape = self.head_mask.shape
-        placeholder_image = np.zeros_like(self.pet_data)
-        logger.debug(f'PET Affine: \n{self.pet_affine}')
-        cluster_ids = cluster_ids.reshape(head_mask_shape[0], head_mask_shape[1], head_mask_shape[2])
-        placeholder_image[self.head_mask] = cluster_ids
-        segmentation_image = image_io.extract_np_to_nibabel(image_array=cluster_ids,
-                                                            header=self.pet_header,
-                                                            affine=self.pet_affine)
+        head_mask = self.head_mask
+        placeholder_image = np.zeros_like(self.mri_data)
+        logger.debug(f'MRI Affine: \n{self.mri_affine}')
+        flat_placeholder_image = placeholder_image.flatten()
+        flat_head_mask = head_mask.flatten()
+        flat_placeholder_image[flat_head_mask] = cluster_ids
+        cluster_image = flat_placeholder_image.reshape(self.mri_data.shape)
+        segmentation_image = image_io.extract_np_to_nibabel(image_array=cluster_image,
+                                                            header=self.mri_header,
+                                                            affine=self.mri_affine)
 
 
         nib.save(segmentation_image, output_path)
