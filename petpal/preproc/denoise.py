@@ -12,10 +12,11 @@ from typing import Union
 
 # Import other libraries
 import numpy as np
+from skimage.transform import radon
 from sklearn.cluster import k_means
 from sklearn.decomposition import PCA
 from scipy.ndimage import convolve, binary_fill_holes
-from scipy.stats import zscore
+from scipy.stats import zscore, norm
 import nibabel as nib
 
 # Import from petpal
@@ -98,7 +99,7 @@ class Denoiser:
 
         logger.debug(f'Centroids: {centroids}\nCluster_ids: {np.unique(cluster_ids)}')
 
-        self._write_cluster_segmentation_to_file(cluster_ids=cluster_ids, output_path="./cluster_img.nii.gz")
+        self._write_cluster_segmentation_to_file(cluster_ids=cluster_ids, output_path=f"~/Data/cluster_img.nii.gz")
 
         final_num_clusters = np.prod(num_clusters)
 
@@ -521,13 +522,34 @@ class Denoiser:
 
         return non_brain_mask_data.astype(bool)
 
-    def apply_smoothing_in_radon_space(self,
+    def _apply_smoothing_in_radon_space(self,
                                        image_data: np.ndarray,
                                        kernel: np.ndarray,
                                        **kwargs) -> np.ndarray:
         """
         Radon transform image, apply smoothing, and transform back to original domain"""
-        pass
+        theta = np.linspace(0.0, 180.0, 7240)
+        radon_transformed_image = radon(image_data, theta=theta)
+
+    def _generate_2d_gaussian_filter(self) -> np.ndarray:
+        """
+
+        Returns:
+
+        """
+        proj_angle = np.linspace(-150, 150, 301)
+        proj_position = np.linspace(-3, 3, 7)
+        norm_angle = norm.pdf(proj_angle, loc=0, scale=100)
+        norm_angle = norm_angle/np.sum(norm_angle)
+        angle_smoothing = np.tile(norm_angle[:,np.newaxis], (6, 1))
+        norm_position = norm.pdf(proj_position, loc=0, scale=2)
+        norm_position = norm_position/np.sum(norm_position)
+        position_smoothing = np.tile(norm_position[np.newaxis,:], (1, 301))
+
+        kernel = angle_smoothing * position_smoothing
+
+        return kernel
+
 
     def weighted_sum_smoothed_image_iterations(self):
         """
