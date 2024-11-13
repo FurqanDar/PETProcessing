@@ -80,12 +80,12 @@ class Denoiser:
         flattened_pet_data = flatten_pet_spatially(self.pet_data)
         self.non_brain_mask = self._generate_non_brain_mask()
         self.updated_segmentation_data = self._add_nonbrain_features_to_segmentation(non_brain_mask=self.non_brain_mask)
-        head_pet_data = flattened_pet_data[flattened_head_mask, :]
+        flattened_head_pet_data = flattened_pet_data[flattened_head_mask, :]
         flattened_mri_data = self.mri_data.flatten()
         flattened_segmentation_data = self.updated_segmentation_data.flatten()
 
-        feature_data = np.zeros(shape=(head_pet_data.shape[0], 6))
-        feature_data[:, :-2] = self._temporal_pca(spatially_flattened_pet_data=head_pet_data,
+        feature_data = np.zeros(shape=(flattened_head_pet_data.shape[0], 6))
+        feature_data[:, :-2] = self._temporal_pca(spatially_flattened_pet_data=flattened_head_pet_data,
                                                   num_components=4)
         feature_data[:, -2] = flattened_mri_data[flattened_head_mask]
         feature_data[:, -1] = flattened_segmentation_data[flattened_head_mask]
@@ -101,42 +101,41 @@ class Denoiser:
 
         self._write_cluster_segmentation_to_file(cluster_ids=cluster_ids, output_path=f"~/Data/cluster_img.nii.gz")
 
+        denoised_head_data = np.zeros_like(flattened_head_pet_data)
+
         final_num_clusters = np.prod(num_clusters)
+        for cluster in range(final_num_clusters):
+            logger.debug(f'Cluster {cluster}\n-------------------------------------------------------\n\n\n')
+            cluster_data = feature_data[cluster_ids == cluster]
+            centroids_temp = np.roll(centroids, shift=-cluster, axis=0)
+            feature_distances = self._extract_distances_to_cluster_centroids(cluster_data=cluster_data,
+                                                                             all_cluster_centroids=centroids_temp)
+            num_voxels_in_cluster = len(cluster_ids[cluster_ids == cluster])
+            cluster_voxel_indices = np.argwhere(cluster_ids == cluster).T[0]
+            ring_space_side_length = self._calculate_ring_space_dimension(num_voxels_in_cluster=num_voxels_in_cluster)
+            cluster_locations = self._define_cluster_locations(num_clusters=final_num_clusters,
+                                                               ring_space_side_length=ring_space_side_length)
+            ring_space_distances = self._extract_distances_in_ring_space(num_clusters=final_num_clusters,
+                                                                         cluster_locations=cluster_locations,
+                                                                         ring_space_shape=(
+                                                                             ring_space_side_length,
+                                                                             ring_space_side_length))
+            ring_space_map = self._generate_ring_space_map(cluster_voxel_indices=cluster_voxel_indices,
+                                                           feature_distances=feature_distances,
+                                                           ring_space_distances=ring_space_distances)
 
-        # for cluster in range(final_num_clusters):
+            ring_space_image = self._populate_ring_space_using_map(spatially_flattened_pet_data=flattened_head_pet_data,
+                                                                   ring_space_map=ring_space_map,
+                                                                   ring_space_shape=(ring_space_side_length,
+                                                                                     ring_space_side_length))
 
-        cluster = 8
-        logger.debug(f'Cluster {cluster}\n-------------------------------------------------------\n\n\n')
-        cluster_data = feature_data[cluster_ids == cluster]
-        centroids_temp = np.roll(centroids, shift=-cluster, axis=0)
-        feature_distances = self._extract_distances_to_cluster_centroids(cluster_data=cluster_data,
-                                                                         all_cluster_centroids=centroids_temp)
-        logger.debug(f'Feature distances for cluster {cluster}: {feature_distances}')
+            smoothing_kernel = self._generate_2d_gaussian_filter()
+            denoised_ring_space_image = self._apply_smoothing_in_radon_space(image_data=ring_space_image,
+                                                                             kernel=smoothing_kernel,
+                                                                             ring_space_map=None)
 
-        num_voxels_in_cluster = len(cluster_ids[cluster_ids == cluster])
-        cluster_voxel_indices = np.argwhere(cluster_ids == cluster).T[0]
-        ring_space_side_length = self._calculate_ring_space_dimension(num_voxels_in_cluster=num_voxels_in_cluster)
-        cluster_locations = self._define_cluster_locations(num_clusters=final_num_clusters,
-                                                           ring_space_side_length=ring_space_side_length)
-        ring_space_distances = self._extract_distances_in_ring_space(num_clusters=final_num_clusters,
-                                                                     cluster_locations=cluster_locations,
-                                                                     ring_space_shape=(
-                                                                         ring_space_side_length,
-                                                                         ring_space_side_length))
-        ring_space_map = self._generate_ring_space_map(cluster_voxel_indices=cluster_voxel_indices,
-                                                       feature_distances=feature_distances,
-                                                       ring_space_distances=ring_space_distances)
 
-        ring_space_image = self._populate_ring_space_using_map(spatially_flattened_pet_data=head_pet_data,
-                                                               ring_space_map=ring_space_map,
-                                                               ring_space_shape=(ring_space_side_length,
-                                                                                 ring_space_side_length))
-
-        smoothing_kernel = self._generate_2d_gaussian_filter()
-        denoised_ring_space_image = self._apply_smoothing_in_radon_space(image_data=ring_space_image,
-                                                                         kernel=smoothing_kernel)
-
-        return denoised_ring_space_image
+        return denoised_image
 
     def run(self):
         """"""
@@ -224,7 +223,7 @@ class Denoiser:
             int: The side length of the ring space that can accommodate the cluster data.
 
         """
-        ring_space_dimensions = math.ceil(math.sqrt(num_voxels_in_cluster))
+        ring_space_dimensions = math.ceil(math.sqrt(2)*math.sqrt(num_voxels_in_cluster))
 
         return ring_space_dimensions
 
@@ -306,7 +305,7 @@ class Denoiser:
                 that not all pixels are filled; these are set to np.nan.
 
         """
-        x, y = ring_space_distances.shape
+        x, y, _ = ring_space_distances.shape
 
         distance_to_origin_cluster_flat = ring_space_distances[:, :, 0].reshape(
             x * y)
@@ -529,15 +528,19 @@ class Denoiser:
         return non_brain_mask_data.astype(bool)
 
     def _apply_smoothing_in_radon_space(self,
-                                       image_data: np.ndarray,
-                                       kernel: np.ndarray,
-                                       **kwargs) -> np.ndarray:
+                                        image_data: np.ndarray,
+                                        kernel: np.ndarray,
+                                        ring_space_map: np.ndarray) -> np.ndarray:
         """
-        Radon transform image, apply smoothing, and transform back to original domain"""
+        Radon transform image, apply smoothing, and transform back to original domain
+
+        Args:
+            ring_space_map: """
         theta = np.linspace(0.0, 180.0, 7240)
         radon_transformed_image = radon(image_data, theta=theta)
         smoothed_radon_image = convolve(radon_transformed_image, kernel, mode='constant')
         denoised_cluster_data = iradon(smoothed_radon_image, theta=theta, output_size=image_data.shape[0])
+        denoised_cluster_data[ring_space_map==-1] = 0
 
         return denoised_cluster_data
 
@@ -572,7 +575,6 @@ class Denoiser:
         """
         Weight smoothed images (one from each iteration) by cluster 'belongingness' with respect to MRI."""
         pass
-
 
 def flatten_pet_spatially(pet_data: np.ndarray) -> np.ndarray:
     """
