@@ -12,7 +12,7 @@ from typing import Union
 
 # Import other libraries
 import numpy as np
-from skimage.transform import radon
+from skimage.transform import radon, iradon
 from sklearn.cluster import k_means
 from sklearn.decomposition import PCA
 from scipy.ndimage import convolve, binary_fill_holes
@@ -103,34 +103,40 @@ class Denoiser:
 
         final_num_clusters = np.prod(num_clusters)
 
-        for cluster in range(final_num_clusters):
-            logger.debug(f'Cluster {cluster}\n-------------------------------------------------------\n\n\n')
-            cluster_data = feature_data[cluster_ids == cluster]
-            centroids_temp = np.roll(centroids, shift=-cluster, axis=0)
-            feature_distances = self._extract_distances_to_cluster_centroids(cluster_data=cluster_data,
-                                                                             all_cluster_centroids=centroids_temp)
-            logger.debug(f'Feature distances for cluster {cluster}: {feature_distances}')
+        # for cluster in range(final_num_clusters):
 
-            num_voxels_in_cluster = len(cluster_ids[cluster_ids == cluster])
-            cluster_voxel_indices = np.argwhere(cluster_ids == cluster).T[0]
-            ring_space_side_length = self._calculate_ring_space_dimension(num_voxels_in_cluster=num_voxels_in_cluster)
-            cluster_locations = self._define_cluster_locations(num_clusters=final_num_clusters,
-                                                               ring_space_side_length=ring_space_side_length)
-            ring_space_distances = self._extract_distances_in_ring_space(num_clusters=final_num_clusters,
-                                                                         cluster_locations=cluster_locations,
-                                                                         ring_space_shape=(
-                                                                             ring_space_side_length,
-                                                                             ring_space_side_length))
-            ring_space_map = self._generate_ring_space_map(cluster_voxel_indices=cluster_voxel_indices,
-                                                           feature_distances=feature_distances,
-                                                           ring_space_distances=ring_space_distances)
+        cluster = 8
+        logger.debug(f'Cluster {cluster}\n-------------------------------------------------------\n\n\n')
+        cluster_data = feature_data[cluster_ids == cluster]
+        centroids_temp = np.roll(centroids, shift=-cluster, axis=0)
+        feature_distances = self._extract_distances_to_cluster_centroids(cluster_data=cluster_data,
+                                                                         all_cluster_centroids=centroids_temp)
+        logger.debug(f'Feature distances for cluster {cluster}: {feature_distances}')
 
-            ring_space_image = self._populate_ring_space_using_map(spatially_flattened_pet_data=head_pet_data,
-                                                                   ring_space_map=ring_space_map,
-                                                                   ring_space_shape=(ring_space_side_length,
-                                                                                     ring_space_side_length))
+        num_voxels_in_cluster = len(cluster_ids[cluster_ids == cluster])
+        cluster_voxel_indices = np.argwhere(cluster_ids == cluster).T[0]
+        ring_space_side_length = self._calculate_ring_space_dimension(num_voxels_in_cluster=num_voxels_in_cluster)
+        cluster_locations = self._define_cluster_locations(num_clusters=final_num_clusters,
+                                                           ring_space_side_length=ring_space_side_length)
+        ring_space_distances = self._extract_distances_in_ring_space(num_clusters=final_num_clusters,
+                                                                     cluster_locations=cluster_locations,
+                                                                     ring_space_shape=(
+                                                                         ring_space_side_length,
+                                                                         ring_space_side_length))
+        ring_space_map = self._generate_ring_space_map(cluster_voxel_indices=cluster_voxel_indices,
+                                                       feature_distances=feature_distances,
+                                                       ring_space_distances=ring_space_distances)
 
-        return
+        ring_space_image = self._populate_ring_space_using_map(spatially_flattened_pet_data=head_pet_data,
+                                                               ring_space_map=ring_space_map,
+                                                               ring_space_shape=(ring_space_side_length,
+                                                                                 ring_space_side_length))
+
+        smoothing_kernel = self._generate_2d_gaussian_filter()
+        denoised_ring_space_image = self._apply_smoothing_in_radon_space(image_data=ring_space_image,
+                                                                         kernel=smoothing_kernel)
+
+        return denoised_ring_space_image
 
     def run(self):
         """"""
@@ -530,6 +536,10 @@ class Denoiser:
         Radon transform image, apply smoothing, and transform back to original domain"""
         theta = np.linspace(0.0, 180.0, 7240)
         radon_transformed_image = radon(image_data, theta=theta)
+        smoothed_radon_image = convolve(radon_transformed_image, kernel, mode='constant')
+        denoised_cluster_data = iradon(smoothed_radon_image, theta=theta, output_size=image_data.shape[0])
+
+        return denoised_cluster_data
 
     def _generate_2d_gaussian_filter(self) -> np.ndarray:
         """
