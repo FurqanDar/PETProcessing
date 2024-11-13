@@ -101,7 +101,7 @@ class Denoiser:
 
         self._write_cluster_segmentation_to_file(cluster_ids=cluster_ids, output_path=f"~/Data/cluster_img.nii.gz")
 
-        denoised_flattened_head_data = np.zeros_like(flattened_head_pet_data)
+        denoised_flattened_head_data = np.zeros(shape=flattened_head_pet_data.shape[0])
 
         final_num_clusters = np.prod(num_clusters)
         for cluster in range(final_num_clusters):
@@ -131,8 +131,7 @@ class Denoiser:
 
             smoothing_kernel = self._generate_2d_gaussian_filter()
             denoised_ring_space_image = self._apply_smoothing_in_radon_space(image_data=ring_space_image,
-                                                                             kernel=smoothing_kernel,
-                                                                             ring_space_map=ring_space_map)
+                                                                             kernel=smoothing_kernel)
 
             flattened_denoised_ring_space_data = denoised_ring_space_image.flatten()
             ring_space_map_only_cluster_data = ring_space_map[ring_space_map != -1]
@@ -536,18 +535,15 @@ class Denoiser:
 
     def _apply_smoothing_in_radon_space(self,
                                         image_data: np.ndarray,
-                                        kernel: np.ndarray,
-                                        ring_space_map: np.ndarray) -> np.ndarray:
+                                        kernel: np.ndarray) -> np.ndarray:
         """
         Radon transform image, apply smoothing, and transform back to original domain
 
-        Args:
             ring_space_map: """
         theta = np.linspace(0.0, 180.0, 7240)
         radon_transformed_image = radon(image_data, theta=theta)
         smoothed_radon_image = convolve(radon_transformed_image, kernel, mode='constant')
-        denoised_cluster_data = iradon(smoothed_radon_image, theta=theta, output_size=(image_data.shape[0],image_data.shape[1]))
-        denoised_cluster_data[ring_space_map == -1] = 0
+        denoised_cluster_data = iradon(smoothed_radon_image, theta=theta, output_size=image_data.shape[0])
 
         return denoised_cluster_data
 
