@@ -546,8 +546,8 @@ class Denoiser:
         theta = np.linspace(0.0, 180.0, 7240)
         radon_transformed_image = radon(image_data, theta=theta)
         smoothed_radon_image = convolve(radon_transformed_image, kernel, mode='constant')
-        denoised_cluster_data = iradon(smoothed_radon_image, theta=theta, output_size=image_data.shape[0])
-        denoised_cluster_data[ring_space_map==-1] = 0
+        denoised_cluster_data = iradon(smoothed_radon_image, theta=theta, output_size=(image_data.shape[0],image_data.shape[1]))
+        denoised_cluster_data[ring_space_map == -1] = 0
 
         return denoised_cluster_data
 
