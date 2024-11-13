@@ -102,6 +102,7 @@ class Denoiser:
         self._write_cluster_segmentation_to_file(cluster_ids=cluster_ids, output_path=f"~/Data/cluster_img.nii.gz")
 
         denoised_flattened_head_data = np.zeros(shape=flattened_head_pet_data.shape[0])
+        smoothing_kernel = self._generate_2d_gaussian_filter()
 
         final_num_clusters = np.prod(num_clusters)
         for cluster in range(final_num_clusters):
@@ -128,8 +129,6 @@ class Denoiser:
                                                                    ring_space_map=ring_space_map,
                                                                    ring_space_shape=(ring_space_side_length,
                                                                                      ring_space_side_length))
-
-            smoothing_kernel = self._generate_2d_gaussian_filter()
             denoised_ring_space_image = self._apply_smoothing_in_radon_space(image_data=ring_space_image,
                                                                              kernel=smoothing_kernel)
 
@@ -257,18 +256,13 @@ class Denoiser:
                                          cluster_locations: np.ndarray,
                                          ring_space_shape: (int, int)) -> np.ndarray:
         """Calculate distances from every cluster's assigned location (not centroid) for each pixel in the ring space"""
-        pixel_cluster_distances = np.zeros(shape=(ring_space_shape[0], ring_space_shape[1], num_clusters))
+        width, height = ring_space_shape
+        pixel_cluster_distances = np.zeros(shape=(width, height, num_clusters))
+        x_coords, y_coords = np.meshgrid(np.arange(width), np.arange(height))
+        grid_coords = np.stack((x_coords, y_coords), axis=-1)
+        for i, loc in enumerate(cluster_locations):
+            pixel_cluster_distances[..., i] = np.linalg.norm(grid_coords - loc, axis=-1)
 
-        # TODO: Find a more pythonic (and probably faster) way to do this; ask gippity
-        for x in range(ring_space_shape[0]):
-            for y in range(ring_space_shape[1]):
-                pixel_cluster_distances[x][y] = np.asarray(
-                    [np.linalg.norm(np.array([x, y]) - loc) for loc in cluster_locations])
-
-        logger.debug(f'Finished extracting ring space distances for num_clusters {num_clusters} and ring_space_shape '
-                     f'{ring_space_shape}')
-
-        logger.debug(f'Ring Space Distances: {pixel_cluster_distances}')
         return pixel_cluster_distances
 
     @staticmethod
