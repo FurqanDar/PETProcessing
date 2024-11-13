@@ -101,7 +101,7 @@ class Denoiser:
 
         self._write_cluster_segmentation_to_file(cluster_ids=cluster_ids, output_path=f"~/Data/cluster_img.nii.gz")
 
-        denoised_head_data = np.zeros_like(flattened_head_pet_data)
+        denoised_flattened_head_data = np.zeros_like(flattened_head_pet_data)
 
         final_num_clusters = np.prod(num_clusters)
         for cluster in range(final_num_clusters):
@@ -132,10 +132,17 @@ class Denoiser:
             smoothing_kernel = self._generate_2d_gaussian_filter()
             denoised_ring_space_image = self._apply_smoothing_in_radon_space(image_data=ring_space_image,
                                                                              kernel=smoothing_kernel,
-                                                                             ring_space_map=None)
+                                                                             ring_space_map=ring_space_map)
 
+            flattened_denoised_ring_space_data = denoised_ring_space_image.flatten()
+            ring_space_map_only_cluster_data = ring_space_map[ring_space_map != -1]
+            denoised_flattened_head_data[ring_space_map_only_cluster_data] = flattened_denoised_ring_space_data[ring_space_map != -1]
 
-        return denoised_image
+        denoised_flattened_pet_data = flattened_pet_data[:, 16] # TODO: Don't hardcode frame 16
+        denoised_flattened_pet_data[flattened_head_mask] = denoised_flattened_head_data
+        denoised_pet_data = denoised_flattened_pet_data.reshape(self.pet_data.shape[0], self.pet_data.shape[1], self.pet_data.shape[2])
+
+        return denoised_pet_data
 
     def run(self):
         """"""
@@ -544,6 +551,13 @@ class Denoiser:
 
         return denoised_cluster_data
 
+    def _transform_back_to_original_space(self) -> np.ndarray:
+        """
+
+        Returns:
+
+        """
+
     def _generate_2d_gaussian_filter(self) -> np.ndarray:
         """
 
@@ -569,7 +583,6 @@ class Denoiser:
         logger.debug(f"kernel dims: {kernel.shape}")
 
         return kernel
-
 
     def weighted_sum_smoothed_image_iterations(self):
         """
