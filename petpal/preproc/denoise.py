@@ -99,7 +99,7 @@ class Denoiser:
 
         logger.debug(f'Centroids: {centroids}\nCluster_ids: {np.unique(cluster_ids)}')
 
-        self._write_cluster_segmentation_to_file(cluster_ids=cluster_ids, output_path=f"~/Data/cluster_img.nii.gz")
+        self._write_cluster_segmentation_to_file(cluster_ids=cluster_ids, output_path=f"/export/scratch1/oestreichk/Data/cluster_img.nii.gz")
 
         denoised_flattened_head_data = np.zeros(shape=flattened_head_pet_data.shape[0])
         smoothing_kernel = self._generate_2d_gaussian_filter()
