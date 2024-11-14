@@ -102,7 +102,7 @@ class Denoiser:
         denoised_flattened_head_data = np.zeros(shape=flattened_head_pet_data.shape[0])
         smoothing_kernel = self._generate_2d_gaussian_filter()
 
-        final_num_clusters = np.prod(num_clusters)
+        final_num_clusters = np.prod(num_clusters).astype(int)
         for cluster in range(final_num_clusters):
             logger.debug(f'Cluster {cluster}\n-------------------------------------------------------\n\n\n')
             cluster_data = feature_data[cluster_ids == cluster]
@@ -112,6 +112,7 @@ class Denoiser:
             num_voxels_in_cluster = len(cluster_ids[cluster_ids == cluster])
             cluster_voxel_indices = np.argwhere(cluster_ids == cluster).T[0]
             ring_space_side_length = self._calculate_ring_space_dimension(num_voxels_in_cluster=num_voxels_in_cluster)
+            logger.debug(f'Ring Space Side Length: {ring_space_side_length}')
             cluster_locations = self._define_cluster_locations(num_clusters=final_num_clusters,
                                                                ring_space_side_length=ring_space_side_length)
             ring_space_distances = self._extract_distances_in_ring_space(num_clusters=final_num_clusters,
