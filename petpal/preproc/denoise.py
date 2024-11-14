@@ -97,8 +97,6 @@ class Denoiser:
         centroids, cluster_ids = self.apply_3_tier_k_means_clustering(flattened_feature_data=feature_data,
                                                                       num_clusters=num_clusters)
 
-        logger.debug(f'Centroids: {centroids}\nCluster_ids: {np.unique(cluster_ids)}')
-
         self._write_cluster_segmentation_to_file(cluster_ids=cluster_ids, output_path=f"/export/scratch1/oestreichk/Data/cluster_img.nii.gz")
 
         denoised_flattened_head_data = np.zeros(shape=flattened_head_pet_data.shape[0])
@@ -280,8 +278,6 @@ class Denoiser:
             y_location = math.floor(center + center * math.sin(i * cluster_angle_increment))
             cluster_locations[i] = [x_location, y_location]
 
-        logger.debug(f'Cluster Locations in Ring Space: {cluster_locations}')
-
         return cluster_locations
 
     @staticmethod
@@ -315,7 +311,7 @@ class Denoiser:
         image_to_ring_map = np.full_like(distance_to_origin_cluster_flat,
                                          fill_value=-1, dtype=np.int64)
         chosen_indices = set()
-
+        start = time.time()
         for i in range(len(cluster_voxel_indices)):
             pixel_flat_index = pixels_emanating_from_center[i]
             pixel_coordinates = np.unravel_index(indices=pixel_flat_index,
@@ -323,19 +319,17 @@ class Denoiser:
             pixel_ring_space_distances = ring_space_distances[pixel_coordinates[0], pixel_coordinates[1], :]
             normalized_ring_space_distances = (pixel_ring_space_distances / np.linalg.norm(pixel_ring_space_distances))[
                                               :, np.newaxis]
-
             mask = np.ones(normalized_feature_distances.shape[0], dtype=bool)
             mask[list(chosen_indices)] = False
-
-            candidate_values = np.matmul(normalized_feature_distances[mask], normalized_ring_space_distances)
-            best_candidate_index_within_mask = np.argmax(candidate_values)
-
+            candidate_voxels_similarities = np.matmul(normalized_feature_distances[mask], normalized_ring_space_distances)
+            best_candidate_index_within_mask = np.argmax(candidate_voxels_similarities)
             remaining_indices = np.where(mask)[0]
             best_candidate_voxel_index = remaining_indices[best_candidate_index_within_mask]
-
             chosen_indices.add(best_candidate_voxel_index)
-
             image_to_ring_map[pixel_flat_index] = cluster_voxel_indices[best_candidate_voxel_index]
+
+        end = time.time()
+        logger.debug(f'Total Time to Generate Ring Map: {end - start} seconds')
 
         return image_to_ring_map
 
@@ -411,25 +405,20 @@ class Denoiser:
 
         cluster_ids_2 = np.zeros(shape=cluster_ids.shape)
         for cluster in range(num_clusters[0]):
-            logger.debug(f'Top-Level Cluster ID: {cluster}')
             cluster_data = flattened_feature_data[cluster_ids == cluster, :]
-            logger.debug(f'{cluster_data}\n{cluster_data.shape}')
             _, cluster_ids_temp, _ = k_means(X=cluster_data,
                                              n_clusters=num_clusters[1],
                                              **kwargs)
-            logger.debug(f'cluster_ids_temp\n{cluster_ids_temp}\n{cluster_ids_temp.shape}')
             cluster_ids_2[cluster_ids == cluster] = cluster_ids[cluster_ids == cluster] * num_clusters[
                 1] + cluster_ids_temp
 
         cluster_ids_3 = np.zeros(shape=cluster_ids.shape)
         for cluster in range(num_clusters[0] * num_clusters[1]):
-            logger.debug(f'Mid-Level Cluster ID: {cluster}')
             cluster_data = flattened_feature_data[cluster_ids_2 == cluster, :]
             centroids_temp, cluster_ids_temp, _ = k_means(X=cluster_data,
                                                           n_clusters=num_clusters[2],
                                                           **kwargs)
             cluster_ids_3[cluster_ids_2 == cluster] = cluster_ids_temp + num_clusters[2] * cluster
-            logger.debug(f'Centroids for cluster {cluster}\n{centroids_temp}\n{centroids_temp.shape}')
             for sub_cluster in range(num_clusters[2]):
                 centroids[cluster * num_clusters[2] + sub_cluster, :] = centroids_temp[sub_cluster]
 
@@ -438,7 +427,7 @@ class Denoiser:
         return centroids, cluster_ids
 
     @staticmethod
-    def _generate_2d_gaussian_filter(self) -> np.ndarray:
+    def _generate_2d_gaussian_filter() -> np.ndarray:
         """
 
         Returns:
@@ -447,26 +436,18 @@ class Denoiser:
         proj_angle = np.linspace(-150, 150, 301)
         proj_position = np.linspace(-3, 3, 7)
         norm_angle = norm.pdf(proj_angle, loc=0, scale=100)
-        logger.debug(f"norm_angle: {norm_angle}")
         norm_angle = norm_angle / np.sum(norm_angle)
         angle_smoothing = np.tile(norm_angle[np.newaxis, :], (7, 1))
-
-        logger.debug(f"angle_smoothing shape: {angle_smoothing.shape}")
         norm_position = norm.pdf(proj_position, loc=0, scale=2)
-        logger.debug(f"norm_position: {norm_position}")
         norm_position = norm_position / np.sum(norm_position)
         position_smoothing = np.tile(norm_position[:, np.newaxis], (1, 301))
-        logger.debug(f"position_smoothing shape: {position_smoothing.shape}")
 
         kernel = angle_smoothing * position_smoothing
-
-        logger.debug(f"kernel dims: {kernel.shape}")
 
         return kernel
 
     @staticmethod
-    def _apply_smoothing_in_radon_space(self,
-                                        image_data: np.ndarray,
+    def _apply_smoothing_in_radon_space(image_data: np.ndarray,
                                         kernel: np.ndarray) -> np.ndarray:
         """
         Radon transform image, apply smoothing, and transform back to original domain
@@ -492,7 +473,6 @@ class Denoiser:
         image_io = ImageIO(verbose=True)
         head_mask = self.head_mask
         placeholder_image = np.zeros_like(self.mri_data)
-        logger.debug(f'MRI Affine: \n{self.mri_affine}')
         flat_placeholder_image = placeholder_image.flatten()
         flat_head_mask = head_mask.flatten()
         flat_placeholder_image[flat_head_mask] = cluster_ids
@@ -560,13 +540,6 @@ class Denoiser:
         non_brain_mask_data = head_mask_data - brain_mask_data
 
         return non_brain_mask_data.astype(bool)
-
-    def _transform_back_to_original_space(self) -> np.ndarray:
-        """
-
-        Returns:
-
-        """
 
     def weighted_sum_smoothed_image_iterations(self):
         """
