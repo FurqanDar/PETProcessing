@@ -60,9 +60,9 @@ class Denoiser:
                 path_to_mri=path_to_mri,
                 path_to_freesurfer_segmentation=path_to_segmentation)
         except OSError as e:
-            raise OSError(e)
+            raise e
         except Exception as e:
-            raise Exception(e)
+            raise e
 
     # Should run the entire process; Probably just call run()
     def __call__(self):
@@ -99,7 +99,7 @@ class Denoiser:
 
         logger.debug(f'Centroids: {centroids}\nCluster_ids: {np.unique(cluster_ids)}')
 
-        self._write_cluster_segmentation_to_file(cluster_ids=cluster_ids, output_path=f"~/Data/cluster_img.nii.gz")
+        self._write_cluster_segmentation_to_file(cluster_ids=cluster_ids, output_path=f"/export/scratch1/oestreichk/Data/cluster_img.nii.gz")
 
         denoised_flattened_head_data = np.zeros(shape=flattened_head_pet_data.shape[0])
         smoothing_kernel = self._generate_2d_gaussian_filter()
@@ -537,33 +537,15 @@ class Denoiser:
         flat_mri_data = self.mri_data.flatten()
         spatially_flat_pet = flatten_pet_spatially(self.pet_data)
 
-        logger.debug(
-            f'Original: \nmri_data shape {self.mri_data.shape}\nnon_brain_mask shape {self.non_brain_mask.shape}'
-            f'\npet_data shape {self.pet_data.shape}\n')
-
-        logger.debug(f'Flat: \nmri_data shape | type {flat_mri_data.shape} | {flat_mri_data.dtype}'
-                     f'\nnon_brain_mask shape | type {spatially_flat_non_brain_mask.shape} | {spatially_flat_non_brain_mask.dtype}'
-                     f'\npet_data shape | type {spatially_flat_pet.shape} | {spatially_flat_pet.dtype}\n')
-
         non_brain_pet_data = spatially_flat_pet[spatially_flat_non_brain_mask, :]
 
-        logger.debug(f'PCA input shape: {non_brain_pet_data.shape}\n')
-
         pca_data = self._temporal_pca(non_brain_pet_data, num_components=2)
-
-        logger.debug(f'Flat MRI Data for non-brain region shape {flat_mri_data[spatially_flat_non_brain_mask].shape}\n')
-        logger.debug(f'Flat MRI Data for non-brain region {flat_mri_data[spatially_flat_non_brain_mask].ptp()}\n')
-        logger.debug(f'PCA results shape: {pca_data.shape}\n')
 
         mri_plus_pca_data = np.zeros(shape=(pca_data.shape[0], pca_data.shape[1] + 1))
         mri_plus_pca_data[:, :-1] = pca_data
         mri_plus_pca_data[:, -1] = flat_mri_data[spatially_flat_non_brain_mask]
         mri_plus_pca_data = zscore(mri_plus_pca_data, axis=0)  # TODO: Verify that this is the right axis with data
 
-        logger.debug(f'Means of z-scored nonbrain features (should be ~0): {mri_plus_pca_data.mean(axis=0)}\n')
-        logger.debug(f'SDs of z-scored nonbrain features (should be ~1): {mri_plus_pca_data.std(axis=0)}\n')
-
-        logger.debug(f'Non-brain features: \n{mri_plus_pca_data}\n')
         return mri_plus_pca_data
 
     def _generate_non_brain_mask(self) -> np.ndarray:
