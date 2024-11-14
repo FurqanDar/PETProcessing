@@ -314,6 +314,7 @@ class Denoiser:
         normalized_feature_distances = feature_distances / np.linalg.norm(feature_distances, axis=1)[:, np.newaxis]
         image_to_ring_map = np.full_like(distance_to_origin_cluster_flat,
                                          fill_value=-1, dtype=np.int64)
+        chosen_indices = set()
 
         for i in range(len(cluster_voxel_indices)):
             pixel_flat_index = pixels_emanating_from_center[i]
@@ -322,9 +323,18 @@ class Denoiser:
             pixel_ring_space_distances = ring_space_distances[pixel_coordinates[0], pixel_coordinates[1], :]
             normalized_ring_space_distances = (pixel_ring_space_distances / np.linalg.norm(pixel_ring_space_distances))[
                                               :, np.newaxis]
-            best_candidate_voxel_index = np.argmax(
-                np.matmul(normalized_feature_distances, normalized_ring_space_distances))
-            normalized_feature_distances[best_candidate_voxel_index][:] = -10
+
+            mask = np.ones(normalized_feature_distances.shape[0], dtype=bool)
+            mask[list(chosen_indices)] = False
+
+            candidate_values = np.matmul(normalized_feature_distances[mask], normalized_ring_space_distances)
+            best_candidate_index_within_mask = np.argmax(candidate_values)
+
+            remaining_indices = np.where(mask)[0]
+            best_candidate_voxel_index = remaining_indices[best_candidate_index_within_mask]
+
+            chosen_indices.add(best_candidate_voxel_index)
+
             image_to_ring_map[pixel_flat_index] = cluster_voxel_indices[best_candidate_voxel_index]
 
         return image_to_ring_map
@@ -427,6 +437,48 @@ class Denoiser:
 
         return centroids, cluster_ids
 
+    @staticmethod
+    def _generate_2d_gaussian_filter(self) -> np.ndarray:
+        """
+
+        Returns:
+
+        """
+        proj_angle = np.linspace(-150, 150, 301)
+        proj_position = np.linspace(-3, 3, 7)
+        norm_angle = norm.pdf(proj_angle, loc=0, scale=100)
+        logger.debug(f"norm_angle: {norm_angle}")
+        norm_angle = norm_angle / np.sum(norm_angle)
+        angle_smoothing = np.tile(norm_angle[np.newaxis, :], (7, 1))
+
+        logger.debug(f"angle_smoothing shape: {angle_smoothing.shape}")
+        norm_position = norm.pdf(proj_position, loc=0, scale=2)
+        logger.debug(f"norm_position: {norm_position}")
+        norm_position = norm_position / np.sum(norm_position)
+        position_smoothing = np.tile(norm_position[:, np.newaxis], (1, 301))
+        logger.debug(f"position_smoothing shape: {position_smoothing.shape}")
+
+        kernel = angle_smoothing * position_smoothing
+
+        logger.debug(f"kernel dims: {kernel.shape}")
+
+        return kernel
+
+    @staticmethod
+    def _apply_smoothing_in_radon_space(self,
+                                        image_data: np.ndarray,
+                                        kernel: np.ndarray) -> np.ndarray:
+        """
+        Radon transform image, apply smoothing, and transform back to original domain
+
+            ring_space_map: """
+        theta = np.linspace(0.0, 180.0, 7240)
+        radon_transformed_image = radon(image_data, theta=theta)
+        smoothed_radon_image = convolve(radon_transformed_image, kernel, mode='constant')
+        denoised_cluster_data = iradon(smoothed_radon_image, theta=theta, output_size=image_data.shape[0])
+
+        return denoised_cluster_data
+
     def _write_cluster_segmentation_to_file(self,
                                             cluster_ids: np.ndarray,
                                             output_path) -> None:
@@ -527,52 +579,12 @@ class Denoiser:
 
         return non_brain_mask_data.astype(bool)
 
-    def _apply_smoothing_in_radon_space(self,
-                                        image_data: np.ndarray,
-                                        kernel: np.ndarray) -> np.ndarray:
-        """
-        Radon transform image, apply smoothing, and transform back to original domain
-
-            ring_space_map: """
-        theta = np.linspace(0.0, 180.0, 7240)
-        radon_transformed_image = radon(image_data, theta=theta)
-        smoothed_radon_image = convolve(radon_transformed_image, kernel, mode='constant')
-        denoised_cluster_data = iradon(smoothed_radon_image, theta=theta, output_size=image_data.shape[0])
-
-        return denoised_cluster_data
-
     def _transform_back_to_original_space(self) -> np.ndarray:
         """
 
         Returns:
 
         """
-
-    def _generate_2d_gaussian_filter(self) -> np.ndarray:
-        """
-
-        Returns:
-
-        """
-        proj_angle = np.linspace(-150, 150, 301)
-        proj_position = np.linspace(-3, 3, 7)
-        norm_angle = norm.pdf(proj_angle, loc=0, scale=100)
-        logger.debug(f"norm_angle: {norm_angle}")
-        norm_angle = norm_angle/np.sum(norm_angle)
-        angle_smoothing = np.tile(norm_angle[np.newaxis,:], (7, 1))
-
-        logger.debug(f"angle_smoothing shape: {angle_smoothing.shape}")
-        norm_position = norm.pdf(proj_position, loc=0, scale=2)
-        logger.debug(f"norm_position: {norm_position}")
-        norm_position = norm_position/np.sum(norm_position)
-        position_smoothing = np.tile(norm_position[:,np.newaxis], (1, 301))
-        logger.debug(f"position_smoothing shape: {position_smoothing.shape}")
-
-        kernel = angle_smoothing * position_smoothing
-
-        logger.debug(f"kernel dims: {kernel.shape}")
-
-        return kernel
 
     def weighted_sum_smoothed_image_iterations(self):
         """
