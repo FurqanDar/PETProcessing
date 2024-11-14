@@ -26,7 +26,6 @@ from ..preproc.image_operations_4d import binarize_image_with_threshold
 # Initialize logger
 logger = logging.getLogger(__name__)
 
-
 class Denoiser:
     """Wrapper class for handling inputs, outputs, and logging for denoising, as well as the main pipeline functions"""
 
@@ -47,7 +46,11 @@ class Denoiser:
                  verbosity: int = 0):
 
         if verbosity in [-2, -1, 0, 1, 2]:
-            logger.setLevel(level=30 - (10 * verbosity))
+            log_level = 30 - (10 * verbosity)
+            logger.setLevel(level=log_level)
+            file_handler = logging.FileHandler('./denoise.log')
+            file_handler.setLevel(log_level)
+            logger.addHandler(file_handler)
         else:
             raise ValueError("Verbosity argument must be an int from -2 to 2. The default (0) corresponds to the "
                              "default logging level (warning). A higher value increases the verbosity and a lower "
@@ -75,6 +78,7 @@ class Denoiser:
         """Generate a denoised image using one iteration of the method, to be weighted with others downstream."""
 
         # TODO: Move these somewhere else (i.e. run()) so they're only called once.
+
         self.head_mask = generate_head_mask(self.pet_data)
         flattened_head_mask = self.head_mask.flatten()
         flattened_pet_data = flatten_pet_spatially(self.pet_data)
@@ -97,13 +101,12 @@ class Denoiser:
         centroids, cluster_ids = self.apply_3_tier_k_means_clustering(flattened_feature_data=feature_data,
                                                                       num_clusters=num_clusters)
 
-        self._write_cluster_segmentation_to_file(cluster_ids=cluster_ids, output_path=f"/export/scratch1/oestreichk/Data/cluster_img.nii.gz")
-
         denoised_flattened_head_data = np.zeros(shape=flattened_head_pet_data.shape[0])
         smoothing_kernel = self._generate_2d_gaussian_filter()
 
         final_num_clusters = np.prod(num_clusters).astype(int)
         for cluster in range(final_num_clusters):
+            start = time.time()
             logger.debug(f'Cluster {cluster}\n-------------------------------------------------------\n\n\n')
             cluster_data = feature_data[cluster_ids == cluster]
             centroids_temp = np.roll(centroids, shift=-cluster, axis=0)
@@ -134,6 +137,8 @@ class Denoiser:
             flattened_denoised_ring_space_data = denoised_ring_space_image.flatten()
             ring_space_map_only_cluster_data = ring_space_map[ring_space_map != -1]
             denoised_flattened_head_data[ring_space_map_only_cluster_data] = flattened_denoised_ring_space_data[ring_space_map != -1]
+            end = time.time()
+            logger.debug(f'Time to process cluster {cluster}:\n{end - start} seconds')
 
         denoised_flattened_pet_data = flattened_pet_data[:, 16] # TODO: Don't hardcode frame 16
         denoised_flattened_pet_data[flattened_head_mask] = denoised_flattened_head_data
@@ -312,7 +317,7 @@ class Denoiser:
         image_to_ring_map = np.full_like(distance_to_origin_cluster_flat,
                                          fill_value=-1, dtype=np.int64)
         chosen_indices = set()
-        start = time.time()
+        mask = np.ones(normalized_feature_distances.shape[0], dtype=bool)
         for i in range(len(cluster_voxel_indices)):
             pixel_flat_index = pixels_emanating_from_center[i]
             pixel_coordinates = np.unravel_index(indices=pixel_flat_index,
@@ -320,7 +325,6 @@ class Denoiser:
             pixel_ring_space_distances = ring_space_distances[pixel_coordinates[0], pixel_coordinates[1], :]
             normalized_ring_space_distances = (pixel_ring_space_distances / np.linalg.norm(pixel_ring_space_distances))[
                                               :, np.newaxis]
-            mask = np.ones(normalized_feature_distances.shape[0], dtype=bool)
             mask[list(chosen_indices)] = False
             candidate_voxels_similarities = np.matmul(normalized_feature_distances[mask], normalized_ring_space_distances)
             best_candidate_index_within_mask = np.argmax(candidate_voxels_similarities)
@@ -328,9 +332,6 @@ class Denoiser:
             best_candidate_voxel_index = remaining_indices[best_candidate_index_within_mask]
             chosen_indices.add(best_candidate_voxel_index)
             image_to_ring_map[pixel_flat_index] = cluster_voxel_indices[best_candidate_voxel_index]
-
-        end = time.time()
-        logger.debug(f'Total Time to Generate Ring Map: {end - start} seconds')
 
         return image_to_ring_map
 
