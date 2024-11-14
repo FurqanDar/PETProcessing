@@ -54,6 +54,21 @@ def convert_ctab_to_dseg(ctab_path: str,
     label_map.to_csv(dseg_path,sep='\t')
     return label_map
 
+def _gen_meta_data_filepath_for_nifty(nifty_path:str):
+    """
+    Generates the corresponding metadata file path for a given nifti file path.
+
+    This function takes a nifti file path (with `.nii` or `.nii.gz` extension)
+    and replaces the extension with `.json` to derive the expected metadata file path.
+
+    Args:
+        nifty_path (str): Path to the nifti file (with `.nii` or `.nii.gz` extension).
+
+    Returns:
+        str: The generated metadata file path with a `.json` extension.
+    """
+    meta_data_path = re.sub(r'\.nii\.gz$|\.nii$', '.json', nifty_path)
+    return meta_data_path
 
 def load_metadata_for_nifty_with_same_filename(image_path) -> dict:
     """
@@ -72,9 +87,9 @@ def load_metadata_for_nifty_with_same_filename(image_path) -> dict:
         Additionally, occurs if the metadata .json file cannot be found.
     """
     if not os.path.exists(image_path):
-        raise FileNotFoundError(f"Image file {image_path} not found")
+        raise FileNotFoundError(f"Image file {image_path} not found.")
 
-    meta_path = re.sub(r'\.nii\.gz$|\.nii$', '.json', image_path)
+    meta_path = _gen_meta_data_filepath_for_nifty(image_path)
 
     if not os.path.exists(meta_path):
         raise FileNotFoundError(f"Metadata file {meta_path} not found. Does it have a different path?")
@@ -122,11 +137,56 @@ def safe_copy_meta(input_image_path: str,
             generating a new image.
         out_image_path (str): Path to the output file written by the function.
     """
-    copy_meta_path = re.sub('.nii.gz|.nii', '.json', out_image_path)
+    copy_meta_path = _gen_meta_data_filepath_for_nifty(out_image_path)
     meta_data_dict = load_metadata_for_nifty_with_same_filename(input_image_path)
     write_dict_to_json(meta_data_dict=meta_data_dict, out_path=copy_meta_path)
 
 
+def get_half_life_from_meta(meta_data_file_path: str):
+    """
+    Extracts the radionuclide half-life (usually in seconds) from a nifti metadata file.
+
+    Args:
+        meta_data_file_path (str): Path to the nifti metadata file.
+
+    Returns:
+        float: The radionuclide half-life extracted from the metadata file.
+
+    Raises:
+        FileNotFoundError: If the metadata file does not exist at the provided path.
+        KeyError: If the 'RadionuclideHalfLife' key is not found in the metadata file.
+    """
+    if not os.path.exists(meta_data_file_path):
+        raise FileNotFoundError(f"Metadata file {meta_data_file_path} not found")
+    with open(meta_data_file_path, 'r') as m_file:
+        meta_data = json.load(m_file)
+    try:
+        half_life = meta_data['RadionuclideHalfLife']
+        return half_life
+    except KeyError:
+        raise KeyError("RadionuclideHalfLife not found in meta-data file.")
+    
+def get_half_life_from_nifty(image_path:str):
+    """
+    Retrieves the radionuclide half-life from a nifti image file.
+
+    This function first checks if the provided nifti image file exists. It then derives
+    the corresponding metadata file path using :func:`_gen_meta_data_filepath_for_nifty`
+    and finally retrieves the half-life from the metadata using :func:`get_half_life_from_meta`.
+
+    Args:
+        image_path (str): Path to the nifti image file.
+
+    Returns:
+        float: The radionuclide half-life extracted from the metadata file.
+
+    Raises:
+        FileNotFoundError: If the nifti image file does not exist at the provided path.
+    """
+    if not os.path.exists(image_path):
+        raise FileNotFoundError(f"Image file {image_path} not found")
+    meta_path = _gen_meta_data_filepath_for_nifty(image_path)
+    return get_half_life_from_meta(meta_path)
 
 class ImageIO:
     """

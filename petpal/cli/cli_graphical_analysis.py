@@ -62,9 +62,11 @@ def main():
     graphical_analysis = pet_ga.GraphicalAnalysis(input_tac_path=args.input_tac_path,
                                                   roi_tac_path=args.roi_tac_path,
                                                   output_directory=args.output_directory,
-                                                  output_filename_prefix=args.output_filename_prefix)
+                                                  output_filename_prefix=args.output_filename_prefix,
+                                                  method=args.method_name,
+                                                  fit_thresh_in_mins=args.threshold_in_mins,)
     
-    graphical_analysis.run_analysis(method_name=args.method_name, t_thresh_in_mins=args.threshold_in_mins)
+    graphical_analysis.run_analysis()
     graphical_analysis.save_analysis()
     
     if args.print:

@@ -544,12 +544,18 @@ class GraphicalAnalysis:
         output_directory (str): Directory where the output should be saved.
         output_filename_prefix (str): Output filename prefix for saving the analysis.
         analysis_props (dict): Property dictionary used to store results of the analysis.
+        method (str): The name of the graphical analysis method to be utilised.
+        fit_thresh_in_mins (float): The fitting threshold time in minutes for the analysis method.
+        self.analysis_func (Callable): The function used for performing the fitting.
+        
     """
     def __init__(self,
                  input_tac_path: str,
                  roi_tac_path: str,
                  output_directory: str,
-                 output_filename_prefix: str) -> None:
+                 output_filename_prefix: str,
+                 method: str,
+                 fit_thresh_in_mins: float) -> None:
         """
         Initializes GraphicalAnalysis with provided paths and output details.
 
@@ -558,6 +564,8 @@ class GraphicalAnalysis:
             roi_tac_path (str): The path to the file containing Region of Interest (ROI) TAC data.
             output_directory (str): The directory where the output of the analysis should be saved.
             output_filename_prefix (str): The prefix for the name of output file(s).
+            method (str): The name of the graphical analysis method to be utilised.
+            fit_thresh_in_mins (float): The fitting threshold time in minutes for the analysis method.
     
         Returns:
             None
@@ -567,6 +575,9 @@ class GraphicalAnalysis:
         self.output_directory = os.path.abspath(output_directory)
         self.output_filename_prefix = output_filename_prefix
         self.analysis_props = self.init_analysis_props()
+        self.method = method
+        self.fit_thresh_in_mins = fit_thresh_in_mins
+        self.analysis_func = get_graphical_analysis_method_with_rsquared(method_name=self.method)
         
     def init_analysis_props(self) -> dict:
         """
@@ -594,16 +605,12 @@ class GraphicalAnalysis:
                  'RSquared': None}
         return props
     
-    def run_analysis(self, method_name: str, t_thresh_in_mins: float):
+    def run_analysis(self):
         """
-        Runs the graphical analysis on the data using a specific method.
+        Runs the graphical analysis on the data using the specified method.
 
         This method is the main entry point to carry out the analysis. It executes the steps in order – first calculating
         the fit, then calculating the properties of the fit.
-
-        Args:
-            method_name (str): The name of the graphical analysis method to be utilised.
-            t_thresh_in_mins (float): The threshold time in minutes for the analysis method.
 
         Returns:
             None
@@ -611,10 +618,10 @@ class GraphicalAnalysis:
         Side Effects:
             Computes and updates the analysis-related properties in the object based on the provided method and threshold.
         """
-        self.calculate_fit(method_name=method_name, t_thresh_in_mins=t_thresh_in_mins)
-        self.calculate_fit_properties(method_name=method_name, t_thresh_in_mins=t_thresh_in_mins)
+        self.calculate_fit()
+        self.calculate_fit_properties(method_name=self.method, t_thresh_in_mins=self.fit_thresh_in_mins)
 
-    def calculate_fit(self, method_name: str, t_thresh_in_mins: float):
+    def calculate_fit(self):
         """
         Calculates the best fit parameters for a graphical analysis method.
     
@@ -632,13 +639,12 @@ class GraphicalAnalysis:
             Updates 'Slope', 'Intercept', and 'RSquared' in self.analysis_props dictionary with calculated fit parameters.
 
         """
-        analysis_func = get_graphical_analysis_method_with_rsquared(method_name)
         p_tac_times, p_tac_vals = safe_load_tac(self.input_tac_path)
         _t_tac_times, t_tac_vals = safe_load_tac(self.roi_tac_path)
-        slope, intercept, rsquared = analysis_func(tac_times_in_minutes=p_tac_times,
-                                                   input_tac_values=p_tac_vals,
-                                                   region_tac_values=t_tac_vals,
-                                                   t_thresh_in_minutes=t_thresh_in_mins)
+        slope, intercept, rsquared = self.analysis_func(tac_times_in_minutes=p_tac_times,
+                                                        input_tac_values=p_tac_vals,
+                                                        region_tac_values=t_tac_vals,
+                                                        t_thresh_in_minutes=self.fit_thresh_in_mins)
         self.analysis_props['Slope'] = slope
         self.analysis_props['Intercept'] = intercept
         self.analysis_props['RSquared'] = rsquared
@@ -652,7 +658,7 @@ class GraphicalAnalysis:
         stored in the instance's `analysis_props` variable.
 
         Parameters:
-            method_name (str): The name of the methodology adopted for the fitting process.
+            method_name (str): The name of the graphical method being used.
             t_thresh_in_mins (float): The threshold time (in minutes) used in the fitting process.
 
         Note:
@@ -696,3 +702,11 @@ class GraphicalAnalysis:
         analysis_props_file = f"{file_name_prefix}_props.json"
         with open(analysis_props_file, 'w',encoding='utf-8') as f:
             json.dump(obj=self.analysis_props, fp=f, indent=4)
+    
+    def __call__(self):
+        """
+        Runs :meth:`run_analysis` and :meth:`save_analysis` to run the analysis and save the analysis properties.
+        
+        """
+        self.run_analysis()
+        self.save_analysis()
