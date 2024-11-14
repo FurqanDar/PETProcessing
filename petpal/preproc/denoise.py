@@ -12,6 +12,7 @@ from typing import Union
 
 # Import other libraries
 import numpy as np
+from numba import njit
 from skimage.transform import radon, iradon
 from sklearn.cluster import k_means
 from sklearn.decomposition import PCA
@@ -96,8 +97,6 @@ class Denoiser:
 
         centroids, cluster_ids = self.apply_3_tier_k_means_clustering(flattened_feature_data=feature_data,
                                                                       num_clusters=num_clusters)
-
-        self._write_cluster_segmentation_to_file(cluster_ids=cluster_ids, output_path=f"/export/scratch1/oestreichk/Data/cluster_img.nii.gz")
 
         denoised_flattened_head_data = np.zeros(shape=flattened_head_pet_data.shape[0])
         smoothing_kernel = self._generate_2d_gaussian_filter()
@@ -282,6 +281,7 @@ class Denoiser:
         return cluster_locations
 
     @staticmethod
+    @njit
     def _generate_ring_space_map(cluster_voxel_indices: np.ndarray,
                                  feature_distances: np.ndarray,
                                  ring_space_distances: np.ndarray) -> np.ndarray:
@@ -304,8 +304,8 @@ class Denoiser:
         """
         x, y, _ = ring_space_distances.shape
 
-        distance_to_origin_cluster_flat = ring_space_distances[:, :, 0].reshape(
-            x * y)
+        distance_to_origin_cluster = ring_space_distances[:, :, 0].copy()
+        distance_to_origin_cluster_flat = distance_to_origin_cluster.reshape(x * y)
 
         pixels_emanating_from_center = np.argsort(distance_to_origin_cluster_flat)
         normalized_feature_distances = feature_distances / np.linalg.norm(feature_distances, axis=1)[:, np.newaxis]
@@ -330,7 +330,7 @@ class Denoiser:
             image_to_ring_map[pixel_flat_index] = cluster_voxel_indices[best_candidate_voxel_index]
 
         end = time.time()
-        logger.debug(f'Total Time to Generate Ring Map: {end - start} seconds')
+        print(f'Total Time to Generate Ring Map: {end - start} seconds')
 
         return image_to_ring_map
 
