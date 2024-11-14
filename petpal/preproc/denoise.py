@@ -316,8 +316,7 @@ class Denoiser:
         normalized_feature_distances = feature_distances / np.linalg.norm(feature_distances, axis=1)[:, np.newaxis]
         image_to_ring_map = np.full_like(distance_to_origin_cluster_flat,
                                          fill_value=-1, dtype=np.int64)
-        chosen_indices = set()
-        mask = np.ones(normalized_feature_distances.shape[0], dtype=bool)
+
         for i in range(len(cluster_voxel_indices)):
             pixel_flat_index = pixels_emanating_from_center[i]
             pixel_coordinates = np.unravel_index(indices=pixel_flat_index,
@@ -325,12 +324,9 @@ class Denoiser:
             pixel_ring_space_distances = ring_space_distances[pixel_coordinates[0], pixel_coordinates[1], :]
             normalized_ring_space_distances = (pixel_ring_space_distances / np.linalg.norm(pixel_ring_space_distances))[
                                               :, np.newaxis]
-            mask[list(chosen_indices)] = False
-            candidate_voxels_similarities = np.matmul(normalized_feature_distances[mask], normalized_ring_space_distances)
-            best_candidate_index_within_mask = np.argmax(candidate_voxels_similarities)
-            remaining_indices = np.where(mask)[0]
-            best_candidate_voxel_index = remaining_indices[best_candidate_index_within_mask]
-            chosen_indices.add(best_candidate_voxel_index)
+            best_candidate_voxel_index = np.argmax(
+                np.matmul(normalized_feature_distances, normalized_ring_space_distances))
+            normalized_feature_distances[best_candidate_voxel_index][:] = -10
             image_to_ring_map[pixel_flat_index] = cluster_voxel_indices[best_candidate_voxel_index]
 
         return image_to_ring_map
