@@ -121,14 +121,17 @@ class Denoiser:
                                                                ring_space_side_length=ring_space_side_length)
             ring_space_distances = self._extract_distances_in_ring_space(num_clusters=final_num_clusters,
                                                                          cluster_locations=cluster_locations,
-                                                                         ring_space_side_length=ring_space_side_length)
+                                                                         ring_space_shape=(
+                                                                             ring_space_side_length,
+                                                                             ring_space_side_length))
             ring_space_map = self._generate_ring_space_map(cluster_voxel_indices=cluster_voxel_indices,
                                                            feature_distances=feature_distances,
                                                            ring_space_distances=ring_space_distances)
 
             ring_space_image = self._populate_ring_space_using_map(spatially_flattened_pet_data=flattened_head_pet_data,
                                                                    ring_space_map=ring_space_map,
-                                                                   ring_space_side_length=ring_space_side_length)
+                                                                   ring_space_shape=(ring_space_side_length,
+                                                                                     ring_space_side_length))
             denoised_ring_space_image = self._apply_smoothing_in_radon_space(image_data=ring_space_image,
                                                                              kernel=smoothing_kernel)
 
@@ -256,9 +259,10 @@ class Denoiser:
     @staticmethod
     def _extract_distances_in_ring_space(num_clusters: int,
                                          cluster_locations: np.ndarray,
-                                         ring_space_side_length: int) -> np.ndarray:
+                                         ring_space_shape: (int, int)) -> np.ndarray:
         """Calculate distances from every cluster's assigned location (not centroid) for each pixel in the ring space"""
-        pixel_cluster_distances = np.zeros(shape=(ring_space_side_length, ring_space_side_length, num_clusters))
+        width, height = ring_space_shape
+        pixel_cluster_distances = np.zeros(shape=(width, height, num_clusters))
         x_coords, y_coords = np.meshgrid(np.arange(width), np.arange(height))
         grid_coords = np.stack((x_coords, y_coords), axis=-1)
         for i, loc in enumerate(cluster_locations):
