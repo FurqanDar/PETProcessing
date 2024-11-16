@@ -102,7 +102,7 @@ class Denoiser:
         centroids, cluster_ids = self.apply_3_tier_k_means_clustering(flattened_feature_data=feature_data,
                                                                       num_clusters=num_clusters)
 
-        denoised_flattened_head_data = np.zeros_like(flattened_head_pet_data)
+        denoised_flattened_head_data = np.zeros(shape=flattened_head_pet_data.shape[0])
         smoothing_kernel = self._generate_2d_gaussian_filter()
 
         final_num_clusters = np.prod(num_clusters).astype(int)
@@ -135,15 +135,15 @@ class Denoiser:
             denoised_ring_space_image = self._apply_smoothing_in_radon_space(image_data=ring_space_image,
                                                                              kernel=smoothing_kernel)
 
-            cluster_data_mask = ring_space_map != -1
-            ring_space_map_only_cluster_data = ring_space_map[cluster_data_mask]
-            denoised_flattened_head_data[ring_space_map_only_cluster_data][:] = denoised_ring_space_image[cluster_data_mask,:]
+            flattened_denoised_ring_space_data = denoised_ring_space_image.flatten()
+            ring_space_map_only_cluster_data = ring_space_map[ring_space_map != -1]
+            denoised_flattened_head_data[ring_space_map_only_cluster_data] = flattened_denoised_ring_space_data[ring_space_map != -1]
             end = time.time()
             logger.debug(f'Time to process cluster {cluster}:\n{end - start} seconds')
 
-        denoised_flattened_pet_data = flattened_pet_data
-        denoised_flattened_pet_data[flattened_head_mask,:] = denoised_flattened_head_data
-        denoised_pet_data = denoised_flattened_pet_data.reshape(self.pet_data.shape)
+        denoised_flattened_pet_data = flattened_pet_data[:, 16] # TODO: Don't hardcode frame 16
+        denoised_flattened_pet_data[flattened_head_mask] = denoised_flattened_head_data
+        denoised_pet_data = denoised_flattened_pet_data.reshape(self.pet_data.shape[0], self.pet_data.shape[1], self.pet_data.shape[2])
 
         return denoised_pet_data
 
@@ -453,19 +453,12 @@ class Denoiser:
         """
         Radon transform image, apply smoothing, and transform back to original domain
 
-        Args:
-
-        Returns:
-
-        """
+            ring_space_map: """
         theta = np.linspace(0.0, 180.0, 7240)
-        denoised_cluster_data = np.zeros_like(image_data)
-        for frame in range(image_data.shape[-1]):
-            radon_transformed_image = radon(image_data[:,:,frame], theta=theta)
-            smoothed_radon_image = convolve(radon_transformed_image, kernel, mode='constant')
-            denoised_cluster_data[:,:,frame] = iradon(smoothed_radon_image, theta=theta, output_size=image_data.shape[0])
+        radon_transformed_image = radon(image_data, theta=theta)
+        smoothed_radon_image = convolve(radon_transformed_image, kernel, mode='constant')
+        denoised_cluster_data = iradon(smoothed_radon_image, theta=theta, output_size=image_data.shape[0])
 
-        denoised_cluster_data = denoised_cluster_data.reshape(image_data.shape[0]*image_data.shape[1], image_data.shape[2])
         return denoised_cluster_data
 
     def _write_cluster_segmentation_to_file(self,
