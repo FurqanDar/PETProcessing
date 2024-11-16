@@ -12,7 +12,6 @@ from typing import Union
 
 # Import other libraries
 import numpy as np
-from numba import njit
 from skimage.transform import radon, iradon
 from sklearn.cluster import k_means
 from sklearn.decomposition import PCA
@@ -333,27 +332,25 @@ class Denoiser:
         return image_to_ring_map
 
     @staticmethod
-    @njit
     def _populate_ring_space_using_map(spatially_flattened_pet_data: np.ndarray,
                                        ring_space_map: np.ndarray,
-                                       ring_space_side_length: int) -> np.ndarray:
+                                       ring_space_shape: (int, int)) -> np.ndarray:
         """
         Fill pixels in ring space with original PET values using a map.
 
         Args:
             ring_space_map (np.ndarray): Map of voxel coordinates to pixel coordinates.
-            ring_space_side_length (int): Side length of ring space
+            ring_space_shape (tuple): Shape of ring space.
 
         Returns:
-            np.ndarray: Array containing all PET data in a cluster rearranged into ring space for each frame
+            np.ndarray: Image containing all PET data in a cluster rearranged into ring space.
 
         """
-        num_frames = spatially_flattened_pet_data.shape[-1]
-        ring_image_flat = np.zeros(shape=(ring_space_map.size,num_frames))
-        for frame in range(num_frames):
-            ring_image_flat[:,frame] = spatially_flattened_pet_data[ring_space_map, frame]
-
-        ring_image = ring_image_flat.reshape(ring_space_side_length, ring_space_side_length, num_frames)
+        populate_pixel_with_pet = lambda a: spatially_flattened_pet_data[a][
+            16] if a != -1 else 0  # TODO: Make this do all timeframes
+        # TODO: Use logical indexing instead of this
+        populated_ring_map = np.array([populate_pixel_with_pet(i) for i in ring_space_map])
+        ring_image = populated_ring_map.reshape(ring_space_shape)
 
         return ring_image
 
