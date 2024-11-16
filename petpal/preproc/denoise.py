@@ -108,7 +108,7 @@ class Denoiser:
         final_num_clusters = np.prod(num_clusters).astype(int)
         for cluster in range(final_num_clusters):
             start = time.time()
-            logger.debug(f'Cluster {cluster}\n-------------------------------------------------------\n\n')
+            logger.debug(f'Cluster {cluster}\n-------------------------------------------------------\n\n\n')
             cluster_data = feature_data[cluster_ids == cluster]
             centroids_temp = np.roll(centroids, shift=-cluster, axis=0)
             feature_distances = self._extract_distances_to_cluster_centroids(cluster_data=cluster_data,
@@ -116,7 +116,7 @@ class Denoiser:
             num_voxels_in_cluster = len(cluster_ids[cluster_ids == cluster])
             cluster_voxel_indices = np.argwhere(cluster_ids == cluster).T[0]
             ring_space_side_length = self._calculate_ring_space_dimension(num_voxels_in_cluster=num_voxels_in_cluster)
-            logger.debug(f'Ring Space Side Length: {ring_space_side_length}\n')
+            logger.debug(f'Ring Space Side Length: {ring_space_side_length}')
             cluster_locations = self._define_cluster_locations(num_clusters=final_num_clusters,
                                                                ring_space_side_length=ring_space_side_length)
             ring_space_distances = self._extract_distances_in_ring_space(num_clusters=final_num_clusters,
@@ -259,7 +259,7 @@ class Denoiser:
                                          ring_space_side_length: int) -> np.ndarray:
         """Calculate distances from every cluster's assigned location (not centroid) for each pixel in the ring space"""
         pixel_cluster_distances = np.zeros(shape=(ring_space_side_length, ring_space_side_length, num_clusters))
-        x_coords, y_coords = np.meshgrid(np.arange(ring_space_side_length), np.arange(ring_space_side_length))
+        x_coords, y_coords = np.meshgrid(np.arange(width), np.arange(height))
         grid_coords = np.stack((x_coords, y_coords), axis=-1)
         for i, loc in enumerate(cluster_locations):
             pixel_cluster_distances[..., i] = np.linalg.norm(grid_coords - loc, axis=-1)
