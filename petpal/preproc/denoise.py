@@ -12,6 +12,7 @@ from typing import Union
 
 # Import other libraries
 import numpy as np
+from numba import njit
 from skimage.transform import radon, iradon
 from sklearn.cluster import k_means
 from sklearn.decomposition import PCA
@@ -287,6 +288,7 @@ class Denoiser:
         return cluster_locations
 
     @staticmethod
+    @njit(fastmath=True)
     def _generate_ring_space_map(cluster_voxel_indices: np.ndarray,
                                  feature_distances: np.ndarray,
                                  ring_space_distances: np.ndarray) -> np.ndarray:
@@ -296,10 +298,11 @@ class Denoiser:
         Args:
             cluster_voxel_indices (np.ndarray): Array of flattened voxel indices corresponding to PET data assigned to a
                 cluster.
-            feature_distances (np.ndarray): Array of size (Number of Voxels in Cluster, Number of Clusters) containing
+            feature_distances (np.ndarray): Array of shape (Number of Voxels in Cluster, Number of Clusters) containing
                 distances from cluster feature centroids. Each distance must be the sum of squared differences for all
                 features.
-            ring_space_distances (np.ndarray): Vector of length (Number of Clusters) containing the euclidean distances
+            ring_space_distances (np.ndarray): Array of shape
+                (Ring Space Side Length, Ring Space Side Length, Number of Clusters) containing the euclidean distances
                 from each cluster's assigned location in the ring space.
 
         Returns:
@@ -309,24 +312,26 @@ class Denoiser:
         """
         x, y, _ = ring_space_distances.shape
 
-        distance_to_origin_cluster_flat = ring_space_distances[:, :, 0].reshape(
-            x * y)
+        distance_to_origin_cluster_flat = ring_space_distances[:, :, 0].copy()
+        distance_to_origin_cluster_flat = distance_to_origin_cluster_flat.reshape(x * y)
 
         pixels_emanating_from_center = np.argsort(distance_to_origin_cluster_flat)
-        normalized_feature_distances = feature_distances / np.linalg.norm(feature_distances, axis=1)[:, np.newaxis]
+
+        normalized_feature_distances = np.zeros_like(feature_distances)
+        for col in range(normalized_feature_distances.shape[1]):
+            normalized_feature_distances[:][col] = feature_distances[:][col] / np.linalg.norm(feature_distances[:][col])
+
         image_to_ring_map = np.full_like(distance_to_origin_cluster_flat,
-                                         fill_value=-1, dtype=np.int64)
+                                         fill_value=-1, dtype=np.uint32) # Maybe use a smaller datatype? Don't need 64-bit int
 
         for i in range(len(cluster_voxel_indices)):
-            pixel_flat_index = pixels_emanating_from_center[i]
-            pixel_coordinates = np.unravel_index(indices=pixel_flat_index,
-                                                 shape=(x, y))
-            pixel_ring_space_distances = ring_space_distances[pixel_coordinates[0], pixel_coordinates[1], :]
-            normalized_ring_space_distances = (pixel_ring_space_distances / np.linalg.norm(pixel_ring_space_distances))[
-                                              :, np.newaxis]
+            pixel_flat_index = pixels_emanating_from_center[i] # O(1)
+            pixel_coordinates = (pixel_flat_index % x, math.floor(pixel_flat_index / x))
+            pixel_ring_space_distances = ring_space_distances[pixel_coordinates[0], pixel_coordinates[1], :] # O(1)
+            normalized_ring_space_distances = pixel_ring_space_distances / np.linalg.norm(pixel_ring_space_distances) # O(1)
             best_candidate_voxel_index = np.argmax(
-                np.matmul(normalized_feature_distances, normalized_ring_space_distances))
-            normalized_feature_distances[best_candidate_voxel_index][:] = -10
+                np.dot(normalized_feature_distances, normalized_ring_space_distances)) # Try changing this to np.dot
+            normalized_feature_distances[best_candidate_voxel_index][:] = -10 # O(1)
             image_to_ring_map[pixel_flat_index] = cluster_voxel_indices[best_candidate_voxel_index]
 
         return image_to_ring_map
