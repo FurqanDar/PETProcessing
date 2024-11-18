@@ -508,7 +508,7 @@ class PatlakPlot(GraphicalAnalysisPlot):
         intercept = self.fit_params['intercept']
         r_sq = self.fit_params['r_squared']
 
-        return f"$K_1=${slope:<5.3f}\n$V_\mathrm{{T}}=${intercept:<5.3f}\n$R^2=${r_sq:<5.3f}"
+        return f"$K_1=${slope:<5.3f}\n$V_\\mathrm{{T}}=${intercept:<5.3f}\n$R^2=${r_sq:<5.3f}"
 
     def add_figure_axes_labels_and_legend(self):
         r"""
@@ -652,7 +652,7 @@ class LoganPlot(GraphicalAnalysisPlot):
         intercept = self.fit_params['intercept']
         r_sq = self.fit_params['r_squared']
 
-        return f"$V_\mathrm{{T}}=${slope:<5.3f}\n$b=${intercept:<5.3f}\n$R^2=${r_sq:<5.3f}"
+        return f"$V_\\mathrm{{T}}=${slope:<5.3f}\n$b=${intercept:<5.3f}\n$R^2=${r_sq:<5.3f}"
 
     def add_figure_axes_labels_and_legend(self):
         r"""
