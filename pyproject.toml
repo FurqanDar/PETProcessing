@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "petpal"
-version = "0.0.1"
+version = "0.0.2"
 description = "PET-PAL (Positron Emission Tomography Processing and Analysis Library)"
 authors = [
     {name = "Furqan Dar"},
@@ -12,7 +12,7 @@ authors = [
     {name = "Noah Goldman"},
     {name = "Kenan Oestreich", email = "kenan.oestreich@wustl.edu"}
 ]
-requires-python = ">= 3.9" # At least Python 3.9
+requires-python = ">= 3.12" # At least Python 3.12
 dependencies = [
     "docker",
     "numpy",
@@ -20,7 +20,7 @@ dependencies = [
     "numba",
     "pandas",
     "nibabel",
-    "antspyx == 0.4.2",
+    "antspyx",
     "fslpy",
     "SimpleITK",
     "matplotlib",
