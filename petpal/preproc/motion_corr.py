@@ -8,7 +8,6 @@ import os
 import tempfile
 from typing import Union
 import ants
-import nibabel
 import numpy as np
 from ..utils import image_io
 from ..utils.useful_functions import weighted_series_sum
@@ -76,8 +75,7 @@ def determine_motion_target(motion_target_option: Union[str, tuple, list],
             out_image_file = tempfile.mkstemp(suffix='_mean.nii.gz')[1]
             input_img = ants.image_read(input_image_4d_path)
             mean_img = input_img.get_average_of_timeseries()
-            mean_img = ants.to_nibabel(mean_img)
-            nibabel.save(mean_img, out_image_file)
+            ants.image_write(image=mean_img,filename=out_image_file)
             return out_image_file
 
         raise ValueError("motion_target_option did not match a file or 'weighted_series_sum'")
@@ -163,11 +161,10 @@ def motion_corr(input_image_4d_path: str,
     pet_moco_params = pet_moco_ants_dict['motion_parameters']
     pet_moco_fd = pet_moco_ants_dict['FD']
     pet_moco_np = pet_moco_ants.numpy()
-    pet_moco_nibabel = ants.to_nibabel(pet_moco_ants)
 
     image_io.safe_copy_meta(input_image_path=input_image_4d_path, out_image_path=out_image_path)
 
-    nibabel.save(pet_moco_nibabel, out_image_path)
+    ants.image_write(image=pet_moco_ants, filename=out_image_path)
     if verbose:
         print(f"(ImageOps4d): motion corrected image saved to {out_image_path}")
     return pet_moco_np, pet_moco_params, pet_moco_fd
@@ -271,9 +268,7 @@ def motion_corr_frame_list(input_image_4d_path: str,
         print("... done!\n")
     tmp_image = _gen_nd_image_based_on_image_list(out_image)
     out_image = ants.list_to_ndimage(tmp_image, out_image)
-    out_image = ants.to_nibabel(out_image)
-
-    nibabel.save(out_image, out_image_path)
+    ants.image_write(image=out_image,filename=out_image_path)
 
     if verbose:
         print(f"(ImageOps4d): motion corrected image saved to {out_image_path}")
@@ -388,9 +383,7 @@ def motion_corr_frame_list_to_t1(input_image_4d_path: str,
         print("... done!\n")
     tmp_image = _gen_nd_image_based_on_image_list(out_image)
     out_image = ants.list_to_ndimage(tmp_image, out_image)
-    out_image = ants.to_nibabel(out_image)
-
-    nibabel.save(out_image, out_image_path)
+    ants.image_write(image=out_image,filename=out_image_path)
 
     if verbose:
         print(f"(ImageOps4d): motion corrected image saved to {out_image_path}")
