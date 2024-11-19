@@ -353,7 +353,7 @@ def write_tacs(input_image_4d_path: str,
                                             verbose=verbose)
         region_tac_file = np.array([pet_meta[time_frame_keyword],extracted_tac]).T
         header_text = f'{time_frame_keyword}\t{regions_abrev[i]}_mean_activity'
-        out_tac_path = os.path.join(out_tac_dir, f'tac-{regions_abrev[i]}.tsv')
+        out_tac_path = os.path.join(out_tac_dir, f'{regions_abrev[i]}_tac.tsv')
         np.savetxt(out_tac_path,region_tac_file,delimiter='\t',header=header_text,comments='')
 
 

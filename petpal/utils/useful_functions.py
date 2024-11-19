@@ -2,12 +2,11 @@
 Module to handle abstracted functionalities
 """
 import os
-
-from petpal.utils import image_io, math_lib
-
 import nibabel
 import numpy as np
 from scipy.interpolate import interp1d
+from petpal.utils import image_io, math_lib
+
 
 FULL_NAME = [
     'Background',

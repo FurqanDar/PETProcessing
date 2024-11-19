@@ -181,7 +181,7 @@ def scatter_with_regression_figure(axes,
                         fontsize=20, transform=fax[ax_id].transAxes,
                         ha='left', va='top', bbox=_TEXT_BOX_)
         fax[ax_id].set_title(f"{title} Fits", fontweight='bold')
-        fax[ax_id].set(xlabel=fr'True Values', ylabel=fr'Fit Values')
+        fax[ax_id].set(xlabel=r'True Values', ylabel=r'Fit Values')
 
 
 def bland_atlman_figure(axes,
@@ -231,7 +231,7 @@ def bland_atlman_figure(axes,
         fax[ax_id].axhline(mid, ls='-', zorder=0, color=bland_kwargs['color'])
         
         fax[ax_id].set_title(f"{title} Fits", fontweight='bold')
-        fax[ax_id].set(xlabel=fr'$\frac{{S_1+S_2}}{{2}}$ (Mean)', ylabel=fr'$S_1-S_2$ (Diff.)')
+        fax[ax_id].set(xlabel=r'$\frac{{S_1+S_2}}{{2}}$ (Mean)', ylabel=r'$S_1-S_2$ (Diff.)')
 
 
 def ratio_bland_atlman_figure(axes,
@@ -283,4 +283,4 @@ def ratio_bland_atlman_figure(axes,
         fax[ax_id].axhline(mid, ls='-', zorder=0, color=bland_kwargs['color'])
         
         fax[ax_id].set_title(f"{title} Fits", fontweight='bold')
-        fax[ax_id].set(xlabel=fr'$\frac{{\log S_1+\log S_2}}{{2}}$ (Mean)', ylabel=fr'$\log S_1-\log S_2$ (Diff.)')
+        fax[ax_id].set(xlabel=r'$\frac{{\log S_1+\log S_2}}{{2}}$ (Mean)', ylabel=r'$\log S_1-\log S_2$ (Diff.)')

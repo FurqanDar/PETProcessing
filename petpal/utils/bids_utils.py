@@ -144,7 +144,7 @@ class BidsInstance:
         for file_name, content in files_to_create.items():
             full_path = os.path.join(self.project_path, file_name)  # change to only write if not existing
             if not os.path.exists(full_path):
-                with open(full_path, 'w') as f:
+                with open(full_path, 'w',encoding='utf-8') as f:
                     f.write(content)
 
     def _update_participants(self, session: str) -> None:

@@ -158,14 +158,14 @@ def get_half_life_from_meta(meta_data_file_path: str):
     """
     if not os.path.exists(meta_data_file_path):
         raise FileNotFoundError(f"Metadata file {meta_data_file_path} not found")
-    with open(meta_data_file_path, 'r') as m_file:
+    with open(meta_data_file_path, 'r',encoding='utf-8') as m_file:
         meta_data = json.load(m_file)
     try:
         half_life = meta_data['RadionuclideHalfLife']
         return half_life
-    except KeyError:
-        raise KeyError("RadionuclideHalfLife not found in meta-data file.")
-    
+    except KeyError as exc:
+        raise KeyError("RadionuclideHalfLife not found in meta-data file.") from exc
+
 def get_half_life_from_nifty(image_path:str):
     """
     Retrieves the radionuclide half-life from a nifti image file.

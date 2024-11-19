@@ -116,7 +116,7 @@ class PetPvc:
         else:
             command += f" -x {psf_dimensions} -y {psf_dimensions} -z {psf_dimensions}"
         if debug:
-            command += f" --debug"
+            command += " --debug"
 
         print(f"Running Docker command: {command}")
         print(f"Volume bindings: {docker_volumes}")
