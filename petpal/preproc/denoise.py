@@ -13,11 +13,12 @@ from typing import Union
 
 # Import other libraries
 import numpy as np
+from docutils.nodes import image
 from numba import njit
 from skimage.transform import radon, iradon
 from sklearn.cluster import k_means
 from sklearn.decomposition import PCA
-from scipy.ndimage import convolve, binary_fill_holes
+from scipy.ndimage import convolve, binary_fill_holes, binary_closing
 from scipy.stats import zscore, norm
 import nibabel as nib
 
@@ -36,7 +37,8 @@ class Denoiser:
     pet_image = None
     mri_image = None
     segmentation_image = None
-    weighted_series_sum_data = None
+    head_mask_data = None
+    head_mask_lims = None
     updated_segmentation_data = None
     non_brain_mask_data = None
 
@@ -64,10 +66,11 @@ class Denoiser:
             (self.pet_image,
              self.mri_image,
              self.segmentation_image,
-             self.weighted_series_sum_data) = self._prepare_inputs(path_to_pet=path_to_pet,
-                                                                   path_to_mri=path_to_mri,
-                                                                   path_to_freesurfer_segmentation=path_to_segmentation,
-                                                                   path_to_wss=path_to_wss)
+             self.head_mask_data,
+             self.head_mask_lims) = self._prepare_inputs(path_to_pet=path_to_pet,
+                                                         path_to_mri=path_to_mri,
+                                                         path_to_freesurfer_segmentation=path_to_segmentation,
+                                                         path_to_wss=path_to_wss)
         except OSError as e:
             raise e
         except Exception as e:
@@ -158,72 +161,6 @@ class Denoiser:
         """"""
 
     # Static Methods
-    @staticmethod
-    def _prepare_inputs(path_to_pet: str,
-                        path_to_mri: str,
-                        path_to_freesurfer_segmentation: str,
-                        path_to_wss: str) -> (Union[nib.nifti1.Nifti1Image, nib.nifti2.Nifti2Image],
-                                              Union[nib.nifti1.Nifti1Image, nib.nifti2.Nifti2Image],
-                                              Union[nib.nifti1.Nifti1Image, nib.nifti2.Nifti2Image],
-                                              np.ndarray):
-        """
-        Read images from files into nibabel Image instances, and ensure all images have the same dimensions as PET.
-
-        Args:
-            path_to_pet (str):
-            path_to_mri (str):
-            path_to_freesurfer_segmentation (str):
-            path_to_wss (str):
-        """
-
-        images_loaded = []
-        images_failed_to_load = []
-        errors = []
-        image_loader = ImageIO()
-
-        # Verify that all files can be loaded and saved as ndarrays.
-        for path in [path_to_pet, path_to_mri, path_to_freesurfer_segmentation, path_to_wss]:
-            try:
-                images_loaded.append(image_loader.load_nii(path))
-            except (FileNotFoundError, OSError) as e:
-                images_failed_to_load.append(path)
-                errors.append(e)
-
-        # Log errors if any images couldn't be loaded
-        if len(images_failed_to_load) > 0:
-            raise OSError(
-                f'{len(images_failed_to_load)} images could not be loaded. See errors below.\n{print(errors)}')
-
-        # Unpack images
-        pet_image, mri_image, segmentation_image, wss_image = images_loaded
-
-        # Extract ndarrays from each image.
-        pet_data = image_loader.extract_image_from_nii_as_numpy(pet_image)
-        mri_data = image_loader.extract_image_from_nii_as_numpy(mri_image)
-        segmentation_data = image_loader.extract_image_from_nii_as_numpy(segmentation_image)
-        wss_data = image_loader.extract_image_from_nii_as_numpy(wss_image)
-        pet_data_3d_shape = pet_data.shape[:-1]
-
-        if pet_data.ndim != 4:
-            raise Exception(
-                f'PET data has {pet_data.ndim} dimensions, but 4 is expected. Ensure that you are loading a '
-                f'4DPET dataset, not a single frame')
-
-        if (mri_data.shape != pet_data_3d_shape or
-            segmentation_data.shape != pet_data_3d_shape or
-            wss_data.shape != pet_data_3d_shape):
-            raise Exception(f'MRI and/or Segmentation has different dimensions from 3D PET image:\n'
-                            f'PET Frame Shape: {pet_data_3d_shape}\n'
-                            f'Segmentation Shape: {segmentation_data.shape}\n'
-                            f'MRI Shape: {mri_data.shape}.\n'
-                            f'Weighted Series Sum Shape: {wss_data.shape}.\n'
-                            f'Ensure that all non-PET data is registered to PET space')
-
-        # Ensure mask is 'filled' (i.e. no holes)
-
-
-        return pet_image, mri_image, segmentation_image, wss_image
-
     @staticmethod
     def _temporal_pca(spatially_flattened_pet_data: np.ndarray,
                       num_components: int) -> np.ndarray:
@@ -483,6 +420,74 @@ class Denoiser:
 
         return denoised_cluster_data
 
+    # Non-Static Methods
+    def _prepare_inputs(self,
+                        path_to_pet: str,
+                        path_to_mri: str,
+                        path_to_freesurfer_segmentation: str,
+                        path_to_wss: str) -> (Union[nib.nifti1.Nifti1Image, nib.nifti2.Nifti2Image],
+                                              Union[nib.nifti1.Nifti1Image, nib.nifti2.Nifti2Image],
+                                              Union[nib.nifti1.Nifti1Image, nib.nifti2.Nifti2Image],
+                                              np.ndarray,
+                                              tuple):
+        """
+        Read images from files into nibabel Image instances, and ensure all images have the same dimensions as PET.
+
+        Args:
+            path_to_pet (str):
+            path_to_mri (str):
+            path_to_freesurfer_segmentation (str):
+            path_to_wss (str):
+        """
+
+        images_loaded = []
+        images_failed_to_load = []
+        errors = []
+        image_loader = ImageIO()
+
+        # Verify that all files can be loaded and saved as ndarrays.
+        for path in [path_to_pet, path_to_mri, path_to_freesurfer_segmentation, path_to_wss]:
+            try:
+                images_loaded.append(image_loader.load_nii(path))
+            except (FileNotFoundError, OSError) as e:
+                images_failed_to_load.append(path)
+                errors.append(e)
+
+        # Log errors if any images couldn't be loaded
+        if len(images_failed_to_load) > 0:
+            raise OSError(
+                f'{len(images_failed_to_load)} images could not be loaded. See errors below.\n{print(errors)}')
+
+        # Unpack images
+        pet_image, mri_image, segmentation_image, wss_image = images_loaded
+
+        # Extract ndarrays from each image.
+        pet_data = image_loader.extract_image_from_nii_as_numpy(pet_image)
+        mri_data = image_loader.extract_image_from_nii_as_numpy(mri_image)
+        segmentation_data = image_loader.extract_image_from_nii_as_numpy(segmentation_image)
+        wss_data = image_loader.extract_image_from_nii_as_numpy(wss_image)
+        pet_data_3d_shape = pet_data.shape[:-1]
+
+        if pet_data.ndim != 4:
+            raise Exception(
+                f'PET data has {pet_data.ndim} dimensions, but 4 is expected. Ensure that you are loading a '
+                f'4DPET dataset, not a single frame')
+
+        if (mri_data.shape != pet_data_3d_shape or
+            segmentation_data.shape != pet_data_3d_shape or
+            wss_data.shape != pet_data_3d_shape):
+            raise Exception(f'MRI and/or Segmentation has different dimensions from 3D PET image:\n'
+                            f'PET Frame Shape: {pet_data_3d_shape}\n'
+                            f'Segmentation Shape: {segmentation_data.shape}\n'
+                            f'MRI Shape: {mri_data.shape}.\n'
+                            f'Weighted Series Sum Shape: {wss_data.shape}.\n'
+                            f'Ensure that all non-PET data is registered to PET space')
+
+        # Extract Head Mask using Weighted Series Sum
+        (head_mask_data, *lims) = self._generate_head_mask_from_wss(path_to_wss=path_to_wss)
+
+        return pet_image, mri_image, segmentation_image, head_mask_data, lims
+
     def _write_cluster_segmentation_to_file(self,
                                             cluster_ids: np.ndarray,
                                             output_path) -> None:
@@ -564,6 +569,32 @@ class Denoiser:
 
         return non_brain_mask_data.astype(bool)
 
+    def _generate_head_mask_from_wss(self,
+                                     path_to_wss: str) -> (np.ndarray, tuple, tuple, tuple):
+        """
+        Function to extract 3D head mask PET data using basic morphological methods.
+
+        Args:
+            path_to_wss (str):
+
+        Returns:
+            np.ndarray: 3D binary mask corresponding to the head voxels.
+        """
+        out_image_path = '/export/scratch1/oestreichk/Data/cropped_wss.nii.gz' # Update this when pipelines drop
+
+        cropper = SimpleAutoImageCropper(input_image_path=path_to_wss,
+                                         out_image_path=out_image_path)
+        x_lims, y_lims, z_lims = cropper.get_index_pairs_for_all_dims(img_obj=cropper.input_img_obj)
+        image_loader = ImageIO()
+        cropped_image = image_loader.load_nii(out_image_path)
+        cropped_data = image_loader.extract_image_from_nii_as_numpy(cropped_image)
+        binary_cropped_data = binarize_image_with_threshold(input_image_numpy=cropped_data,
+                                                            lower_bound=500)
+        binary_cropped_data = binary_closing(binary_cropped_data)
+        mask_data = binary_fill_holes(binary_cropped_data)
+
+        return mask_data, x_lims, y_lims, z_lims
+
     def weighted_sum_smoothed_image_iterations(self):
         """
         Weight smoothed images (one from each iteration) by cluster 'belongingness' with respect to MRI."""
@@ -588,17 +619,4 @@ def flatten_pet_spatially(pet_data: np.ndarray) -> np.ndarray:
     return flattened_pet_data
 
 
-def generate_head_mask_from_wss(wss_data: np.ndarray) -> np.ndarray:
-    """
-    Function to extract 3D head mask PET data using basic morphological methods.
 
-    Args:
-        wss_data (np.ndarray):
-
-    Returns:
-        np.ndarray: 3D binary mask corresponding to the head voxels.
-    """
-
-    mask_image = binary_fill_holes(thresholded_data)
-
-    return mask_image
