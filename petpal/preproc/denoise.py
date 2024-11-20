@@ -90,11 +90,11 @@ class Denoiser:
 
         # TODO: Move these somewhere else (i.e. run()) so they're only called once.
 
-        self.head_mask = generate_head_mask(self.pet_image)
-        flattened_head_mask = self.head_mask.flatten()
-        flattened_pet_data = flatten_pet_spatially(self.pet_image)
-        self.non_brain_mask = self._generate_non_brain_mask()
-        self.updated_segmentation_data = self._add_nonbrain_features_to_segmentation(non_brain_mask=self.non_brain_mask)
+
+        flattened_head_mask = self.head_mask_data.flatten()
+        flattened_pet_data = flatten_pet_spatially(self.pet_image.get_fdata())
+        self.non_brain_mask_data = self._generate_non_brain_mask()
+        self.updated_segmentation_data = self._add_nonbrain_features_to_segmentation(non_brain_mask=self.non_brain_mask_data)
         flattened_head_pet_data = flattened_pet_data[flattened_head_mask, :]
         flattened_mri_data = self.mri_image.flatten()
         flattened_segmentation_data = self.updated_segmentation_data.flatten()
@@ -245,7 +245,8 @@ class Denoiser:
         return cluster_locations
 
     @staticmethod
-    @njit(fastmath=True)
+    @njit(fastmath=True,
+          cache=True)
     def _generate_ring_space_map(cluster_voxel_indices: np.ndarray,
                                  feature_distances: np.ndarray,
                                  ring_space_distances: np.ndarray) -> np.ndarray:
@@ -518,7 +519,7 @@ class Denoiser:
                                                non_brain_mask: np.ndarray) -> np.ndarray:
         """Cluster non-brain and add labels to existing segmentation"""
 
-        segmentation_data = self.segmentation_image
+        segmentation_data = self.segmentation_image.get_fdata()
         non_brain_features = self._extract_non_brain_features(non_brain_mask_data=non_brain_mask)
         _, cluster_ids, _ = k_means(X=non_brain_features,
                                     n_clusters=5)
@@ -542,8 +543,8 @@ class Denoiser:
         """
 
         spatially_flat_non_brain_mask = non_brain_mask_data.flatten()
-        flat_mri_data = self.mri_image.flatten()
-        spatially_flat_pet = flatten_pet_spatially(self.pet_image)
+        flat_mri_data = self.mri_image.get_fdata().flatten()
+        spatially_flat_pet = flatten_pet_spatially(self.pet_image.get_fdata())
 
         non_brain_pet_data = spatially_flat_pet[spatially_flat_non_brain_mask, :]
 
@@ -562,8 +563,8 @@ class Denoiser:
         Returns:
 
         """
-        segmentation_data = self.segmentation_image
-        head_mask_data = self.head_mask
+        segmentation_data = self.segmentation_image.get_fdata()
+        head_mask_data = self.head_mask_data
         brain_mask_data = np.where(segmentation_data > 0, 1, 0)
         non_brain_mask_data = head_mask_data - brain_mask_data
 
