@@ -326,8 +326,8 @@ class Denoiser:
 
         for i in range(len(cluster_voxel_indices)):
             pixel_flat_index = pixels_emanating_from_center[i] # O(1)
-            pixel_coordinates = (pixel_flat_index % x, math.floor(pixel_flat_index / x))
-            pixel_ring_space_distances = ring_space_distances[pixel_coordinates[0], pixel_coordinates[1], :] # O(1)
+            pixel_coordinates = (pixel_flat_index % x, math.floor(pixel_flat_index / x)) # maybe change to //
+            pixel_ring_space_distances = ring_space_distances[pixel_coordinates[0], pixel_coordinates[1], :] # TODO: Move this outside of loop
             normalized_ring_space_distances = pixel_ring_space_distances / np.linalg.norm(pixel_ring_space_distances) # O(1)
             best_candidate_voxel_index = np.argmax(
                 np.dot(normalized_feature_distances, normalized_ring_space_distances)) # Try changing this to np.dot
