@@ -278,16 +278,20 @@ class Denoiser:
         for col in range(normalized_feature_distances.shape[1]):
             normalized_feature_distances[:][col] = feature_distances[:][col] / np.linalg.norm(feature_distances[:][col])
 
+        normalized_ring_space_distances = np.zeros_like(ring_space_distances)
+        for col in range(ring_space_distances.shape[1]):
+            for row in range(ring_space_distances.shape[0]):
+                normalized_ring_space_distances[row][col][:] = ring_space_distances[row][col][:] / np.linalg.norm(ring_space_distances[row][col][:])
+
         image_to_ring_map = np.full_like(distance_to_origin_cluster_flat,
                                          fill_value=-1, dtype=np.uint32) # Maybe use a smaller datatype? Don't need 64-bit int
 
         for i in range(len(cluster_voxel_indices)):
             pixel_flat_index = pixels_emanating_from_center[i] # O(1)
-            pixel_coordinates = (pixel_flat_index % x, math.floor(pixel_flat_index / x)) # maybe change to //
-            pixel_ring_space_distances = ring_space_distances[pixel_coordinates[0], pixel_coordinates[1], :] # TODO: Move this outside of loop
-            normalized_ring_space_distances = pixel_ring_space_distances / np.linalg.norm(pixel_ring_space_distances) # O(1)
+            pixel_coordinates = (pixel_flat_index % x, pixel_flat_index // x)
+            pixel_normalized_ring_space_distances = normalized_ring_space_distances[pixel_coordinates[0], pixel_coordinates[1], :] # TODO: Move this outside of loop
             best_candidate_voxel_index = np.argmax(
-                np.dot(normalized_feature_distances, normalized_ring_space_distances)) # Try changing this to np.dot
+                np.dot(normalized_feature_distances, pixel_normalized_ring_space_distances)) # Try changing this to np.dot
             normalized_feature_distances[best_candidate_voxel_index][:] = -10 # O(1)
             image_to_ring_map[pixel_flat_index] = cluster_voxel_indices[best_candidate_voxel_index]
 
