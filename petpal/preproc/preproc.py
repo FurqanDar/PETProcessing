@@ -80,7 +80,7 @@ _REQUIRED_KEYS_ = {
 }
 
 
-class PreProc():
+class PreProc:
     """
     :class:`ImageOps4D` to provide basic implementations of the preprocessing functions in module
     ``image_operations_4d``. Uses a properties dictionary ``preproc_props`` to
@@ -259,10 +259,10 @@ class PreProc():
                                  f"run {method_name} are: {required_keys}.")
 
 
-    def _generate_outfile_path(self,
-                               method_short: str,
-                               extension: str='nii.gz',
-                               modality: str = None,):
+    def generate_outfile_path(self,
+                              method_short: str,
+                              extension: str='nii.gz',
+                              modality: str = None, ):
         r"""
         Generate the path to an output file, from the output directory,
         filename prefix, abbreviation of the method name, and filename
@@ -302,7 +302,7 @@ class PreProc():
         self._check_input_paths_exist(method_name=method_name)
 
         if method_name=='weighted_series_sum':
-            outfile = self._generate_outfile_path(method_short='wss', modality=modality)
+            outfile = self.generate_outfile_path(method_short='wss', modality=modality)
             weighted_series_sum(input_image_4d_path=preproc_props['FilePathWSSInput'],
                                 out_image_path=outfile,
                                 half_life=preproc_props['HalfLife'],
@@ -311,7 +311,7 @@ class PreProc():
                                 verbose=preproc_props['Verbose'])
         
         elif method_name == 'motion_corr_frames_above_mean':
-            outfile = self._generate_outfile_path(method_short='moco', modality=modality)
+            outfile = self.generate_outfile_path(method_short='moco', modality=modality)
             motion_corr.motion_corr_frames_above_mean_value(input_image_4d_path=preproc_props['FilePathMocoInp'],
                                                             motion_target_option=preproc_props['MotionTarget'],
                                                             out_image_path=outfile,
@@ -321,7 +321,7 @@ class PreProc():
                                                             kwargs=preproc_props['MocoPars'])
 
         elif method_name=='motion_corr':
-            outfile = self._generate_outfile_path(method_short='moco', modality=modality)
+            outfile = self.generate_outfile_path(method_short='moco', modality=modality)
             moco_outputs = motion_corr.motion_corr(input_image_4d_path=preproc_props['FilePathMocoInp'],
                                                    motion_target_option=preproc_props['MotionTarget'],
                                                    type_of_transform=preproc_props['MocoTransformType'],
@@ -337,7 +337,7 @@ class PreProc():
             return moco_outputs
 
         elif method_name=='register_pet':
-            outfile = self._generate_outfile_path(method_short='reg', modality=modality)
+            outfile = self.generate_outfile_path(method_short='reg', modality=modality)
             register_pet(motion_target_option=preproc_props['MotionTarget'],
                          input_reg_image_path=preproc_props['FilePathRegInp'],
                          reference_image_path=preproc_props['FilePathAnat'],
@@ -347,7 +347,7 @@ class PreProc():
                          kwargs=preproc_props['RegPars'])
 
         elif method_name=='resample_segmentation':
-            outfile = self._generate_outfile_path(method_short='seg-res', modality=modality)
+            outfile = self.generate_outfile_path(method_short='seg-res', modality=modality)
             resample_segmentation(input_image_4d_path=preproc_props['FilePathTACInput'],
                                   segmentation_image_path=preproc_props['FilePathSeg'],
                                   out_seg_path=outfile,
@@ -355,7 +355,7 @@ class PreProc():
             self.update_props({'FilePathSeg': outfile})
 
         elif method_name=='roi_tac':
-            outfile = self._generate_outfile_path(method_short='tac',extension='.tsv', modality=modality)
+            outfile = self.generate_outfile_path(method_short='tac', extension='.tsv', modality=modality)
             return roi_tac(input_image_4d_path=preproc_props['FilePathTACInput'],
                            roi_image_path=preproc_props['FilePathSeg'],
                            out_tac_path=outfile,
@@ -373,7 +373,7 @@ class PreProc():
                        time_frame_keyword=preproc_props['TimeFrameKeyword'])
 
         elif method_name=='warp_pet_atlas':
-            outfile = self._generate_outfile_path(method_short='space-atlas', modality=modality)
+            outfile = self.generate_outfile_path(method_short='space-atlas', modality=modality)
             warp_pet_atlas(input_image_path=preproc_props['FilePathWarpInput'],
                            anat_image_path=preproc_props['FilePathAnat'],
                            atlas_image_path=preproc_props['FilePathAtlas'],
@@ -382,14 +382,14 @@ class PreProc():
                            kwargs=preproc_props['WarpPars'])
 
         elif method_name=='apply_xfm_ants':
-            outfile = self._generate_outfile_path(method_short='space-atlas', modality=modality)
+            outfile = self.generate_outfile_path(method_short='space-atlas', modality=modality)
             apply_xfm_ants(input_image_path=preproc_props['FilePathWarpInput'],
                            ref_image_path=preproc_props['FilePathWarpRef'],
                            out_image_path=outfile,
                            xfm_paths=preproc_props['FilePathAntsXfms'])
 
         elif method_name=='apply_xfm_fsl':
-            outfile = self._generate_outfile_path(method_short='space-atlas', modality=modality)
+            outfile = self.generate_outfile_path(method_short='space-atlas', modality=modality)
             apply_xfm_fsl(input_image_path=preproc_props['FilePathWarpInput'],
                           ref_image_path=preproc_props['FilePathWarpRef'],
                           out_image_path=outfile,
@@ -398,7 +398,7 @@ class PreProc():
                           postmat_path=preproc_props['FilePathFSLPostmat'])
 
         elif method_name=='suvr':
-            outfile = self._generate_outfile_path(method_short='suvr', modality=modality)
+            outfile = self.generate_outfile_path(method_short='suvr', modality=modality)
             suvr(input_image_path=preproc_props['FilePathSUVRInput'],
                  segmentation_image_path=preproc_props['FilePathSeg'],
                  ref_region=preproc_props['RefRegion'],
@@ -406,19 +406,19 @@ class PreProc():
                  verbose=preproc_props['Verbose'])
 
         elif method_name=='gauss_blur':
-            outfile = self._generate_outfile_path(method_short=f"blur_{preproc_props['BlurSize']}mm", modality=modality)
+            outfile = self.generate_outfile_path(method_short=f"blur_{preproc_props['BlurSize']}mm", modality=modality)
             gauss_blur(input_image_path=preproc_props['FilePathBlurInput'],
                        blur_size_mm=preproc_props['BlurSize'],
                        out_image_path=outfile,
                        verbose=preproc_props['Verbose'])
 
         elif method_name=='vat_wm_ref_region':
-            out_ref_region = self._generate_outfile_path(method_short='wm-ref', modality=modality)
+            out_ref_region = self.generate_outfile_path(method_short='wm-ref', modality=modality)
             segmentation_tools.vat_wm_ref_region(
                 input_segmentation_path=f"{preproc_props['FilePathSeg']}",
                 out_segmentation_path=out_ref_region
             )
-            outfile = self._generate_outfile_path(method_short='wm-merged', modality=modality)
+            outfile = self.generate_outfile_path(method_short='wm-merged', modality=modality)
             segmentation_tools.vat_wm_region_merge(
                 wmparc_segmentation_path=f"{preproc_props['FilePathSeg']}",
                 bs_segmentation_path=f"{preproc_props['FilePathBSseg']}",
@@ -427,7 +427,7 @@ class PreProc():
             )
 
         elif method_name=='thresh_crop':
-            outfile = self._generate_outfile_path(method_short='threshcropped', modality=modality)
+            outfile = self.generate_outfile_path(method_short='threshcropped', modality=modality)
             thresh_crop(input_image_path=preproc_props['FilePathCropInput'],
                         out_image_path=outfile,
                         thresh_val=preproc_props['CropThreshold'],
@@ -435,7 +435,7 @@ class PreProc():
                         copy_metadata=True)
 
         elif method_name=='crop_image':
-            outfile = self._generate_outfile_path(method_short='crop')
+            outfile = self.generate_outfile_path(method_short='crop')
             image_operations_4d.crop_image(
                 input_image_path=preproc_props['FilePathCropInput'],
                 out_image_path=outfile,

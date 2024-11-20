@@ -14,9 +14,9 @@ from ..utils import image_io
 from ..utils.useful_functions import weighted_series_sum
 
 
-def determine_motion_target(motion_target_option: Union[str,tuple,list],
-                            input_image_4d_path: str=None,
-                            half_life: float=None) -> str:
+def determine_motion_target(motion_target_option: Union[str, tuple, list],
+                            input_image_4d_path: str = None,
+                            half_life: float = None) -> str:
     """
     Produce a motion target given the ``motion_target_option`` from a method
     running registrations on PET, i.e. :meth:`motion_correction` or
@@ -31,9 +31,9 @@ def determine_motion_target(motion_target_option: Union[str,tuple,list],
     If it is the option ``mean_image``, then compute the time-average of the
     4D-PET image.
 
-    If it is a tuple, run a weighted sum on the PET series on a range of 
+    If it is a tuple, run a weighted sum on the PET series on a range of
     frames. The elements of the tuple are treated as times in seconds, counted
-    from the time of the first frame, i.e. (0,300) would average all frames 
+    from the time of the first frame, i.e. (0,300) would average all frames
     from the first to the frame 300 seconds later. If the two elements are the
     same, returns the one frame closest to the entered time.
 
@@ -47,20 +47,24 @@ def determine_motion_target(motion_target_option: Union[str,tuple,list],
         half_life (float): Half life of the radiotracer used in the image
             located at ``input_image_4d_path``. Only used if a calculation is
             performed.
-    
+
     Returns:
         out_image_file (str): File to use as a target to compute
             transformations on.
 
     Raises:
-        ValueError: If ``motion_target_option`` does not match an acceptable option.
+        ValueError: If ``motion_target_option`` does not match an acceptable option, or if ``half_life`` is not specified
+        when ``motion_target_option`` is not 'mean_image'
         TypeError: If start and end time are incompatible with ``float`` type.
     """
-    if isinstance(motion_target_option,str):
+    if motion_target_option != 'mean_image' and half_life is None:
+        raise ValueError('half_life must be specified if not using "mean_image" for motion_target_option')
+
+    if isinstance(motion_target_option, str):
         if os.path.exists(motion_target_option):
             return motion_target_option
 
-        if motion_target_option=='weighted_series_sum':
+        if motion_target_option == 'weighted_series_sum':
             out_image_file = tempfile.mkstemp(suffix='_wss.nii.gz')[1]
             weighted_series_sum(input_image_4d_path=input_image_4d_path,
                                 out_image_path=out_image_file,
@@ -68,7 +72,7 @@ def determine_motion_target(motion_target_option: Union[str,tuple,list],
                                 verbose=False)
             return out_image_file
 
-        if motion_target_option=='mean_image':
+        if motion_target_option == 'mean_image':
             out_image_file = tempfile.mkstemp(suffix='_mean.nii.gz')[1]
             input_img = ants.image_read(input_image_4d_path)
             mean_img = input_img.get_average_of_timeseries()
@@ -78,7 +82,7 @@ def determine_motion_target(motion_target_option: Union[str,tuple,list],
 
         raise ValueError("motion_target_option did not match a file or 'weighted_series_sum'")
 
-    if isinstance(motion_target_option,(list,tuple)):
+    if isinstance(motion_target_option, (list, tuple)):
 
         start_time = motion_target_option[0]
         end_time = motion_target_option[1]
@@ -105,11 +109,11 @@ def determine_motion_target(motion_target_option: Union[str,tuple,list],
 
 
 def motion_corr(input_image_4d_path: str,
-                motion_target_option: Union[str,tuple],
+                motion_target_option: Union[str, tuple],
                 out_image_path: str,
                 verbose: bool,
-                type_of_transform: str='DenseRigid',
-                half_life: float=None,
+                type_of_transform: str = 'DenseRigid',
+                half_life: float = None,
                 **kwargs) -> tuple[np.ndarray, list[str], list[float]]:
     """
     Correct PET image series for inter-frame motion. Runs rigid motion
@@ -127,7 +131,7 @@ def motion_corr(input_image_4d_path: str,
         type_of_transform (str): Type of transform to perform on the PET image,
             must be one of antspy's transformation types, i.e. 'DenseRigid' or
             'Translation'. Any transformation type that uses >6 degrees of
-            freedom is not recommended, use with caution. See 
+            freedom is not recommended, use with caution. See
             :py:func:`ants.registration`.
         half_life (float): Half life of the PET radioisotope in seconds. Used
             for certain settings of ``motion_target_option``.
@@ -161,7 +165,7 @@ def motion_corr(input_image_4d_path: str,
     pet_moco_np = pet_moco_ants.numpy()
     pet_moco_nibabel = ants.to_nibabel(pet_moco_ants)
 
-    image_io.safe_copy_meta(input_image_path=input_image_4d_path,out_image_path=out_image_path)
+    image_io.safe_copy_meta(input_image_path=input_image_4d_path, out_image_path=out_image_path)
 
     nibabel.save(pet_moco_nibabel, out_image_path)
     if verbose:
@@ -186,18 +190,18 @@ def motion_corr_frame_list(input_image_4d_path: str,
 
     Args:
         input_image_4d_path (str): Path to the input 4D PET image file.
-        motion_target_option (Union[str, tuple]): Option to determine the motion target. This can 
+        motion_target_option (Union[str, tuple]): Option to determine the motion target. This can
             be a path to a specific image file, a tuple of frame indices to generate a target, or
             specific options recognized by :func:`determine_motion_target`.
         out_image_path (str): Path to save the motion-corrected output image.
         verbose (bool): Whether to print verbose output during processing.
-        frames_list (list, optional): List of frame indices to correct. If None, corrects all 
+        frames_list (list, optional): List of frame indices to correct. If None, corrects all
             frames. Default is None.
         type_of_transform (str, optional): Type of transformation to use for registration. Default
             is 'Affine'.
-        transform_metric (str, optional): Metric to use for the transformation. Default is 
+        transform_metric (str, optional): Metric to use for the transformation. Default is
             'mattes'.
-        half_life (float, optional): Half-life value used by `determine_motion_target` if 
+        half_life (float, optional): Half-life value used by `determine_motion_target` if
             applicable. Default is None.
         **kwargs: Additional arguments passed to the `ants.registration` method.
 
@@ -205,16 +209,16 @@ def motion_corr_frame_list(input_image_4d_path: str,
         None
 
     Example:
-        
+
         .. code-block:: python
-            
+
             from petpal.preproc.motion_corr import motion_corr_frame_list
-            
+
             motion_corr_frame_list(input_image_4d_path='/path/to/image.nii.gz',
                                   motion_target_option='/path/to/target_image.nii.gz',
                                   out_image_path='/path/to/output_motion_corrected.nii.gz',
                                   verbose=True)
-                              
+
     Notes:
         - The :func:`determine_motion_target` function is used to derive the motion target image
             based on the specified option.
@@ -223,7 +227,7 @@ def motion_corr_frame_list(input_image_4d_path: str,
             ANTsPy library.
         - The corrected frames are reassembled into a 4D image and saved to the specified output
             path.
-        
+
     """
     input_image = ants.image_read(input_image_4d_path)
 
@@ -274,6 +278,7 @@ def motion_corr_frame_list(input_image_4d_path: str,
     if verbose:
         print(f"(ImageOps4d): motion corrected image saved to {out_image_path}")
 
+
 def motion_corr_frame_list_to_t1(input_image_4d_path: str,
                                  t1_image_path: str,
                                  motion_target_option: Union[str, tuple],
@@ -318,24 +323,24 @@ def motion_corr_frame_list_to_t1(input_image_4d_path: str,
             PET image.
 
     Example:
-        
+
         .. code-block:: python
-        
-        
+
+
             motion_corr_frame_list_to_t1(input_image_4d_path='pet_timeseries.nii.gz',
                               t1_image_path='t1_image.nii.gz',
                               motion_target_option='average',
                               out_image_path='pet_corrected.nii.gz',
                               verbose=True)
-                        
+
     """
 
     input_image = ants.image_read(input_image_4d_path)
     t1_image = ants.image_read(t1_image_path)
 
     motion_target_path = determine_motion_target(motion_target_option=motion_target_option,
-                                            input_image_4d_path=input_image_4d_path,
-                                            half_life=half_life)
+                                                 input_image_4d_path=input_image_4d_path,
+                                                 half_life=half_life)
     motion_target = ants.image_read(motion_target_path)
 
     motion_target_to_mpr_reg = ants.registration(fixed=t1_image,
@@ -375,7 +380,7 @@ def motion_corr_frame_list_to_t1(input_image_4d_path: str,
         else:
             tmp_transform = ants.apply_transforms(fixed=motion_target_in_t1,
                                                   moving=this_frame,
-                                                  transforms=motion_transform_matrix,
+                                                  transformlist=motion_transform_matrix,
                                                   interpolator='linear')
             out_image.append(tmp_transform)
 
@@ -398,7 +403,7 @@ def motion_corr_frames_above_mean_value(input_image_4d_path: str,
                                         type_of_transform: str = 'Affine',
                                         transform_metric: str = 'mattes',
                                         half_life: float = None,
-                                        scale_factor = 1.0,
+                                        scale_factor=1.0,
                                         **kwargs):
     r"""
     Perform motion correction on frames with mean values above the mean of a 4D PET image.
@@ -416,11 +421,11 @@ def motion_corr_frames_above_mean_value(input_image_4d_path: str,
         verbose (bool): Whether to print verbose output during processing.
         type_of_transform (str, optional): Type of transformation to use for registration.
             Default is 'Affine'.
-        transform_metric (str, optional): Metric to use for the transformation. Default is 
+        transform_metric (str, optional): Metric to use for the transformation. Default is
             'mattes'.
-        half_life (float, optional): Half-life value used by `determine_motion_target`, if 
+        half_life (float, optional): Half-life value used by `determine_motion_target`, if
             applicable. Default is None.
-        scale_factor (float, optional): Scale factor to apply to frame mean values before 
+        scale_factor (float, optional): Scale factor to apply to frame mean values before
             comparison. Default is 1.0.
         **kwargs: Additional arguments passed to the `ants.registration` method.
 
@@ -447,7 +452,7 @@ def motion_corr_frames_above_mean_value(input_image_4d_path: str,
             by `scale_factor`) are selected for motion correction.
         - The :func:`_get_list_of_frames_above_total_mean` function is used to
             identify the frames to be motion corrected based on their mean voxel values.
-          
+
     """
 
     frames_list = _get_list_of_frames_above_total_mean(image_4d_path=input_image_4d_path,
@@ -457,7 +462,7 @@ def motion_corr_frames_above_mean_value(input_image_4d_path: str,
                            motion_target_option=motion_target_option,
                            out_image_path=out_image_path,
                            verbose=verbose,
-                           frames_list = frames_list,
+                           frames_list=frames_list,
                            type_of_transform=type_of_transform,
                            transform_metric=transform_metric,
                            half_life=half_life,
@@ -493,7 +498,7 @@ def motion_corr_frames_above_mean_value_to_t1(input_image_4d_path: str,
         type_of_transform (str, optional): Type of transformation to use for registration. Default
             is 'AffineFast'.
         transform_metric (str, optional): Metric to use for the transformation. Default is 'mattes'.
-        half_life (float, optional): Half-life value used by `determine_motion_target`, if 
+        half_life (float, optional): Half-life value used by `determine_motion_target`, if
             applicable. Default is None.
         scale_factor (float, optional): Scale factor applied to the mean voxel value of the entire
             image for comparison. Must be greater than 0. Default is 1.0.
@@ -565,10 +570,10 @@ def _gen_nd_image_based_on_image_list(image_list: list[ants.core.ants_image.ANTs
         * :func:`petpal.preproc.motion_corr.motion_corr_frame_list_to_t1`
 
     Example:
-        
+
         .. code-block:: python
-        
-        
+
+
             import ants
             image1 = ants.image_read('frame1.nii.gz')
             image2 = ants.image_read('frame2.nii.gz')
@@ -576,7 +581,7 @@ def _gen_nd_image_based_on_image_list(image_list: list[ants.core.ants_image.ANTs
             result = _gen_nd_image_based_on_image_list(image_list)
             print(result.dimension)  # 4
             image4d = ants.list_to_ndimage(result, image_list)
-        
+
     """
     assert len(image_list) > 0
     assert image_list[0].dimension == 3
@@ -635,7 +640,7 @@ def _get_list_of_frames_above_total_mean(image_4d_path: str,
             individual frame means.
         - The function uses the :func:`ants.ndimage_to_list` method from ANTsPy to convert the 4D
             image into a list of 3D frames.
-    
+
     """
     assert scale_factor > 0
     image = ants.image_read(image_4d_path)

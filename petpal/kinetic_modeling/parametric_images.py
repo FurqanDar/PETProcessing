@@ -12,14 +12,18 @@ various properties, and handling parametric image data.
 import os
 import warnings
 import json
-from typing import Tuple, Callable
+from typing import Tuple, Callable, Union
 import nibabel
 import numpy as np
 import numba
 
+from petpal.kinetic_modeling.reference_tissue_models import (fit_mrtm2_2003_to_tac,
+                                                             calc_bp_from_mrtm2_2003_fit)
+from petpal.kinetic_modeling.fit_tac_with_rtms import get_rtm_kwargs, get_rtm_method
+from petpal.utils.time_activity_curve import TimeActivityCurveFromFile
 from petpal.utils.image_io import safe_load_4dpet_nifti
 from . import graphical_analysis
-from ..utils.image_io import safe_load_tac, safe_copy_meta
+from ..utils.image_io import safe_load_tac, safe_copy_meta, validate_two_images_same_dimensions
 
 
 @numba.njit()
@@ -124,6 +128,287 @@ def generate_parametric_images_with_graphical_method(pTAC_times: np.ndarray,
 
     return slope_img, intercept_img
 
+
+def apply_mrtm2_to_all_voxels(tac_times_in_minutes: np.ndarray,
+                              tgt_image: np.ndarray,
+                              ref_tac_vals: np.ndarray,
+                              k2_prime: float,
+                              t_thresh_in_mins: float,
+                              mask_img: np.ndarray) -> Tuple[np.ndarray, np.ndarray]:
+    """
+    Generates parametric images for 4D-PET data using the MRTM2 reference tissue method.
+
+    Args:
+        tac_times_in_minutes (np.ndarray): A 1D array representing the reference TAC and PET frame
+            times in minutes.
+        tgt_image (np.ndarray): A 4D array representing the 3D PET image over time.
+            The shape of this array should be (x, y, z, time).
+        ref_tac_vals (np.ndarray): A 1D array representing the reference TAC values. This array
+            should be of the same length as `tac_times_in_minutes`.
+        k2_prime (float): A float representing the k2' value to be used for MRTM2 analysis. This
+            is chosen based on the tracer or based on a regional MRTM1 analysis.
+        t_thresh_in_mins (float): A float representing the threshold time past which MRTM
+            parameters are calculated with a least squares fit.
+        mask_img (np.ndarray): A 3D array representing the brain mask for `tgt_image`, where brain
+            regions are labelled 1 and non-brain regions are labelled 0. This is made necessary in
+            order to save time during computation. 
+
+    Returns:
+        bp_img (np.ndarray): A 3D array with computed BP values based on the MRTM2 parameter fit
+            results. 
+        simulation_img (np.ndarray): A 4D array with the same shape as `tgt_image` where each voxel
+            is the best fit curve based on the solved parameters to the linear equation in MRTM2.
+    """
+    img_dims = tgt_image.shape
+
+    bp_img = np.zeros((img_dims[0], img_dims[1], img_dims[2]), float)
+    simulation_img = np.zeros_like(tgt_image)
+
+    for i in range(0, img_dims[0], 1):
+        for j in range(0, img_dims[1], 1):
+            for k in range(0, img_dims[2], 1):
+                if mask_img[i,j,k]>0.5:
+                    analysis_vals = fit_mrtm2_2003_to_tac(tac_times_in_minutes=tac_times_in_minutes,
+                                                          ref_tac_vals=ref_tac_vals,
+                                                          tgt_tac_vals=tgt_image[i, j, k, :],
+                                                          k2_prime=k2_prime,
+                                                          t_thresh_in_mins=t_thresh_in_mins)
+                    try:
+                        bp_img[i, j, k] = calc_bp_from_mrtm2_2003_fit(analysis_vals[0])
+                    except ValueError as exc:
+                        print("Error in estimating BP from parameters, setting BP to NaN."
+                              f"See: {exc}")
+                        bp_img[i, j, k] = np.nan
+                    simulation_img[i, j, k, :] = analysis_vals[1]
+
+    return bp_img, simulation_img
+
+
+class ReferenceTissueParametricImage:
+    """
+    Class for generating parametric images of 4D-PET images using reference tissue model (RTM)
+    methods.
+
+    Example:
+        .. code-block:: python
+            
+            from petpal.kinetic_modeling import parametric_images
+            
+            rtm_parametric = ReferenceTissueParametricImage(reference_tac_path='/path/to/tac.tsv',
+                                                            pet_image_path='/path/to/pet.nii.gz',
+                                                            mask_image_path='/path/to/mask.nii.gz',
+                                                            output_directory='/path/to/output,
+                                                            output_filename_prefix='sub-001_mrtm2')
+            rtm_parametric.run_parametric_analysis(method='mrtm2',
+                                                   k2_prime=0.01,
+                                                   t_thresh_in_mins=30)
+            rtm_parametric.save_parametric_images()
+
+    """
+    def __init__(self,
+                 reference_tac_path: str,
+                 pet_image_path: str,
+                 mask_image_path: str,
+                 output_directory: str,
+                 output_filename_prefix: str,
+                 method: str='mrtm2'):
+        """
+        Initialize ReferenceTissueParametricImage with input values.
+
+        Args:
+            reference_tac_path (str): Path to the reference region TAC file.
+            pet_image_path (str): Path to the 4D PET image on which kinetic analysis is performed.
+            mask_image_path (str): Path to image that masks the brain in the same space as the PET
+                image.
+            output_directory (str): Path to folder where analysis is saved.
+            output_filename_prefix (str): Prefix for output files saved after analysis.
+            method (str): RTM method to run. Default 'mrtm2'.
+        """
+        self.reference_tac = TimeActivityCurveFromFile(tac_path=reference_tac_path)
+        self.pet_image = safe_load_4dpet_nifti(pet_image_path)
+        self.mask_image = safe_load_4dpet_nifti(mask_image_path)
+
+        validate_two_images_same_dimensions(self.pet_image,self.mask_image,check_4d=False)
+
+        self.output_directory = output_directory
+        self.output_filename_prefix = output_filename_prefix
+        self.method = method
+        self.analysis_props = self.init_analysis_props(method)
+        self.fit_results = None, None
+
+
+    def init_analysis_props(self, method: str) -> dict:
+        r"""
+        Initializes the analysis properties dict based on the specified RTM analysis method.
+
+        Args:
+            method (str): RTM analysis method. Must be one of 'srtm', 'frtm', 'mrtm-original',
+                'mrtm' or 'mrtm2'.
+
+        Returns:
+            dict: A dictionary containing method-specific property keys and default values.
+
+        Raises:
+            ValueError: If input `method` is not one of the supported RTM methods.
+        """
+        common_props = {'MethodName': method.upper()}
+        if method.startswith("mrtm"):
+            props = {
+                'BP': None,
+                'k2Prime': None,
+                'ThresholdTime': None,
+                'Bounds': None,
+                'StartFrameTime': None,
+                'EndFrameTime' : None,
+                'NumberOfPointsFit': None,
+                'RawFits': None,
+                **common_props
+                }
+        elif method.startswith("srtm") or method.startswith("frtm"):
+            props = {
+                'FitValues': None,
+                'FitStdErr': None,
+                **common_props
+                }
+        else:
+            raise ValueError(f"Invalid method! Must be either 'srtm', 'frtm', 'srtm2', 'frtm2', "
+                             f"'mrtm-original', 'mrtm' or 'mrtm2'. Got {method}.")
+        return props
+
+
+    def set_analysis_props(self,
+                           props: dict,
+                           bounds: Union[None, np.ndarray] = None,
+                           k2_prime: float=None,
+                           t_thresh_in_mins: float=None,
+                           image_scale: float=None):
+        """
+        Set kwargs used for running parametric analysis.
+
+        Args:
+            rtm_kwargs (dict): Dictionary of kwargs fed into RTM analysis.
+        """
+        props['Bounds'] = bounds
+        props['k2Prime'] = k2_prime
+        props['ThresholdTime'] = t_thresh_in_mins
+        props['ImageScale'] = image_scale
+
+
+    def run_parametric_analysis(self,
+                                bounds: Union[None, np.ndarray] = None,
+                                k2_prime: float=None,
+                                t_thresh_in_mins: float=None,
+                                image_scale: float=1/37000):
+        """
+        Run the analysis.
+
+        Args:
+            method (str): The method to be used in voxel-wise analysis. Currently only mrtm2 is
+                implemented.
+            bounds (Union[None, np.ndarray]): Bounds on fit parameters. See
+                :py:func:`get_rtm_kwargs`. Default None.
+            k2_prime (float): k2' value set for all voxel-wise analysis. Default None.
+            t_thresh_in_mins (float): Threshold time after which kinetic parameters are fit.
+                Default None.
+        
+        Returns:
+            fit_results (np.ndarray, Tuple[np.ndarray, np.ndarray]): Kinetic parameters and
+                simulated data returned as arrays. 
+        """
+        pet_np = self.pet_image.get_fdata()
+        mask_np = self.mask_image.get_fdata()
+        tac_times_in_minutes = self.reference_tac.tac_times_in_minutes
+        ref_tac_vals = self.reference_tac.tac_vals
+        rtm_method = get_rtm_method(self.method)
+        analysis_kwargs = get_rtm_kwargs(method=rtm_method,
+                                         bounds=bounds,
+                                         k2_prime=k2_prime,
+                                         t_thresh_in_mins=t_thresh_in_mins)
+
+        if self.method=='mrtm2':
+            analysis_function = apply_mrtm2_to_all_voxels
+        else:
+            raise NotImplementedError(f"Method {self.method} is not yet implemented for voxel-wise"
+                                      f"analysis.")
+
+        fit_results = analysis_function(tac_times_in_minutes=tac_times_in_minutes,
+                                        tgt_image=pet_np * image_scale,
+                                        ref_tac_vals=ref_tac_vals,
+                                        mask_img=mask_np,
+                                        **analysis_kwargs)
+        self.fit_results = fit_results
+
+
+    def save_parametric_images(self):
+        """
+        Save parametric images.
+        """
+        bp_img, simulation_img = self.fit_results
+        pet_image = self.pet_image
+        mask_image = self.mask_image
+        bp_nibabel = nibabel.nifti1.Nifti1Image(dataobj=bp_img,
+                                                affine=mask_image.affine,
+                                                header=mask_image.header)
+        simulation_nibabel = nibabel.nifti1.Nifti1Image(dataobj=simulation_img,
+                                                        affine=pet_image.affine,
+                                                        header=pet_image.header)
+
+        try:
+            bp_img_path = os.path.join(self.output_directory,
+                                    f"{self.output_filename_prefix}_desc-bp_pet.nii.gz")
+            simulation_img_path = os.path.join(self.output_directory,
+                                            f"{self.output_filename_prefix}_desc-sim_pet.nii.gz")
+
+            nibabel.save(bp_nibabel,bp_img_path)
+            nibabel.save(simulation_nibabel,simulation_img_path)
+        except IOError as exc:
+            print("An IOError occurred while attempting to write the NIfTI image files.")
+            raise exc from None
+
+
+    def save_analysis_properties(self):
+        """
+        Saves the analysis properties to a JSON file in the output directory.
+
+        This method involves saving a dictionary of analysis properties, which include file paths,
+        analysis method, start and end frame times, threshold time, number of points fitted, and 
+        various properties like the maximum, minimum, mean, and variance of slopes and intercepts
+        found in the analysis. These analysis properties are written to a JSON file in the output
+        directory with the name following the pattern
+        `{output_filename_prefix}-analysis-props.json`.
+
+        Args:
+            None
+
+        Returns:
+            None
+
+        Raises:
+            IOError: An error occurred accessing the output_directory or while writing to the JSON
+            file.
+
+        See Also:
+            * :func:`save_analysis_properties`
+        """
+        analysis_props_file = os.path.join(self.output_directory,
+                                           f"{self.output_filename_prefix}_desc-"
+                                           f"{self.analysis_props['MethodName']}_props.json")
+        with open(analysis_props_file, 'w', encoding='utf-8') as f:
+            json.dump(obj=self.analysis_props, fp=f, indent=4)
+
+
+    def __call__(self, bounds, t_thresh_in_mins, k2_prime, image_scale):
+        self.run_parametric_analysis(bounds=bounds,
+                                     t_thresh_in_mins=t_thresh_in_mins,
+                                     k2_prime=k2_prime,
+                                     image_scale=image_scale)
+        self.set_analysis_props(props=self.analysis_props,
+                                bounds=bounds,
+                                k2_prime=k2_prime,
+                                t_thresh_in_mins=t_thresh_in_mins,
+                                image_scale=image_scale)
+        self.save_parametric_images()
+        self.save_analysis_properties()
 
 class GraphicalAnalysisParametricImage:
     """

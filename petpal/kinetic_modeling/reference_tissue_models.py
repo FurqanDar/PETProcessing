@@ -1,8 +1,7 @@
-"""
+r"""
 Todo:
-    * Add the Ichise paper citations.
-    * Add the SRTM and FRTM paper citations.
-    * Add implementations for the SRTM2 and FRTM2 analyses.
+    * Method to calculate chi-squared from fit, 
+        :math:`\chi^2=\Sigma_{i=1}^{n}(x_i-x_{ti})^2/\sigma_i^2`
     
 """
 import numpy as np
@@ -14,8 +13,73 @@ from .graphical_analysis import get_index_from_threshold
 from .graphical_analysis import cumulative_trapezoidal_integral as cum_trapz
 from . import tcms_as_convolutions as tcms_conv
 
+def weight_tac_simple(tac_durations_in_minutes: np.ndarray,
+                      tac_vals: np.ndarray) -> np.ndarray:
+    """
+    Weight a Time Activity Curve (TAC) based on variance. This function applies the simple frame
+    time length to activity ratio found in
+    http://www.turkupetcentre.net/petanalysis/model_weighting.html.
 
-def calc_srtm_tac(tac_times_in_minutes: np.ndarray, ref_tac_vals: np.ndarray, r1: float, k2: float, bp: float) -> np.ndarray:
+    Args:
+        tac_durations_in_minutes (np.ndarray): Duration of each frame in the TAC in minutes.
+        tac_vals (np.ndarray): Activity values for each frame in the TAC.
+    
+    Returns:
+        tac_weights (np.ndarray): Weights to be applied to the TAC during fitting process.
+    """
+    tac_weights = tac_durations_in_minutes/tac_vals
+    tac_vals_where_zero = np.where(tac_vals==0)
+    tac_weights[tac_vals_where_zero] = 0
+    return tac_weights
+
+
+def weight_tac_decay(tac_durations_in_minutes: np.ndarray,
+                     tac_vals: np.ndarray,
+                     tac_times_in_minutes: np.ndarray,
+                     half_life_in_minutes: np.ndarray) -> np.ndarray:
+    """
+    Weight a Time Activity Curve (TAC) based on variance. This function applies the simple frame
+    time length to activity ratio found in
+    http://www.turkupetcentre.net/petanalysis/model_weighting.html with an extra factor for decay
+    correction.
+
+    Args:
+        tac_durations_in_minutes (np.ndarray): Duration of each frame in the TAC in minutes.
+        tac_vals (np.ndarray): Activity values for each frame in the TAC.
+        tac_times_in_minutes (np.ndarray): Frame times for the TAC in minutes.
+        half_life_in_minutes (np.ndarray): Half life of the radioisotope in minutes.
+    
+    Returns:
+        tac_weights (np.ndarray): Weights to be applied to the TAC during fitting process.
+    """
+    decay_factor = np.exp(-np.log(2) / half_life_in_minutes * tac_times_in_minutes)
+    tac_weights = tac_durations_in_minutes * decay_factor / tac_vals
+    tac_vals_where_zero = np.where(tac_vals==0)
+    tac_weights[tac_vals_where_zero] = 0
+    return tac_weights
+
+
+def convert_weights_to_sigma(tac_weights: np.ndarray) -> np.ndarray:
+    r"""
+    Convert TAC weights to sigma (standard deviation) values. Calculated as
+    :math:`\sigma=w^{-1/2}`. Returns zero as the sigma value if the weight at that time point is
+    zero.
+
+    Args:
+        tac_weights (np.ndarray): Weights calculated using :meth:`weight_tac_simple` or
+        `weight_tac_decay`.
+    
+    Returns:
+        tac_sigma (np.ndarray): Array of sigmas calculated from the weights.
+    """
+    tac_sigma = np.power(tac_weights,-1/2)
+    tac_weights_where_zero = np.where(tac_weights==0)
+    tac_sigma[tac_weights_where_zero] = np.inf
+    return tac_sigma
+
+
+def calc_srtm_tac(tac_times_in_minutes: np.ndarray,
+                  ref_tac_vals: np.ndarray, r1: float, k2: float, bp: float) -> np.ndarray:
     r"""
     Calculate the Time Activity Curve (TAC) using the Simplified Reference Tissue Model (SRTM)
     with the given reference TAC and kinetic parameters.
@@ -40,9 +104,11 @@ def calc_srtm_tac(tac_times_in_minutes: np.ndarray, ref_tac_vals: np.ndarray, r1
 
     Args:
         tac_times_in_minutes (np.ndarray): The array representing the time-points for both TACs.
-        r1 (float): The ratio of the clearance rate of tracer from plasma to the reference to the transfer rate of the
-            tracer from plasma to the tissue; :math:`R_{1}\equiv\frac{k_1^\prime}{k_1}`.
-        k2 (float): The rate constant for the transfer of the tracer from tissue compartment to plasma.
+        r1 (float): The ratio of the clearance rate of tracer from plasma to the reference to the
+             transfer rate of the tracer from plasma to the tissue;
+             :math:`R_{1}\equiv\frac{k_1^\prime}{k_1}`.
+        k2 (float): The rate constant for the transfer of the tracer from tissue compartment to
+            plasma.
         bp (float): The binding potential of the tracer in the tissue.
         ref_tac_vals (np.ndarray): The values of the reference TAC.
 
@@ -53,13 +119,13 @@ def calc_srtm_tac(tac_times_in_minutes: np.ndarray, ref_tac_vals: np.ndarray, r1
     Raises:
         AssertionError: If the reference TAC and times are different dimensions.
 
-
     """
     first_term = r1 * ref_tac_vals
     bp_coeff = k2 / (1.0 + bp)
     exp_term = np.exp(-bp_coeff * tac_times_in_minutes)
     dt = tac_times_in_minutes[1] - tac_times_in_minutes[0]
-    second_term = (k2 - r1 * bp_coeff) * tcms_conv.calc_convolution_with_check(f=exp_term, g=ref_tac_vals, dt=dt)
+    convolution_term = tcms_conv.calc_convolution_with_check(f=exp_term,g=ref_tac_vals,dt=dt)
+    second_term = (k2 - r1 * bp_coeff) * convolution_term
 
     return first_term + second_term
 
@@ -568,7 +634,8 @@ def fit_frtm_to_tac_with_bounds(tac_times_in_minutes: np.ndarray,
 
     """
     def _fitting_frtm(tac_times_in_minutes, r1, k2, k3, k4):
-        return calc_frtm_tac(tac_times_in_minutes=tac_times_in_minutes, ref_tac_vals=ref_tac_vals, r1=r1, k2=k2, k3=k3, k4=k4)
+        return calc_frtm_tac(tac_times_in_minutes=tac_times_in_minutes,
+                             ref_tac_vals=ref_tac_vals, r1=r1, k2=k2, k3=k3, k4=k4)
 
     st_values = (r1_bounds[0], k2_bounds[0], k3_bounds[0], k4_bounds[0])
     lo_values = (r1_bounds[1], k2_bounds[1], k3_bounds[1], k4_bounds[1])
@@ -634,7 +701,8 @@ def fit_frtm2_to_tac_with_bounds(tac_times_in_minutes: np.ndarray,
 def fit_mrtm_original_to_tac(tac_times_in_minutes: np.ndarray,
                              tgt_tac_vals: np.ndarray,
                              ref_tac_vals: np.ndarray,
-                             t_thresh_in_mins: float):
+                             t_thresh_in_mins: float,
+                             weights: np.ndarray=None):
     r"""
     Fit the original (1996) Multilinear Reference Tissue Model (MRTM) to the provided target Time
     Activity Curve (TAC) values given the reference TAC, times, and threshold time (in minutes).
@@ -660,6 +728,7 @@ def fit_mrtm_original_to_tac(tac_times_in_minutes: np.ndarray,
         tgt_tac_vals (np.ndarray): Target TAC values to fit the MRTM.
         ref_tac_vals (np.ndarray): Reference TAC values.
         t_thresh_in_mins (float): Threshold time in minutes.
+        weights (np.ndarray): Weights applied to each frame. Default None.
 
     Returns:
         np.ndarray: Array containing fit results. (:math:`\frac{V}{V^{\prime}}`,
@@ -669,19 +738,21 @@ def fit_mrtm_original_to_tac(tac_times_in_minutes: np.ndarray,
         This function is implemented with numba for improved performance.
 
     """
+    if weights is None:
+        weights = np.ones_like(tac_times_in_minutes)
 
     non_zero_indices = np.argwhere(tgt_tac_vals != 0.).T[0]
 
     if len(non_zero_indices) <= 2:
-        return np.asarray([np.nan, np.nan, np.nan])
+        return np.asarray([np.nan, np.nan, np.nan]), np.asarray(len(tac_times_in_minutes)*[np.nan])
 
     t_thresh = get_index_from_threshold(times_in_minutes=tac_times_in_minutes[non_zero_indices],
                                         t_thresh_in_minutes=t_thresh_in_mins)
 
     if len(tac_times_in_minutes[non_zero_indices][t_thresh:]) <= 2:
-        return np.asarray([np.nan, np.nan, np.nan])
+        return np.asarray([np.nan, np.nan, np.nan]), np.asarray(len(tac_times_in_minutes)*[np.nan])
 
-    y = cum_trapz(xdata=tac_times_in_minutes, ydata=tgt_tac_vals, initial=0.0)
+    y = cum_trapz(xdata=tac_times_in_minutes, ydata=tgt_tac_vals, initial=0.0)*weights
     y = y[non_zero_indices] / tgt_tac_vals[non_zero_indices]
 
     x1 = cum_trapz(xdata=tac_times_in_minutes, ydata=ref_tac_vals, initial=0.0)
@@ -690,18 +761,21 @@ def fit_mrtm_original_to_tac(tac_times_in_minutes: np.ndarray,
     x2 = ref_tac_vals[non_zero_indices] / tgt_tac_vals[non_zero_indices]
 
     x_matrix = np.ones((len(y), 3), float)
-    x_matrix[:, 0] = x1[:]
-    x_matrix[:, 1] = x2[:]
+    x_matrix[:, 0] = x1[:]*weights
+    x_matrix[:, 1] = x2[:]*weights
 
     fit_ans = np.linalg.lstsq(x_matrix[t_thresh:], y[t_thresh:])[0]
-    return fit_ans
+
+    y_fit = x_matrix[:,0]*fit_ans[0] + x_matrix[:,1]*fit_ans[1] + x_matrix[:,2]*fit_ans[2]
+    return fit_ans, y_fit
 
 
 @numba.njit(fastmath=True)
 def fit_mrtm_2003_to_tac(tac_times_in_minutes: np.ndarray,
                          tgt_tac_vals: np.ndarray,
                          ref_tac_vals: np.ndarray,
-                         t_thresh_in_mins: float):
+                         t_thresh_in_mins: float,
+                         weights: np.ndarray=None):
     r"""
     Fit the 2003 Multilinear Reference Tissue Model (MRTM) to the provided target Time Activity
     Curve (TAC) values given the reference TAC, times, and threshold time (in minutes). The data
@@ -725,6 +799,7 @@ def fit_mrtm_2003_to_tac(tac_times_in_minutes: np.ndarray,
         tgt_tac_vals (np.ndarray): Target TAC values to fit the MRTM.
         ref_tac_vals (np.ndarray): Reference TAC values.
         t_thresh_in_mins (float): Threshold time in minutes.
+        weights (np.ndarray): Weights applied to each frame. Default None.
 
     Returns:
         np.ndarray: Array containing fit results. (:math:`-\frac{V}{V^{\prime}b}`,
@@ -734,19 +809,24 @@ def fit_mrtm_2003_to_tac(tac_times_in_minutes: np.ndarray,
         This function is implemented with numba for improved performance.
 
     """
+    if weights is None:
+        weights = np.ones_like(tac_times_in_minutes)
 
-    t_thresh = get_index_from_threshold(times_in_minutes=tac_times_in_minutes, t_thresh_in_minutes=t_thresh_in_mins)
+    t_thresh = get_index_from_threshold(times_in_minutes=tac_times_in_minutes,
+                                        t_thresh_in_minutes=t_thresh_in_mins)
     if t_thresh == -1:
-        return np.asarray([np.nan, np.nan, np.nan])
+        return np.asarray([np.nan, np.nan, np.nan]), np.asarray(len(tac_times_in_minutes)*[np.nan])
 
-    y = tgt_tac_vals
+    y = tgt_tac_vals*weights
     x_matrix = np.ones((len(y), 3), float)
-    x_matrix[:, 0] = cum_trapz(xdata=tac_times_in_minutes, ydata=ref_tac_vals, initial=0.0)
-    x_matrix[:, 1] = cum_trapz(xdata=tac_times_in_minutes, ydata=tgt_tac_vals, initial=0.0)
-    x_matrix[:, 2] = ref_tac_vals
+    x_matrix[:, 0] = cum_trapz(xdata=tac_times_in_minutes, ydata=ref_tac_vals, initial=0.0)*weights
+    x_matrix[:, 1] = cum_trapz(xdata=tac_times_in_minutes, ydata=tgt_tac_vals, initial=0.0)*weights
+    x_matrix[:, 2] = ref_tac_vals*weights
 
     fit_ans = np.linalg.lstsq(x_matrix[t_thresh:], y[t_thresh:])[0]
-    return fit_ans
+
+    y_fit = x_matrix[:,0]*fit_ans[0] + x_matrix[:,1]*fit_ans[1] + x_matrix[:,2]*fit_ans[2]
+    return fit_ans, y_fit
 
 
 @numba.njit(fastmath=True)
@@ -754,7 +834,8 @@ def fit_mrtm2_2003_to_tac(tac_times_in_minutes: np.ndarray,
                           tgt_tac_vals: np.ndarray,
                           ref_tac_vals: np.ndarray,
                           t_thresh_in_mins: float,
-                          k2_prime: float):
+                          k2_prime: float,
+                          weights: np.ndarray=None):
     r"""
     Fit the second version of Multilinear Reference Tissue Model (MRTM2) to the provided target
     Time Activity Curve (TAC) values given the reference TAC, times, threshold time (in minutes),
@@ -780,6 +861,7 @@ def fit_mrtm2_2003_to_tac(tac_times_in_minutes: np.ndarray,
         ref_tac_vals (np.ndarray): Reference TAC values.
         t_thresh_in_mins (float): Threshold time in minutes.
         k2_prime (float): Kinetic parameter: washout rate for the reference region.
+        weights (np.ndarray): Weights applied to each frame. Default None.
 
     Returns:
         np.ndarray: Array containing fit results. (:math:`-\frac{V}{V^{\prime}b}`,
@@ -789,22 +871,27 @@ def fit_mrtm2_2003_to_tac(tac_times_in_minutes: np.ndarray,
         This function is implemented with numba for improved performance.
 
     """
+    if weights is None:
+        weights = np.ones_like(tac_times_in_minutes)
 
-    t_thresh = get_index_from_threshold(times_in_minutes=tac_times_in_minutes, t_thresh_in_minutes=t_thresh_in_mins)
+    t_thresh = get_index_from_threshold(times_in_minutes=tac_times_in_minutes,
+                                        t_thresh_in_minutes=t_thresh_in_mins)
     if t_thresh == -1:
-        return np.asarray([np.nan, np.nan])
+        return np.asarray([np.nan, np.nan]), np.asarray(len(tac_times_in_minutes)*[np.nan])
 
     x1 = cum_trapz(xdata=tac_times_in_minutes, ydata=ref_tac_vals, initial=0.0)
     x1 += ref_tac_vals / k2_prime
     x2 = cum_trapz(xdata=tac_times_in_minutes, ydata=tgt_tac_vals, initial=0.0)
 
-    y = tgt_tac_vals
+    y = tgt_tac_vals*weights
     x_matrix = np.ones((len(y), 2), float)
-    x_matrix[:, 0] = x1[:]
-    x_matrix[:, 1] = x2[:]
+    x_matrix[:, 0] = x1[:]*weights
+    x_matrix[:, 1] = x2[:]*weights
 
     fit_ans = np.linalg.lstsq(x_matrix[t_thresh:], y[t_thresh:])[0]
-    return fit_ans
+
+    y_fit = x_matrix[:,0]*fit_ans[0] + x_matrix[:,1]*fit_ans[1]
+    return fit_ans, y_fit
 
 
 def calc_bp_from_mrtm_original_fit(fit_vals: np.ndarray) -> float:
@@ -860,7 +947,7 @@ def calc_bp_from_mrtm_2003_fit(fit_vals: np.ndarray) -> float:
         :func:`fit_mrtm_2003_to_tac` where the order of the regression coefficients is laid out.
 
     """
-    return -fit_vals[0]/fit_vals[1] + 1.0
+    return -(fit_vals[0]/fit_vals[1] + 1.0)
 
 
 def calc_bp_from_mrtm2_2003_fit(fit_vals: np.ndarray) -> float:

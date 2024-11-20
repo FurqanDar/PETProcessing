@@ -4,15 +4,15 @@ creation and management of BIDS projects, offering functions for building projec
 and managing neuroimaging data files. Key features include scaffolding BIDS projects, caching file paths for efficient
 retrieval, and supporting various neuroimaging file types through integration with `nibabel`.
 """
-import os
 import json
-import numpy
+import os
 import shutil
 import warnings
-from pathlib import Path
+
+import numpy
 from bids_validator import BIDSValidator
-from nibabel.nifti1 import Nifti1Image
 from nibabel.filebasedimages import FileBasedImage
+from nibabel.nifti1 import Nifti1Image
 
 
 # from .registration_tools import ImageIO

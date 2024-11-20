@@ -12,6 +12,7 @@ Submodules
    petpal.utils.math_lib
    petpal.utils.testing_utils
    petpal.utils.useful_functions
+   petpal.utils.time_activity_curve
 
 Module contents
 ---------------
