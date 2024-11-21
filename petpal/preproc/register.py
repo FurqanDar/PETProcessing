@@ -15,24 +15,26 @@ from .motion_corr import determine_motion_target
 
 logger = logging.getLogger(__name__)
 
-def register_pet_to_anat(pet_image_path: str,
-                         anat_image_path: str,
-                         pet_motion_target_option: Union[str, tuple],
+def register_pet_to_anat(input_image_path: str,
+                         reference_image_path: str,
+                         motion_target_option: Union[str, tuple],
                          out_image_path: str,
                          verbose: bool = False,
                          type_of_transform: str = 'DenseRigid',
-                         half_life: float = None, **kwargs):
+                         half_life: float = None,
+                         **kwargs):
     """
-    Computes and runs rigid registration of 4D PET image series to 3D anatomical image, typically
-    a T1 MRI. Runs rigid registration module from Advanced Normalisation Tools (ANTs) with  default
+    Computes and runs rigid registration of 4D PET image series to 3D anatomical image, typically a T1 MRI.
+
+    Runs rigid registration module from Advanced Normalisation Tools (ANTs) with  default
     inputs. Will upsample PET image to the resolution of anatomical imaging.
 
     Args:
-        pet_image_path (str): Path to a .nii or .nii.gz file containing a 4D
+        input_image_path (str): Path to a .nii or .nii.gz file containing a 4D
             PET image to be registered to anatomical space.
-        anat_image_path (str): Path to a .nii or .nii.gz file containing a 3D
+        reference_image_path (str): Path to a .nii or .nii.gz file containing a 3D
             anatomical image to which PET image is registered.
-        pet_motion_target_option (str | tuple): Target image for computing
+        motion_target_option (str | tuple): Target image for computing
             transformation. See :meth:`determine_motion_target`.
         type_of_transform (str): Type of transform to perform on the PET image, must be one of antspy's
             transformation types, i.e. 'DenseRigid' or 'Translation'. Any transformation type that uses
@@ -46,12 +48,12 @@ def register_pet_to_anat(pet_image_path: str,
     if verbose:
         logger.setLevel(logging.INFO)
 
-    motion_target = determine_motion_target(motion_target_option=pet_motion_target_option,
-                                            input_image_4d_path=pet_image_path,
+    motion_target = determine_motion_target(motion_target_option=motion_target_option,
+                                            input_image_4d_path=input_image_path,
                                             half_life=half_life)
     motion_target_image = ants.image_read(motion_target)
-    mri_image = ants.image_read(anat_image_path)
-    pet_image_ants = ants.image_read(pet_image_path)
+    mri_image = ants.image_read(reference_image_path)
+    pet_image_ants = ants.image_read(input_image_path)
 
     transforms = ants.registration(moving=motion_target_image,
                                    fixed=mri_image,
@@ -69,34 +71,36 @@ def register_pet_to_anat(pet_image_path: str,
                                              transformlist=transforms['fwdtransforms'],
                                              interpolator='linear',
                                              imagetype=dim)
-    logger.info(f'Registration applied to {pet_image_path}')
+    logger.info(f'Registration applied to {input_image_path}')
 
     ants.image_write(registered_image, out_image_path)
     logger.info(f'Transformed image saved to {out_image_path}')
 
-    image_io.safe_copy_meta(input_image_path=pet_image_path, out_image_path=out_image_path)
+    image_io.safe_copy_meta(input_image_path=input_image_path, out_image_path=out_image_path)
 
-def register_anat_to_pet(pet_image_path: str,
-                         anat_image_path: str,
-                         pet_motion_target_option: Union[str, tuple],
+def register_anat_to_pet(input_image_path: str,
+                         reference_image_path: str,
+                         motion_target_option: Union[str, tuple],
                          out_image_path: str,
                          verbose: bool = False,
                          type_of_transform: str = 'DenseRigid',
                          half_life: float = None,
-                         in_seg_path: str = None,
+                         input_seg_path: str = None,
                          out_seg_path: str = None,
                          **kwargs):
     """
-    Computes and runs rigid registration of 4D PET image series to 3D anatomical image, typically
-    a T1 MRI. Runs rigid registration module from Advanced Normalisation Tools (ANTs) with  default
-    inputs. Will upsample PET image to the resolution of anatomical imaging.
+    Computes and runs rigid registration of 3D anatomical image (typically a T1 MRI) to 3D Space of 4D PET image series.
+
+    Runs rigid registration module from Advanced Normalisation Tools (ANTs) with default inputs. Will downsample
+    anatomical image to the resolution of anatomical imaging. Allows for simultaneous registration of a segmentation
+    image if it is in the same space as the anatomical image.
 
     Args:
-        pet_image_path (str): Path to a .nii or .nii.gz file containing a 4D
-            PET image to be registered to anatomical space.
-        anat_image_path (str): Path to a .nii or .nii.gz file containing a 3D
-            anatomical image to which PET image is registered.
-        pet_motion_target_option (str | tuple): Target image for computing
+        input_image_path (str): Path to a .nii or .nii.gz file containing a 3D
+            anatomical image to be registered to PET space.
+        reference_image_path (str): Path to a .nii or .nii.gz file containing a 4D
+            PET image to which anatomical image is registered.
+        motion_target_option (str | tuple): Target image for computing
             transformation. See :meth:`determine_motion_target`.
         type_of_transform (str): Type of transform to perform on the PET image, must be one of antspy's
             transformation types, i.e. 'DenseRigid' or 'Translation'. Any transformation type that uses
@@ -105,21 +109,22 @@ def register_anat_to_pet(pet_image_path: str,
             is written.
         verbose (bool): Set to ``True`` to output processing information.
         half_life (float): Half-life of PET tracer in seconds.
-        in_seg_path (str): Path to a .nii or .nii.gz file containing a 3D segmentation image to be registered as well.
+        input_seg_path (str): Path to a .nii or .nii.gz file containing a 3D segmentation image to be
+            registered as well.
         out_seg_path (str): Path to a .nii or .nii.gz file to which the registered segmentation is written.
         kwargs (keyword arguments): Additional arguments passed to :py:func:`ants.registration`.
     """
     if verbose:
         logger.setLevel(logging.INFO)
 
-    if bool(out_seg_path) != bool(in_seg_path): # logical XOR; either both or neither paths should be passed
+    if bool(out_seg_path) != bool(input_seg_path): # logical XOR; either both or neither paths should be passed
         raise ValueError("If in_seg_path is specified, out_seg_path must also be specified.")
 
-    motion_target = determine_motion_target(motion_target_option=pet_motion_target_option,
-                                            input_image_4d_path=pet_image_path,
+    motion_target = determine_motion_target(motion_target_option=motion_target_option,
+                                            input_image_4d_path=reference_image_path,
                                             half_life=half_life)
     motion_target_image = ants.image_read(motion_target)
-    mri_image_ants = ants.image_read(anat_image_path)
+    mri_image_ants = ants.image_read(input_image_path)
 
     transforms = ants.registration(moving=mri_image_ants,
                                    fixed=motion_target_image,
@@ -134,21 +139,21 @@ def register_anat_to_pet(pet_image_path: str,
                                              transformlist=transform,
                                              interpolator='linear',
                                              imagetype=0)
-    logger.info(f'Registration applied to {anat_image_path}')
+    logger.info(f'Registration applied to {input_image_path}')
 
     ants.image_write(registered_image, out_image_path)
     logger.info(f'Transformed image saved to {out_image_path}')
 
-    image_io.safe_copy_meta(input_image_path=anat_image_path, out_image_path=out_image_path)
+    image_io.safe_copy_meta(input_image_path=input_image_path, out_image_path=out_image_path)
 
-    if in_seg_path is not None:
-        segmentation_image_ants = ants.image_read(in_seg_path)
+    if input_seg_path is not None:
+        segmentation_image_ants = ants.image_read(input_seg_path)
         registered_segmentation = ants.apply_transforms(moving=segmentation_image_ants,
                                                         fixed=motion_target_image,
                                                         transformlist=transform,
                                                         interpolator='genericLabel',
                                                         imagetype=0)
-        logger.info(f'Registration applied to {in_seg_path}')
+        logger.info(f'Registration applied to {input_seg_path}')
         ants.image_write(registered_segmentation, out_seg_path)
         logger.info(f'Transformed segmentation saved to {out_seg_path}')
 
@@ -169,6 +174,7 @@ def warp_pet_atlas(input_image_path: str,
         anat_image_path (str): Image used to compute registration to atlas space.
         atlas_image_path (str): Atlas to which input image is warped.
         out_image_path (str): Path to which warped image is saved.
+        verbose (bool): Set to ``True`` to output processing information.
         type_of_transform (str): Type of non-linear transform applied to input
             image using :py:func:`ants.registration`.
         kwargs (keyword arguments): Additional arguments passed to
@@ -320,8 +326,9 @@ def resample_nii_4dfp(input_image_path: str,
 
     Args:
         input_image_path (str): Path to PET image on which transform is applied.
-        resampled_image (str): Path to image with sampling needed for output. Often `rawavg.mgz` in FreeSurfer directory.
+        resampled_image_path (str): Path to image with sampling needed for output. Often `rawavg.mgz` in FreeSurfer directory.
         mpr_image_path (str): Path to mpr (MPRAGE) image the PET will be transformed to.
+        out_image_path (str): Path to which the transformed image is saved.
     """
     input_image = nibabel.load(input_image_path)
     resampled_image = nibabel.load(resampled_image_path)

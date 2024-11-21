@@ -339,7 +339,7 @@ class PreProc:
         elif method_name=='register_pet':
             outfile = self.generate_outfile_path(method_short='reg', modality=modality)
             register_pet(motion_target_option=preproc_props['MotionTarget'],
-                         input_reg_image_path=preproc_props['FilePathRegInp'],
+                         input_image_path=preproc_props['FilePathRegInp'],
                          reference_image_path=preproc_props['FilePathAnat'],
                          out_image_path=outfile,
                          verbose=preproc_props['Verbose'],
