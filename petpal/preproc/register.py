@@ -15,17 +15,13 @@ from .motion_corr import determine_motion_target
 
 logger = logging.getLogger(__name__)
 
-def register_pet(pet_image_path: str,
-                 anat_image_path: str,
-                 pet_motion_target_option: Union[str, tuple],
-                 out_image_path: str,
-                 verbose: bool = False,
-                 type_of_transform: str = 'DenseRigid',
-                 half_life: float = None,
-                 reverse: bool = False,
-                 in_seg_path: str = None,
-                 out_seg_path: str = None,
-                 **kwargs):
+def register_pet_to_anat(pet_image_path: str,
+                         anat_image_path: str,
+                         pet_motion_target_option: Union[str, tuple],
+                         out_image_path: str,
+                         verbose: bool = False,
+                         type_of_transform: str = 'DenseRigid',
+                         half_life: float = None, **kwargs):
     """
     Computes and runs rigid registration of 4D PET image series to 3D anatomical image, typically
     a T1 MRI. Runs rigid registration module from Advanced Normalisation Tools (ANTs) with  default
@@ -45,19 +41,10 @@ def register_pet(pet_image_path: str,
             is written.
         verbose (bool): Set to ``True`` to output processing information.
         half_life (float): Half-life of PET tracer in seconds.
-        reverse (bool): If True, register anatomical image onto PET space
-        in_seg_path (str): Segmentation to register using the same transform computed for
-            out_image. Segmentation must be in the space of the moving image. If specified, out_seg_path must also
-            be specified.
-        out_seg_path (str): Path to write registered segmentation found at in_seg_path. If specified, in_seg_path must
-            also be specified.
         kwargs (keyword arguments): Additional arguments passed to :py:func:`ants.registration`.
     """
     if verbose:
         logger.setLevel(logging.INFO)
-
-    if bool(out_seg_path) != bool(in_seg_path): # logical XOR; either both or neither paths should be passed
-        raise ValueError("If in_seg_path is specified, out_seg_path must also be specified.")
 
     motion_target = determine_motion_target(motion_target_option=pet_motion_target_option,
                                             input_image_4d_path=pet_image_path,
@@ -72,51 +59,98 @@ def register_pet(pet_image_path: str,
                                    write_composite_transform=True,
                                    **kwargs)
 
-
-    input_image = pet_image_ants if not reverse else mri_image
-    input_path = pet_image_path if not reverse else anat_image_path
-    fixed_image = mri_image if not reverse else motion_target_image
-
-    if input_image.dimension == 4:
+    if pet_image_ants.dimension == 4:
         dim = 3
     else:
         dim = 0
 
-    transform = transforms['fwdtransforms'] if not reverse else transforms['invtransforms']
-
-    registered_image = ants.apply_transforms(moving=input_image,
-                                             fixed=fixed_image,
-                                             transformlist=transform,
+    registered_image = ants.apply_transforms(moving=pet_image_ants,
+                                             fixed=mri_image,
+                                             transformlist=transforms['fwdtransforms'],
                                              interpolator='linear',
                                              imagetype=dim)
-    logger.info(f'Registration applied to {pet_image_path if not reverse else anat_image_path}')
+    logger.info(f'Registration applied to {pet_image_path}')
 
     ants.image_write(registered_image, out_image_path)
     logger.info(f'Transformed image saved to {out_image_path}')
 
-    image_io.safe_copy_meta(input_image_path=input_path, out_image_path=out_image_path)
+    image_io.safe_copy_meta(input_image_path=pet_image_path, out_image_path=out_image_path)
+
+def register_anat_to_pet(pet_image_path: str,
+                         anat_image_path: str,
+                         pet_motion_target_option: Union[str, tuple],
+                         out_image_path: str,
+                         verbose: bool = False,
+                         type_of_transform: str = 'DenseRigid',
+                         half_life: float = None,
+                         in_seg_path: str = None,
+                         out_seg_path: str = None,
+                         **kwargs):
+    """
+    Computes and runs rigid registration of 4D PET image series to 3D anatomical image, typically
+    a T1 MRI. Runs rigid registration module from Advanced Normalisation Tools (ANTs) with  default
+    inputs. Will upsample PET image to the resolution of anatomical imaging.
+
+    Args:
+        pet_image_path (str): Path to a .nii or .nii.gz file containing a 4D
+            PET image to be registered to anatomical space.
+        anat_image_path (str): Path to a .nii or .nii.gz file containing a 3D
+            anatomical image to which PET image is registered.
+        pet_motion_target_option (str | tuple): Target image for computing
+            transformation. See :meth:`determine_motion_target`.
+        type_of_transform (str): Type of transform to perform on the PET image, must be one of antspy's
+            transformation types, i.e. 'DenseRigid' or 'Translation'. Any transformation type that uses
+            >6 degrees of freedom is not recommended, use with caution. See :py:func:`ants.registration`.
+        out_image_path (str): Path to a .nii or .nii.gz file to which the registered PET series
+            is written.
+        verbose (bool): Set to ``True`` to output processing information.
+        half_life (float): Half-life of PET tracer in seconds.
+        in_seg_path (str): Path to a .nii or .nii.gz file containing a 3D segmentation image to be registered as well.
+        out_seg_path (str): Path to a .nii or .nii.gz file to which the registered segmentation is written.
+        kwargs (keyword arguments): Additional arguments passed to :py:func:`ants.registration`.
+    """
+    if verbose:
+        logger.setLevel(logging.INFO)
+
+    if bool(out_seg_path) != bool(in_seg_path): # logical XOR; either both or neither paths should be passed
+        raise ValueError("If in_seg_path is specified, out_seg_path must also be specified.")
+
+    motion_target = determine_motion_target(motion_target_option=pet_motion_target_option,
+                                            input_image_4d_path=pet_image_path,
+                                            half_life=half_life)
+    motion_target_image = ants.image_read(motion_target)
+    mri_image_ants = ants.image_read(anat_image_path)
+
+    transforms = ants.registration(moving=mri_image_ants,
+                                   fixed=motion_target_image,
+                                   type_of_transform=type_of_transform,
+                                   write_composite_transform=True,
+                                   **kwargs)
+
+    transform = transforms['fwdtransforms']
+
+    registered_image = ants.apply_transforms(moving=mri_image_ants,
+                                             fixed=motion_target_image,
+                                             transformlist=transform,
+                                             interpolator='linear',
+                                             imagetype=0)
+    logger.info(f'Registration applied to {anat_image_path}')
+
+    ants.image_write(registered_image, out_image_path)
+    logger.info(f'Transformed image saved to {out_image_path}')
+
+    image_io.safe_copy_meta(input_image_path=anat_image_path, out_image_path=out_image_path)
 
     if in_seg_path is not None:
-        registered_segmentation = register_segmentation(in_seg_path=in_seg_path,
-                                                        ants_transform=transform,
-                                                        fixed_image=fixed_image)
+        segmentation_image_ants = ants.image_read(in_seg_path)
+        registered_segmentation = ants.apply_transforms(moving=segmentation_image_ants,
+                                                        fixed=motion_target_image,
+                                                        transformlist=transform,
+                                                        interpolator='genericLabel',
+                                                        imagetype=0)
         logger.info(f'Registration applied to {in_seg_path}')
         ants.image_write(registered_segmentation, out_seg_path)
         logger.info(f'Transformed segmentation saved to {out_seg_path}')
-
-
-def register_segmentation(in_seg_path: str,
-                          ants_transform: list,
-                          fixed_image: np.ndarray) -> np.ndarray:
-    """Helper function to apply registration transform to segmentation."""
-    segmentation_image = ants.image_read(in_seg_path)
-    registered_image = ants.apply_transforms(moving=segmentation_image,
-                                             fixed=fixed_image,
-                                             transformlist=ants_transform,
-                                             interpolator='genericLabel',
-                                             imagetype=0)
-    return registered_image
-
 
 def warp_pet_atlas(input_image_path: str,
                    anat_image_path: str,
