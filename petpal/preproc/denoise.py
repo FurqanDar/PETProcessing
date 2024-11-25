@@ -7,25 +7,23 @@ TODO: Credit Hamed Yousefi and his publication formally once it's published.
 # Import Python Standard Libraries
 import logging
 import math
-import os.path
 import time
 from typing import Union
 
+import nibabel as nib
 # Import other libraries
 import numpy as np
-from docutils.nodes import image
 from numba import njit
+from scipy.ndimage import convolve, binary_fill_holes, binary_closing
+from scipy.stats import zscore, norm
 from skimage.transform import radon, iradon
 from sklearn.cluster import k_means
 from sklearn.decomposition import PCA
-from scipy.ndimage import convolve, binary_fill_holes, binary_closing
-from scipy.stats import zscore, norm
-import nibabel as nib
 
+from ..preproc.image_operations_4d import SimpleAutoImageCropper
+from ..preproc.image_operations_4d import binarize_image_with_threshold
 # Import from petpal
 from ..utils.image_io import ImageIO
-from ..preproc.image_operations_4d import binarize_image_with_threshold
-from ..preproc.image_operations_4d import SimpleAutoImageCropper
 
 # Initialize logger
 logger = logging.getLogger(__name__)
@@ -46,16 +44,12 @@ class Denoiser:
                  path_to_pet: str,
                  path_to_mri: str,
                  path_to_segmentation: str,
-                 path_to_wss: str,
+                 path_to_head_mask: str,
                  verbosity: int = 0):
 
         if verbosity in [-2, -1, 0, 1, 2]:
             log_level = 30 - (10 * verbosity)
             logger.setLevel(level=log_level)
-            file_handler = logging.FileHandler('/export/scratch1/oestreichk/denoise.log',
-                                               mode='w')
-            file_handler.setLevel(log_level)
-            logger.addHandler(file_handler)
         else:
             raise ValueError("Verbosity argument must be an int from -2 to 2. The default (0) corresponds to the "
                              "default logging level (warning). A higher value increases the verbosity and a lower "
@@ -70,7 +64,7 @@ class Denoiser:
              self.head_mask_lims) = self._prepare_inputs(path_to_pet=path_to_pet,
                                                          path_to_mri=path_to_mri,
                                                          path_to_freesurfer_segmentation=path_to_segmentation,
-                                                         path_to_wss=path_to_wss)
+                                                         path_to_wss=path_to_head_mask)
         except OSError as e:
             raise e
         except Exception as e:
@@ -87,9 +81,6 @@ class Denoiser:
     def run_single_iteration(self,
                              num_clusters: list[int]):
         """Generate a denoised image using one iteration of the method, to be weighted with others downstream."""
-
-        # TODO: Move these somewhere else (i.e. run()) so they're only called once.
-
 
         flattened_head_mask = self.head_mask_data.flatten()
         flattened_pet_data = flatten_pet_spatially(self.pet_image.get_fdata())
