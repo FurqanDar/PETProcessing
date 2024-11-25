@@ -10,18 +10,16 @@ import math
 import time
 from typing import Union
 
-import nibabel as nib
 # Import other libraries
+import nibabel as nib
 import numpy as np
 from numba import njit
-from scipy.ndimage import convolve, binary_fill_holes, binary_closing
+from scipy.ndimage import convolve
 from scipy.stats import zscore, norm
 from skimage.transform import radon, iradon
 from sklearn.cluster import k_means
 from sklearn.decomposition import PCA
 
-from ..preproc.image_operations_4d import SimpleAutoImageCropper
-from ..preproc.image_operations_4d import binarize_image_with_threshold
 # Import from petpal
 from ..utils.image_io import ImageIO
 
@@ -35,8 +33,7 @@ class Denoiser:
     pet_image = None
     mri_image = None
     segmentation_image = None
-    head_mask_data = None
-    head_mask_lims = None
+    head_mask_image = None
     updated_segmentation_data = None
     non_brain_mask_data = None
 
@@ -60,11 +57,10 @@ class Denoiser:
             (self.pet_image,
              self.mri_image,
              self.segmentation_image,
-             self.head_mask_data,
-             self.head_mask_lims) = self._prepare_inputs(path_to_pet=path_to_pet,
-                                                         path_to_mri=path_to_mri,
-                                                         path_to_freesurfer_segmentation=path_to_segmentation,
-                                                         path_to_wss=path_to_head_mask)
+             self.head_mask_image) = self._prepare_inputs(path_to_pet=path_to_pet,
+                                                    path_to_mri=path_to_mri,
+                                                    path_to_freesurfer_segmentation=path_to_segmentation,
+                                                    path_to_wss=path_to_head_mask)
         except OSError as e:
             raise e
         except Exception as e:
@@ -82,7 +78,7 @@ class Denoiser:
                              num_clusters: list[int]):
         """Generate a denoised image using one iteration of the method, to be weighted with others downstream."""
 
-        flattened_head_mask = self.head_mask_data.flatten()
+        flattened_head_mask = self.head_mask_image.get_fdata().flatten()
         flattened_pet_data = flatten_pet_spatially(self.pet_image.get_fdata())
         self.non_brain_mask_data = self._generate_non_brain_mask()
         self.updated_segmentation_data = self._add_nonbrain_features_to_segmentation(non_brain_mask=self.non_brain_mask_data)
@@ -417,11 +413,7 @@ class Denoiser:
                         path_to_pet: str,
                         path_to_mri: str,
                         path_to_freesurfer_segmentation: str,
-                        path_to_wss: str) -> (Union[nib.nifti1.Nifti1Image, nib.nifti2.Nifti2Image],
-                                              Union[nib.nifti1.Nifti1Image, nib.nifti2.Nifti2Image],
-                                              Union[nib.nifti1.Nifti1Image, nib.nifti2.Nifti2Image],
-                                              np.ndarray,
-                                              tuple):
+                        path_to_head_mask: str) -> list[Union[nib.nifti1.Nifti1Image, nib.nifti2.Nifti2Image]]:
         """
         Read images from files into nibabel Image instances, and ensure all images have the same dimensions as PET.
 
@@ -438,7 +430,7 @@ class Denoiser:
         image_loader = ImageIO()
 
         # Verify that all files can be loaded and saved as ndarrays.
-        for path in [path_to_pet, path_to_mri, path_to_freesurfer_segmentation, path_to_wss]:
+        for path in [path_to_pet, path_to_mri, path_to_freesurfer_segmentation, path_to_head_mask]:
             try:
                 images_loaded.append(image_loader.load_nii(path))
             except (FileNotFoundError, OSError) as e:
@@ -451,13 +443,13 @@ class Denoiser:
                 f'{len(images_failed_to_load)} images could not be loaded. See errors below.\n{print(errors)}')
 
         # Unpack images
-        pet_image, mri_image, segmentation_image, wss_image = images_loaded
+        pet_image, mri_image, segmentation_image, head_mask_image = images_loaded
 
         # Extract ndarrays from each image.
         pet_data = image_loader.extract_image_from_nii_as_numpy(pet_image)
         mri_data = image_loader.extract_image_from_nii_as_numpy(mri_image)
         segmentation_data = image_loader.extract_image_from_nii_as_numpy(segmentation_image)
-        wss_data = image_loader.extract_image_from_nii_as_numpy(wss_image)
+        head_mask_data = image_loader.extract_image_from_nii_as_numpy(head_mask_image)
         pet_data_3d_shape = pet_data.shape[:-1]
 
         if pet_data.ndim != 4:
@@ -472,13 +464,10 @@ class Denoiser:
                             f'PET Frame Shape: {pet_data_3d_shape}\n'
                             f'Segmentation Shape: {segmentation_data.shape}\n'
                             f'MRI Shape: {mri_data.shape}.\n'
-                            f'Weighted Series Sum Shape: {wss_data.shape}.\n'
+                            f'Weighted Series Sum Shape: {head_mask_data.shape}.\n'
                             f'Ensure that all non-PET data is registered to PET space')
 
-        # Extract Head Mask using Weighted Series Sum
-        (head_mask_data, *lims) = self._generate_head_mask_from_wss(path_to_wss=path_to_wss)
-
-        return pet_image, mri_image, segmentation_image, head_mask_data, lims
+        return [pet_image, mri_image, segmentation_image, head_mask_image]
 
     def _write_cluster_segmentation_to_file(self,
                                             cluster_ids: np.ndarray,
@@ -560,32 +549,6 @@ class Denoiser:
         non_brain_mask_data = head_mask_data - brain_mask_data
 
         return non_brain_mask_data.astype(bool)
-
-    def _generate_head_mask_from_wss(self,
-                                     path_to_wss: str) -> (np.ndarray, tuple, tuple, tuple):
-        """
-        Function to extract 3D head mask PET data using basic morphological methods.
-
-        Args:
-            path_to_wss (str):
-
-        Returns:
-            np.ndarray: 3D binary mask corresponding to the head voxels.
-        """
-        out_image_path = '/export/scratch1/oestreichk/Data/cropped_wss.nii.gz' # Update this when pipelines drop
-
-        cropper = SimpleAutoImageCropper(input_image_path=path_to_wss,
-                                         out_image_path=out_image_path)
-        x_lims, y_lims, z_lims = cropper.get_index_pairs_for_all_dims(img_obj=cropper.input_img_obj)
-        image_loader = ImageIO()
-        cropped_image = image_loader.load_nii(out_image_path)
-        cropped_data = image_loader.extract_image_from_nii_as_numpy(cropped_image)
-        binary_cropped_data = binarize_image_with_threshold(input_image_numpy=cropped_data,
-                                                            lower_bound=500)
-        binary_cropped_data = binary_closing(binary_cropped_data)
-        mask_data = binary_fill_holes(binary_cropped_data)
-
-        return mask_data, x_lims, y_lims, z_lims
 
     def weighted_sum_smoothed_image_iterations(self):
         """
