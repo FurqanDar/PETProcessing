@@ -36,6 +36,7 @@ class Denoiser:
     head_mask_image = None
     updated_segmentation_data = None
     non_brain_mask_data = None
+    feature_data = None
 
     def __init__(self,
                  path_to_pet: str,
@@ -53,18 +54,14 @@ class Denoiser:
                              f"value decreases it. Verbosity given was {verbosity}. See python's logging documentation "
                              "for more information.")
 
-        try:
-            (self.pet_image,
-             self.mri_image,
-             self.segmentation_image,
-             self.head_mask_image) = self._prepare_inputs(path_to_pet=path_to_pet,
-                                                    path_to_mri=path_to_mri,
-                                                    path_to_freesurfer_segmentation=path_to_segmentation,
-                                                    path_to_wss=path_to_head_mask)
-        except OSError as e:
-            raise e
-        except Exception as e:
-            raise e
+        (self.pet_image,
+         self.mri_image,
+         self.segmentation_image,
+         self.head_mask_image) = self._prepare_inputs(path_to_pet=path_to_pet,
+                                                      path_to_mri=path_to_mri,
+                                                      path_to_freesurfer_segmentation=path_to_segmentation,
+                                                      path_to_head_mask=path_to_head_mask)
+
 
 
 
@@ -77,22 +74,6 @@ class Denoiser:
     def run_single_iteration(self,
                              num_clusters: list[int]):
         """Generate a denoised image using one iteration of the method, to be weighted with others downstream."""
-
-        flattened_head_mask = self.head_mask_image.get_fdata().flatten()
-        flattened_pet_data = flatten_pet_spatially(self.pet_image.get_fdata())
-        self.non_brain_mask_data = self._generate_non_brain_mask()
-        self.updated_segmentation_data = self._add_nonbrain_features_to_segmentation(non_brain_mask=self.non_brain_mask_data)
-        flattened_head_pet_data = flattened_pet_data[flattened_head_mask, :]
-        flattened_mri_data = self.mri_image.flatten()
-        flattened_segmentation_data = self.updated_segmentation_data.flatten()
-
-        feature_data = np.zeros(shape=(flattened_head_pet_data.shape[0], 6))
-        feature_data[:, :-2] = self._temporal_pca(spatially_flattened_pet_data=flattened_head_pet_data,
-                                                  num_components=4)
-        feature_data[:, -2] = flattened_mri_data[flattened_head_mask]
-        feature_data[:, -1] = flattened_segmentation_data[flattened_head_mask]
-
-        feature_data = zscore(feature_data, axis=0)
 
         # TODO: Probably ought to set object attribute values only in these run*() methods, rather than in other methods
 
@@ -146,6 +127,26 @@ class Denoiser:
 
     def run(self):
         """"""
+        flattened_head_mask = self.head_mask_image.get_fdata().flatten()
+        flattened_pet_data = flatten_pet_spatially(self.pet_image.get_fdata())
+        self.non_brain_mask_data = self._generate_non_brain_mask()
+        self.updated_segmentation_data = self._add_nonbrain_features_to_segmentation(
+            non_brain_mask=self.non_brain_mask_data)
+        flattened_head_pet_data = flattened_pet_data[flattened_head_mask, :]
+        flattened_mri_data = self.mri_image.flatten()
+        flattened_segmentation_data = self.updated_segmentation_data.flatten()
+
+        feature_data = np.zeros(shape=(flattened_head_pet_data.shape[0], 6))
+        feature_data[:, :-2] = self._temporal_pca(spatially_flattened_pet_data=flattened_head_pet_data,
+                                                  num_components=4)
+        feature_data[:, -2] = flattened_mri_data[flattened_head_mask]
+        feature_data[:, -1] = flattened_segmentation_data[flattened_head_mask]
+
+        self.feature_data = zscore(feature_data, axis=0)
+
+        num_clusters = [2, 2, 2] # TODO: Copy all of Hamed's values for this once one run-through works.
+
+        self.run_single_iteration(num_clusters=num_clusters)
 
     # Static Methods
     @staticmethod
@@ -459,7 +460,7 @@ class Denoiser:
 
         if (mri_data.shape != pet_data_3d_shape or
             segmentation_data.shape != pet_data_3d_shape or
-            wss_data.shape != pet_data_3d_shape):
+            head_mask_data.shape != pet_data_3d_shape):
             raise Exception(f'MRI and/or Segmentation has different dimensions from 3D PET image:\n'
                             f'PET Frame Shape: {pet_data_3d_shape}\n'
                             f'Segmentation Shape: {segmentation_data.shape}\n'
