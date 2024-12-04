@@ -108,7 +108,7 @@ class Denoiser:
                                                            feature_distances=feature_distances,
                                                            ring_space_distances=ring_space_distances)
 
-            ring_space_image_per_frame = self._populate_ring_space_using_map(spatially_flattened_pet_data=flattened_head_pet_data,
+            ring_space_image_per_frame = self._populate_ring_space_using_map(spatially_flattened_pet_data=self.flattened_head_pet_data,
                                                                              ring_space_map=ring_space_map,
                                                                              ring_space_shape=(ring_space_side_length,
                                                                                                ring_space_side_length))
@@ -136,23 +136,23 @@ class Denoiser:
 
     def run(self):
         """"""
-        self.flattened_head_mask = self.head_mask_image.get_fdata().flatten()
+        self.flattened_head_mask = self.head_mask_image.get_fdata().flatten().astype(bool)
         flattened_pet_data = flatten_pet_spatially(self.pet_image.get_fdata())
         self.non_brain_mask_data = self._generate_non_brain_mask()
         self.updated_segmentation_data = self._add_nonbrain_features_to_segmentation()
-        self.flattened_head_pet_data = flattened_pet_data[flattened_head_mask, :]
+        self.flattened_head_pet_data = flattened_pet_data[self.flattened_head_mask, :]
         flattened_mri_data = self.mri_image.get_fdata().flatten()
         flattened_segmentation_data = self.updated_segmentation_data.flatten()
 
         feature_data = np.zeros(shape=(self.flattened_head_pet_data.shape[0], 6))
-        feature_data[:, :-2] = self._temporal_pca(spatially_flattened_pet_data=flattened_head_pet_data,
+        feature_data[:, :-2] = self._temporal_pca(spatially_flattened_pet_data=self.flattened_head_pet_data,
                                                   num_components=4)
-        feature_data[:, -2] = flattened_mri_data[flattened_head_mask]
-        feature_data[:, -1] = flattened_segmentation_data[flattened_head_mask]
+        feature_data[:, -2] = flattened_mri_data[self.flattened_head_mask]
+        feature_data[:, -1] = flattened_segmentation_data[self.flattened_head_mask]
 
         self.feature_data = zscore(feature_data, axis=0)
 
-        num_clusters = [2, 2, 2] # TODO: Copy all of Hamed's values for this once one run-through works.
+        num_clusters = [4, 5, 3] # TODO: Copy all of Hamed's values for this once one run-through works.
 
         self.smoothing_kernel = self._generate_2d_gaussian_filter()
 
@@ -308,9 +308,11 @@ class Denoiser:
 
         """
         num_frames = spatially_flattened_pet_data.shape[-1]
-        ring_image_per_frame = np.zeros(shape=(ring_space_map.shape, num_frames))
+        ring_image_per_frame = np.zeros(shape=(len(ring_space_map), num_frames))
+        populate_pixel_with_pet = lambda a, f: spatially_flattened_pet_data[a][f] if a != -1 else 0
+
         for frame in range(num_frames):
-            ring_image_per_frame[:, frame] = np.where(ring_space_map != -1, spatially_flattened_pet_data[ring_space_map, frame], 0)
+            ring_image_per_frame[:, frame] = np.array([populate_pixel_with_pet(a, f) for a in ring_space_map[:, frame]])
         ring_image_per_frame = ring_image_per_frame.reshape(ring_space_shape[0],ring_space_shape[1],num_frames)
 
         return ring_image_per_frame
