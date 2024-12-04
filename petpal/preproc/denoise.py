@@ -3,6 +3,8 @@
 TODO: Credit Hamed Yousefi and his publication formally once it's published.
 
 """
+# Temp!!!
+from skimage.io import imshow
 
 # Import Python Standard Libraries
 import logging
@@ -35,9 +37,12 @@ class Denoiser:
     mri_image = None
     segmentation_image = None
     head_mask_image = None
+    flattened_head_mask = None
     updated_segmentation_data = None
     non_brain_mask_data = None
+    flattened_head_pet_data = None
     feature_data = None
+    smoothing_kernel = None
 
     def __init__(self,
                  path_to_pet: str,
@@ -76,19 +81,15 @@ class Denoiser:
                              num_clusters: list[int]):
         """Generate a denoised image using one iteration of the method, to be weighted with others downstream."""
 
-        # TODO: Probably ought to set object attribute values only in these run*() methods, rather than in other methods
-
-        centroids, cluster_ids = self.apply_3_tier_k_means_clustering(flattened_feature_data=feature_data,
+        centroids, cluster_ids = self.apply_3_tier_k_means_clustering(flattened_feature_data=self.feature_data,
                                                                       num_clusters=num_clusters)
-
-        denoised_flattened_head_data = np.zeros(shape=flattened_head_pet_data.shape[0])
-        smoothing_kernel = self._generate_2d_gaussian_filter()
+        denoised_flattened_head_data = np.zeros(shape=self.flattened_head_pet_data.shape)
 
         final_num_clusters = np.prod(num_clusters).astype(int)
         for cluster in range(final_num_clusters):
             start = time.time()
             logger.debug(f'Cluster {cluster}\n-------------------------------------------------------\n\n\n')
-            cluster_data = feature_data[cluster_ids == cluster]
+            cluster_data = self.feature_data[cluster_ids == cluster]
             centroids_temp = np.roll(centroids, shift=-cluster, axis=0)
             feature_distances = self._extract_distances_to_cluster_centroids(cluster_data=cluster_data,
                                                                              all_cluster_centroids=centroids_temp)
@@ -107,37 +108,44 @@ class Denoiser:
                                                            feature_distances=feature_distances,
                                                            ring_space_distances=ring_space_distances)
 
-            ring_space_image = self._populate_ring_space_using_map(spatially_flattened_pet_data=flattened_head_pet_data,
-                                                                   ring_space_map=ring_space_map,
-                                                                   ring_space_shape=(ring_space_side_length,
-                                                                                     ring_space_side_length))
-            denoised_ring_space_image = self._apply_smoothing_in_radon_space(image_data=ring_space_image,
-                                                                             kernel=smoothing_kernel)
+            ring_space_image_per_frame = self._populate_ring_space_using_map(spatially_flattened_pet_data=flattened_head_pet_data,
+                                                                             ring_space_map=ring_space_map,
+                                                                             ring_space_shape=(ring_space_side_length,
+                                                                                               ring_space_side_length))
 
-            flattened_denoised_ring_space_data = denoised_ring_space_image.flatten()
-            ring_space_map_only_cluster_data = ring_space_map[ring_space_map != -1]
-            denoised_flattened_head_data[ring_space_map_only_cluster_data] = flattened_denoised_ring_space_data[ring_space_map != -1]
+            for frame in range(ring_space_image_per_frame.shape[-1]):
+                denoised_ring_space_image = self._apply_smoothing_in_radon_space(image_data=ring_space_image_per_frame[..., frame],
+                                                                                 kernel=self.smoothing_kernel)
+
+                # TEMP!!!
+                imshow(denoised_ring_space_image, cmap='gray_r')
+
+                flattened_denoised_ring_space_data = denoised_ring_space_image.flatten()
+                ring_space_map_only_cluster_data = ring_space_map[ring_space_map != -1]
+                denoised_flattened_head_data[ring_space_map_only_cluster_data, frame] = np.where(ring_space_map != -1, flattened_denoised_ring_space_data, 0)
+
             end = time.time()
             logger.debug(f'Time to process cluster {cluster}:\n{end - start} seconds')
 
-        denoised_flattened_pet_data = flattened_pet_data[:, 16] # TODO: Don't hardcode frame 16
-        denoised_flattened_pet_data[flattened_head_mask] = denoised_flattened_head_data
-        denoised_pet_data = denoised_flattened_pet_data.reshape(self.pet_image.shape[0], self.pet_image.shape[1], self.pet_image.shape[2])
+
+        denoised_flattened_pet_data = flattened_pet_data.copy()
+        denoised_flattened_pet_data[self.flattened_head_mask, :] = denoised_flattened_head_data
+        denoised_pet_data = denoised_flattened_pet_data.reshape(self.pet_image.shape)
 
         return denoised_pet_data
 
     def run(self):
         """"""
-        flattened_head_mask = self.head_mask_image.get_fdata().flatten()
+        self.flattened_head_mask = self.head_mask_image.get_fdata().flatten()
         flattened_pet_data = flatten_pet_spatially(self.pet_image.get_fdata())
         self.non_brain_mask_data = self._generate_non_brain_mask()
         self.updated_segmentation_data = self._add_nonbrain_features_to_segmentation(
             non_brain_mask=self.non_brain_mask_data)
-        flattened_head_pet_data = flattened_pet_data[flattened_head_mask, :]
-        flattened_mri_data = self.mri_image.flatten()
+        self.flattened_head_pet_data = flattened_pet_data[flattened_head_mask, :]
+        flattened_mri_data = self.mri_image.get_fdata().flatten()
         flattened_segmentation_data = self.updated_segmentation_data.flatten()
 
-        feature_data = np.zeros(shape=(flattened_head_pet_data.shape[0], 6))
+        feature_data = np.zeros(shape=(self.flattened_head_pet_data.shape[0], 6))
         feature_data[:, :-2] = self._temporal_pca(spatially_flattened_pet_data=flattened_head_pet_data,
                                                   num_components=4)
         feature_data[:, -2] = flattened_mri_data[flattened_head_mask]
@@ -146,6 +154,8 @@ class Denoiser:
         self.feature_data = zscore(feature_data, axis=0)
 
         num_clusters = [2, 2, 2] # TODO: Copy all of Hamed's values for this once one run-through works.
+
+        self.smoothing_kernel = self._generate_2d_gaussian_filter()
 
         self.run_single_iteration(num_clusters=num_clusters)
 
