@@ -14,6 +14,7 @@ from typing import Union
 import nibabel as nib
 import numpy as np
 from numba import njit
+from numpy.ma.core import shape
 from scipy.ndimage import convolve
 from scipy.stats import zscore, norm
 from skimage.transform import radon, iradon
@@ -297,13 +298,13 @@ class Denoiser:
             np.ndarray: Image containing all PET data in a cluster rearranged into ring space.
 
         """
-        populate_pixel_with_pet = lambda a: spatially_flattened_pet_data[a][
-            16] if a != -1 else 0  # TODO: Make this do all timeframes
-        # TODO: Use logical indexing instead of this
-        populated_ring_map = np.array([populate_pixel_with_pet(i) for i in ring_space_map])
-        ring_image = populated_ring_map.reshape(ring_space_shape)
+        num_frames = spatially_flattened_pet_data.shape[-1]
+        ring_image_per_frame = np.zeros(shape=(ring_space_map.shape, num_frames))
+        for frame in range(num_frames):
+            ring_image_per_frame[:, frame] = np.where(ring_space_map != -1, spatially_flattened_pet_data[ring_space_map, frame], 0)
+        ring_image_per_frame = ring_image_per_frame.reshape(ring_space_shape[0],ring_space_shape[1],num_frames)
 
-        return ring_image
+        return ring_image_per_frame
 
     @staticmethod
     def apply_3_tier_k_means_clustering(flattened_feature_data: np.ndarray,
@@ -409,9 +410,8 @@ class Denoiser:
 
         return denoised_cluster_data
 
-    # Non-Static Methods
-    def _prepare_inputs(self,
-                        path_to_pet: str,
+    @staticmethod
+    def _prepare_inputs(path_to_pet: str,
                         path_to_mri: str,
                         path_to_freesurfer_segmentation: str,
                         path_to_head_mask: str) -> list[Union[nib.nifti1.Nifti1Image, nib.nifti2.Nifti2Image]]:
