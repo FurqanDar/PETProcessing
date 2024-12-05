@@ -5,6 +5,7 @@ TODO: Credit Hamed Yousefi and his publication formally once it's published.
 """
 # Temp!!!
 from skimage.io import imshow
+import matplotlib.pyplot as plt
 
 # Import Python Standard Libraries
 import logging
@@ -117,18 +118,15 @@ class Denoiser:
                 denoised_ring_space_image = self._apply_smoothing_in_radon_space(image_data=ring_space_image_per_frame[..., frame],
                                                                                  kernel=self.smoothing_kernel)
 
-                # TEMP!!!
-                imshow(denoised_ring_space_image, cmap='gray_r')
-
                 flattened_denoised_ring_space_data = denoised_ring_space_image.flatten()
                 ring_space_map_only_cluster_data = ring_space_map[ring_space_map != -1]
-                denoised_flattened_head_data[ring_space_map_only_cluster_data, frame] = np.where(ring_space_map != -1, flattened_denoised_ring_space_data, 0)
+
+                denoised_flattened_head_data[ring_space_map_only_cluster_data, frame] = flattened_denoised_ring_space_data[ring_space_map != -1]
 
             end = time.time()
             logger.debug(f'Time to process cluster {cluster}:\n{end - start} seconds')
 
-
-        denoised_flattened_pet_data = flattened_pet_data.copy()
+        denoised_flattened_pet_data = self.flattened_pet_data.copy()
         denoised_flattened_pet_data[self.flattened_head_mask, :] = denoised_flattened_head_data
         denoised_pet_data = denoised_flattened_pet_data.reshape(self.pet_image.shape)
 
@@ -137,10 +135,10 @@ class Denoiser:
     def run(self):
         """"""
         self.flattened_head_mask = self.head_mask_image.get_fdata().flatten().astype(bool)
-        flattened_pet_data = flatten_pet_spatially(self.pet_image.get_fdata())
+        self.flattened_pet_data = flatten_pet_spatially(self.pet_image.get_fdata())
         self.non_brain_mask_data = self._generate_non_brain_mask()
         self.updated_segmentation_data = self._add_nonbrain_features_to_segmentation()
-        self.flattened_head_pet_data = flattened_pet_data[self.flattened_head_mask, :]
+        self.flattened_head_pet_data = self.flattened_pet_data[self.flattened_head_mask, :]
         flattened_mri_data = self.mri_image.get_fdata().flatten()
         flattened_segmentation_data = self.updated_segmentation_data.flatten()
 
@@ -278,7 +276,7 @@ class Denoiser:
             normalized_feature_distances[:][col] = feature_distances[:][col] / np.linalg.norm(feature_distances[:][col])
 
         image_to_ring_map = np.full_like(distance_to_origin_cluster_flat,
-                                         fill_value=-1, dtype=np.uint32) # Maybe use a smaller datatype? Don't need 64-bit int
+                                         fill_value=-1, dtype=np.int32) # Maybe use a smaller datatype? Don't need 64-bit int
 
         for i in range(len(cluster_voxel_indices)):
             pixel_flat_index = pixels_emanating_from_center[i] # O(1)
@@ -312,7 +310,7 @@ class Denoiser:
         populate_pixel_with_pet = lambda a, f: spatially_flattened_pet_data[a][f] if a != -1 else 0
 
         for frame in range(num_frames):
-            ring_image_per_frame[:, frame] = np.array([populate_pixel_with_pet(a, f) for a in ring_space_map[:, frame]])
+            ring_image_per_frame[:, frame] = np.array([populate_pixel_with_pet(a, frame) for a in ring_space_map])
         ring_image_per_frame = ring_image_per_frame.reshape(ring_space_shape[0],ring_space_shape[1],num_frames)
 
         return ring_image_per_frame
