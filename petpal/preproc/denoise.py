@@ -36,11 +36,8 @@ class Denoiser:
     # Class attributes; The fewer the better with respect to memory.
     pet_image = None
     mri_image = None
-    segmentation_image = None
     head_mask_image = None
     flattened_head_mask = None
-    updated_segmentation_data = None
-    non_brain_mask_data = None
     flattened_head_pet_data = None
     flattened_pet_data = None
     feature_data = None
@@ -49,7 +46,6 @@ class Denoiser:
     def __init__(self,
                  path_to_pet: str,
                  path_to_mri: str,
-                 path_to_segmentation: str,
                  path_to_head_mask: str,
                  verbosity: int = 0):
 
@@ -64,10 +60,8 @@ class Denoiser:
 
         (self.pet_image,
          self.mri_image,
-         self.segmentation_image,
          self.head_mask_image) = self._prepare_inputs(path_to_pet=path_to_pet,
                                                       path_to_mri=path_to_mri,
-                                                      path_to_freesurfer_segmentation=path_to_segmentation,
                                                       path_to_head_mask=path_to_head_mask)
 
 
@@ -155,17 +149,13 @@ class Denoiser:
         """
         self.flattened_head_mask = self.head_mask_image.get_fdata().flatten().astype(bool)
         self.flattened_pet_data = flatten_pet_spatially(self.pet_image.get_fdata())
-        self.non_brain_mask_data = self._generate_non_brain_mask()
-        self.updated_segmentation_data = self._add_nonbrain_features_to_segmentation()
         self.flattened_head_pet_data = self.flattened_pet_data[self.flattened_head_mask, :]
         flattened_mri_data = self.mri_image.get_fdata().flatten()
-        flattened_segmentation_data = self.updated_segmentation_data.flatten()
 
         feature_data = np.zeros(shape=(self.flattened_head_pet_data.shape[0], 6))
-        feature_data[:, :-2] = self._temporal_pca(spatially_flattened_pet_data=self.flattened_head_pet_data,
+        feature_data[:, :-1] = self._temporal_pca(spatially_flattened_pet_data=self.flattened_head_pet_data,
                                                   num_components=4)
-        feature_data[:, -2] = flattened_mri_data[self.flattened_head_mask]
-        feature_data[:, -1] = flattened_segmentation_data[self.flattened_head_mask]
+        feature_data[:, -1] = flattened_mri_data[self.flattened_head_mask]
 
         self.feature_data = zscore(feature_data, axis=0)
 
@@ -448,7 +438,6 @@ class Denoiser:
     @staticmethod
     def _prepare_inputs(path_to_pet: str,
                         path_to_mri: str,
-                        path_to_freesurfer_segmentation: str,
                         path_to_head_mask: str) -> list[Union[nib.nifti1.Nifti1Image, nib.nifti2.Nifti2Image]]:
         """
         Read images from files into nibabel Image instances, and ensure all images have the same dimensions as PET.
@@ -456,7 +445,6 @@ class Denoiser:
         Args:
             path_to_pet (str):
             path_to_mri (str):
-            path_to_freesurfer_segmentation (str):
             path_to_wss (str):
         """
 
@@ -479,12 +467,11 @@ class Denoiser:
                 f'{len(images_failed_to_load)} images could not be loaded. See errors below.\n{print(errors)}')
 
         # Unpack images
-        pet_image, mri_image, segmentation_image, head_mask_image = images_loaded
+        pet_image, mri_image, head_mask_image = images_loaded
 
         # Extract ndarrays from each image.
         pet_data = image_loader.extract_image_from_nii_as_numpy(pet_image)
         mri_data = image_loader.extract_image_from_nii_as_numpy(mri_image)
-        segmentation_data = image_loader.extract_image_from_nii_as_numpy(segmentation_image)
         head_mask_data = image_loader.extract_image_from_nii_as_numpy(head_mask_image)
         pet_data_3d_shape = pet_data.shape[:-1]
 
@@ -494,16 +481,14 @@ class Denoiser:
                 f'4DPET dataset, not a single frame')
 
         if (mri_data.shape != pet_data_3d_shape or
-            segmentation_data.shape != pet_data_3d_shape or
             head_mask_data.shape != pet_data_3d_shape):
-            raise Exception(f'MRI and/or Segmentation has different dimensions from 3D PET image:\n'
+            raise Exception(f'MRI has different dimensions from 3D PET image:\n'
                             f'PET Frame Shape: {pet_data_3d_shape}\n'
-                            f'Segmentation Shape: {segmentation_data.shape}\n'
                             f'MRI Shape: {mri_data.shape}.\n'
-                            f'Weighted Series Sum Shape: {head_mask_data.shape}.\n'
+                            f'Head Mask Shape: {head_mask_data.shape}.\n'
                             f'Ensure that all non-PET data is registered to PET space')
 
-        return [pet_image, mri_image, segmentation_image, head_mask_image]
+        return [pet_image, mri_image, head_mask_image]
 
     def _write_cluster_segmentation_to_file(self,
                                             cluster_ids: np.ndarray,
