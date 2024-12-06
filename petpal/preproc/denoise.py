@@ -152,9 +152,11 @@ class Denoiser:
         self.flattened_head_pet_data = self.flattened_pet_data[self.flattened_head_mask, :]
         flattened_mri_data = self.mri_image.get_fdata().flatten()
 
-        feature_data = np.zeros(shape=(self.flattened_head_pet_data.shape[0], 6))
+        num_pet_pcs = 4
+
+        feature_data = np.zeros(shape=(self.flattened_head_pet_data.shape[0], num_pet_pcs + 1))
         feature_data[:, :-1] = self._temporal_pca(spatially_flattened_pet_data=self.flattened_head_pet_data,
-                                                  num_components=4)
+                                                  num_components=num_pet_pcs)
         feature_data[:, -1] = flattened_mri_data[self.flattened_head_mask]
 
         self.feature_data = zscore(feature_data, axis=0)
