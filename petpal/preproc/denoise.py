@@ -42,6 +42,7 @@ class Denoiser:
     updated_segmentation_data = None
     non_brain_mask_data = None
     flattened_head_pet_data = None
+    flattened_pet_data = None
     feature_data = None
     smoothing_kernel = None
 
@@ -74,13 +75,25 @@ class Denoiser:
 
     # Should run the entire process; Probably just call run()
     def __call__(self):
-        """Denoise Image"""
-        pass
+        """Denoise an image"""
+
 
     # "Pipeline" Functions: Functions that string a number of other functions.
     def run_single_iteration(self,
-                             num_clusters: list[int]):
-        """Generate a denoised image using one iteration of the method, to be weighted with others downstream."""
+                             num_clusters: list[int]) -> np.ndarray:
+        """
+        Generate a denoised image using one iteration of the method, to be weighted with others downstream.
+
+        Args:
+            num_clusters (list[int]): List of length 3 containing the number of clusters to use to separate the feature
+                data in the three tiers of k-means clustering. The first index represents the top-most number of
+                clusters, the second represents the middle, and the last represents the bottom-most (most fine-grained).
+
+        Returns:
+            np.ndarray: "Denoised" PET data for a single iteration of the method. Downstream, this will be weighted and
+                added to other weighted iterations for the best result.
+
+        """
 
         centroids, cluster_ids = self.apply_3_tier_k_means_clustering(flattened_feature_data=self.feature_data,
                                                                       num_clusters=num_clusters)
@@ -132,8 +145,14 @@ class Denoiser:
 
         return denoised_pet_data
 
-    def run(self):
-        """"""
+    def run(self) -> nib.Nifti1Image:
+        """
+        Outermost function to take pet data and return a denoised copy.
+
+        Returns:
+            nib.Nifti1Image: Denoised PET image.
+
+        """
         self.flattened_head_mask = self.head_mask_image.get_fdata().flatten().astype(bool)
         self.flattened_pet_data = flatten_pet_spatially(self.pet_image.get_fdata())
         self.non_brain_mask_data = self._generate_non_brain_mask()
@@ -154,21 +173,28 @@ class Denoiser:
 
         self.smoothing_kernel = self._generate_2d_gaussian_filter()
 
-        self.run_single_iteration(num_clusters=num_clusters)
+        first_iteration = self.run_single_iteration(num_clusters=num_clusters)
+        denoised_image = nib.Nifti1Image(dataobj=first_iteration,
+                                         affine=self.pet_image.affine,
+                                         header=self.pet_image.header)
+
+        return denoised_image
+
 
     # Static Methods
     @staticmethod
     def _temporal_pca(spatially_flattened_pet_data: np.ndarray,
                       num_components: int) -> np.ndarray:
         """
-
+        Run principal component analysis on feature data of size (num_samples, num_features) with a given number of PCs.
 
         Args:
-            spatially_flattened_pet_data:
-            num_components:
+            spatially_flattened_pet_data (np.ndarray): Array of size (num_samples, num_features) to apply PCA to.
+            num_components (int): Number of principal components to identify in the data.
 
         Returns:
-
+            np.ndarray: Output of sklearn.decomposition.PCA.fit_transform, where X is the input data, and n_components
+                is num_components.
         """
         pca_data = PCA(n_components=num_components).fit_transform(X=spatially_flattened_pet_data)
 
