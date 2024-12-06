@@ -170,7 +170,6 @@ class Denoiser:
 
         return denoised_image
 
-
     # Static Methods
     @staticmethod
     def _temporal_pca(spatially_flattened_pet_data: np.ndarray,
@@ -454,7 +453,7 @@ class Denoiser:
         image_loader = ImageIO()
 
         # Verify that all files can be loaded and saved as ndarrays.
-        for path in [path_to_pet, path_to_mri, path_to_freesurfer_segmentation, path_to_head_mask]:
+        for path in [path_to_pet, path_to_mri, path_to_head_mask]:
             try:
                 images_loaded.append(image_loader.load_nii(path))
             except (FileNotFoundError, OSError) as e:
