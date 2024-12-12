@@ -22,6 +22,7 @@ from petpal.kinetic_modeling.reference_tissue_models import (fit_mrtm2_2003_to_t
 from petpal.kinetic_modeling.fit_tac_with_rtms import get_rtm_kwargs, get_rtm_method
 from petpal.utils.time_activity_curve import TimeActivityCurveFromFile
 from petpal.utils.image_io import safe_load_4dpet_nifti
+from ..input_function.blood_input import read_plasma_glucose_concentration
 from . import graphical_analysis
 from ..utils.image_io import safe_load_tac, safe_copy_meta, validate_two_images_same_dimensions
 
@@ -840,7 +841,7 @@ def generate_cmrglc_parametric_image_from_ki_image(input_ki_image_path: str,
     Returns:
         None
     """
-    patlak_image = ImageIO(verbose=False).load_nii(image_path=input_ki_image_path)
+    patlak_image = safe_load_4dpet_nifti(filename=input_ki_image_path)
     patlak_affine = patlak_image.affine
     plasma_glucose = read_plasma_glucose_concentration(file_path=plasma_glucose_file_path,
                                                        correction_scale=glucose_rescaling_constant)
