@@ -1,3 +1,6 @@
+"""
+Module for reading and processing arterial input data.
+"""
 from typing import Tuple
 import numpy as np
 from pandas import read_csv
@@ -45,7 +48,6 @@ def extract_blood_input_function_activity_from_csv(file_path: str) -> np.ndarray
     return activity
 
 
-# TODO: Maybe a class that tracks unitful quantities so we don't have to worry about units
 class BloodInputFunction(object):
     """A general purpose class to deal with blood input function related data. The primarily functionality is to be able to
     compute the blood input function at any time, given the raw time and activity data.
@@ -98,13 +100,13 @@ class BloodInputFunction(object):
         y = np.zeros_like(t)
         below_thresh = t < self.thresh
         above_thresh = t >= self.thresh
-        
+
         y[below_thresh] = self.below_func(t[below_thresh])
         y[above_thresh] = self.above_func(t[above_thresh])
         y[y < 0] = 0
-        
+
         return y
-    
+
     @staticmethod
     def _linear_function(x: np.ndarray, m: float, b: float) -> np.ndarray:
         """ Simple equation for a line. `y = m * x + b`
@@ -115,7 +117,7 @@ class BloodInputFunction(object):
         :return: m * x + b
         """
         return m * x + b
-    
+
     @staticmethod
     def linear_fitting_func(x_data: np.ndarray, y_data: np.ndarray):
         """ Given x-data and y-data, we return a function corresponding to the linear fit.
@@ -124,13 +126,16 @@ class BloodInputFunction(object):
         :param y_data: Dependent variable corresponding to the x_data
         :return: A callable function that takes x-data as an input to compute the line values
         """
-        
+
         # noinspection PyTupleAssignmentBalance
-        popt, _ = sp_fit(f=BloodInputFunction._linear_function, xdata=x_data, ydata=y_data, full_output=False)
-        
+        popt, _, _, _, _ = sp_fit(f=BloodInputFunction._linear_function,
+                                  xdata=x_data,
+                                  ydata=y_data,
+                                  full_output=False)
+
         def fitted_line_function(x):
             return BloodInputFunction._linear_function(x, *popt)
-        
+
         return fitted_line_function
 
 
