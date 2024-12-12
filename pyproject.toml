@@ -28,6 +28,7 @@ dependencies = [
     "pydata-sphinx-theme",
     "bids_validator",
     "seaborn",
+    "networkx"
 ]
 readme = "README.md"
 classifiers = [  # These are added to PyPI package when published; Used for searching
