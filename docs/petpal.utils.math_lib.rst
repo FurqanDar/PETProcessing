@@ -1,5 +1,5 @@
-petpal.utils.math\_lib module
-=============================
+Useful Mathematical Operations
+===============================
 
 .. automodule:: petpal.utils.math_lib
    :members:

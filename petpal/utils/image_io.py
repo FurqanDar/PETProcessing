@@ -132,6 +132,7 @@ def safe_copy_meta(input_image_path: str,
     Copy the metadata file from input image, to one with the same name as the
     output file. Intended to be used in functions operating on images in order
     to ensure a metadata file is associated with each new image.
+    
     Args:
         input_image_path (str): Path to the input file for the function
             generating a new image.

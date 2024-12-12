@@ -1,4 +1,4 @@
-petpal.utils.math\_lib module
+Time Activity Curve Utilities
 =============================
 
 .. automodule:: petpal.utils.time_activity_curve

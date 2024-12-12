@@ -29,11 +29,11 @@ Example:
             tac_values = np.array([0., 0.8, 2., 1.5, 0.6, 0.0])
         
             # instantiate EvenlyInterpolate object and resample TAC (and add shift for better visualization)
-            even_interp = EvenlyInterpolate(tac_times_in_minutes=tac_times_in_minutes, tac_values=tac_values+0.25, delta_time=1.0)
+            even_interp = EvenlyInterpolate(tac_times=tac_times_in_minutes, tac_values=tac_values+0.25, delta_time=1.0)
             resampled_tac = even_interp.get_resampled_tac()
         
             # instantiate EvenlyInterpolateWithMax object and resample TAC (and add shift for better visualization)
-            even_interp_max = EvenlyInterpolateWithMax(tac_times_in_minutes=tac_times_in_minutes, tac_values=tac_values+0.5, samples_before_max=3)
+            even_interp_max = EvenlyInterpolateWithMax(tac_times=tac_times_in_minutes, tac_values=tac_values+0.5, samples_before_max=3)
             resampled_tac_max = even_interp_max.get_resampled_tac()
             
             # plot the TAC and the resampled TACs
@@ -100,7 +100,7 @@ class EvenlyInterpolate:
         self._tac_times = tac_times
         self._tac_values = tac_values
         self.interp_func = sp_interpolation(x=self._tac_times, y=self._tac_values, kind='linear', bounds_error=True)
-        self.resample_times = np.arange(tac_times[0], tac_times[-1], delta_time)
+        self.resample_times = np.arange(tac_times[0], tac_times[-1] + delta_time, delta_time)
         self.resample_vals = self.interp_func(self.resample_times)
 
     def get_resampled_tac(self) -> np.ndarray:

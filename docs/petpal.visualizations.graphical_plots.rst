@@ -1,5 +1,5 @@
-petpal.visualizations.graphical\_plots module
-=============================================
+Visualizing Graphical Analyses
+===============================
 
 .. automodule:: petpal.visualizations.graphical_plots
    :members:

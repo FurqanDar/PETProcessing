@@ -3,7 +3,7 @@ from . import input_function
 from . import preproc
 from . import utils
 from . import visualizations
-
+from . import pipelines
 
 def main():
     print("PET-PAL (Positron Emission Tomography Processing and Analysis Library)")

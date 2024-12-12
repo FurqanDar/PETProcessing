@@ -14,12 +14,12 @@ from . import motion_corr
 determine_motion_target = motion_corr.determine_motion_target
 
 def register_pet(input_reg_image_path: str,
-                 reference_image_path: str,
-                 motion_target_option: Union[str,tuple],
                  out_image_path: str,
+                 reference_image_path: str,
+                 motion_target_option: Union[str, tuple],
                  verbose: bool,
-                 type_of_transform: str='DenseRigid',
-                 half_life: float=None,
+                 type_of_transform: str = 'DenseRigid',
+                 half_life: float = None,
                  **kwargs):
     """
     Computes and runs rigid registration of 4D PET image series to 3D anatomical image, typically

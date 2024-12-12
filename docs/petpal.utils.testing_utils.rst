@@ -1,5 +1,5 @@
-petpal.utils.testing\_utils module
-==================================
+Testing Utilities
+=================
 
 .. automodule:: petpal.utils.testing_utils
    :members:

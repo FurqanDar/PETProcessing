@@ -1,5 +1,5 @@
-petpal.utils.useful\_functions module
-=====================================
+Useful Utility Functions
+========================
 
 .. automodule:: petpal.utils.useful_functions
    :members:

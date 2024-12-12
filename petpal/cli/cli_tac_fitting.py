@@ -19,7 +19,7 @@ User can optionally provide:
     * Maximum number of function iterations
     * Decay constant (in minutes) for per-frame weighting
 
-This script utilizes the :class:`FitTCMToTAC<petpal.tac_fitting.FitTCMToTAC>` class to perform the TAC fitting and save
+This script utilizes the :class:`TCMAnalysis<petpal.tac_fitting.TCMAnalysis>` class to perform the TAC fitting and save
  the results accordingly.
 
 Example:
@@ -148,7 +148,7 @@ def main():
     
     bounds = _generate_bounds(initial=args.initial_guesses, lower=args.lower_bounds, upper=args.upper_bounds)
     
-    tac_fitting = pet_fit.FitTCMToTAC(input_tac_path=args.input_tac_path,
+    tac_fitting = pet_fit.TCMAnalysis(input_tac_path=args.input_tac_path,
                                       roi_tac_path=args.roi_tac_path,
                                       output_directory=args.output_directory,
                                       output_filename_prefix=args.output_filename_prefix,

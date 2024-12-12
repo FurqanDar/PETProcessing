@@ -17,8 +17,6 @@ TODO:
     
 """
 
-__version__ = '0.2'
-
 from typing import Callable, Tuple
 import os
 import json
@@ -712,13 +710,35 @@ class GraphicalAnalysis:
 
 
 class MultiTACGraphicalAnalysis(GraphicalAnalysis, MultiTACAnalysisMixin):
+    """
+    A class that performs graphical analysis on multiple tissue TACs (Time Activity Curves).
+
+    Attributes:
+        input_tac_path (str): Path to the input TAC file.
+        roi_tacs_dir (str): Directory containing region of interest TAC files.
+        output_directory (str): Directory for saving analysis results.
+        output_filename_prefix (str): Prefix for output filenames.
+        method (str): Method used for analysis.
+        fit_thresh_in_mins (Optional[float]): Threshold in minutes for fit calculation.
+    """
     def __init__(self,
                  input_tac_path: str,
                  roi_tacs_dir:str,
                  output_directory: str,
                  output_filename_prefix: str,
                  method:str,
-                 fit_thresh_in_mins=None):
+                 fit_thresh_in_mins=None,):
+        """
+        Initializes the MultiTACGraphicalAnalysis object with required paths, method, and threshold.
+
+        Args:
+            input_tac_path (str): Path to the input TAC file.
+            roi_tacs_dir (str): Directory containing region of interest TAC files.
+            output_directory (str): Directory for saving analysis results.
+            output_filename_prefix (str): Prefix for output filenames.
+            method (str): Method used for analysis.
+            fit_thresh_in_mins (Optional[float], optional): Threshold in minutes for fit calculation. Defaults to None.
+        """
         MultiTACAnalysisMixin.__init__(self,
                                        input_tac_path=input_tac_path,
                                        tacs_dir=roi_tacs_dir)
@@ -732,6 +752,13 @@ class MultiTACGraphicalAnalysis(GraphicalAnalysis, MultiTACAnalysisMixin):
                                    )
 
     def init_analysis_props(self):
+        """
+        Initializes analysis properties for each tissue TAC. Overrides
+        :meth:`GraphicalAnalysis.init_analysis_props`.
+
+        Returns:
+            list[dict]: A list of analysis property dictionaries for each TAC.
+        """
         num_of_tacs = self.num_of_tacs
         analysis_props = [GraphicalAnalysis.init_analysis_props(self) for a_tac in range(num_of_tacs)]
         for tac_id, a_prop_dict in enumerate(analysis_props):
@@ -740,6 +767,10 @@ class MultiTACGraphicalAnalysis(GraphicalAnalysis, MultiTACAnalysisMixin):
 
 
     def calculate_fit(self):
+        """
+        Calculates the fit for each TAC, updating the analysis properties with slope, intercept, and R-squared values.
+        Overrides :meth:`GraphicalAnalysis.calculate_fit`.
+        """
         p_tac_times, p_tac_vals = safe_load_tac(self.input_tac_path)
         for tac_id, a_tac in enumerate(self.tacs_files_list):
             _, t_tac_vals = safe_load_tac(a_tac)
@@ -755,6 +786,12 @@ class MultiTACGraphicalAnalysis(GraphicalAnalysis, MultiTACAnalysisMixin):
             self.analysis_props[tac_id]['RSquared'] = rsquared
 
     def calculate_fit_properties(self):
+        """
+        Calculates additional properties of the fit, such as threshold, method name,
+        start and end times, and number of points. Iterates over all the TACs.
+        
+        Overrides :meth:`GraphicalAnalysis.calculate_fit_properties`
+        """
         p_tac_times, _ = safe_load_tac(self.input_tac_path)
         t_thresh_index = get_index_from_threshold(times_in_minutes=p_tac_times,
                                                   t_thresh_in_minutes=self.fit_thresh_in_mins)
@@ -770,6 +807,12 @@ class MultiTACGraphicalAnalysis(GraphicalAnalysis, MultiTACAnalysisMixin):
             self.analysis_props[tac_id]['NumberOfPointsFit'] = points_fit
 
     def save_analysis(self):
+        """
+        Saves the analysis results to a JSON file for each segment.
+
+        Raises:
+            RuntimeError: If 'run_analysis' method has not been called before save_analysis.
+        """
         if self.analysis_props[0]['RSquared'] is None:
             raise RuntimeError("'run_analysis' method must be called before 'save_analysis'.")
 

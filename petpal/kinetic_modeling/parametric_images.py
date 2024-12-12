@@ -42,19 +42,14 @@ def apply_linearized_analysis_to_all_voxels(pTAC_times: np.ndarray,
 
     Args:
         pTAC_times (np.ndarray): A 1D array representing the input TAC times in minutes.
-
         pTAC_vals (np.ndarray): A 1D array representing the input TAC values. This array should
                                 be of the same length as `pTAC_times`.
-
         tTAC_img (np.ndarray): A 4D array representing the 3D PET image over time.
                                The shape of this array should be (x, y, z, time).
-
         t_thresh_in_mins (float): A float representing the threshold time in minutes.
                                   It is applied when calling the `analysis_func`.
-
         analysis_func (Callable): A numba.jit function to apply to each voxel for given PET data.
                                   It should take the following arguments:
-
                                     - input_tac_values: 1D numpy array for input TAC values
                                     - region_tac_values: 1D numpy array for regional TAC values
                                     - tac_times_in_minutes: 1D numpy array for TAC times in minutes
@@ -97,22 +92,18 @@ def generate_parametric_images_with_graphical_method(pTAC_times: np.ndarray,
 
     Args:
         pTAC_times (np.ndarray): A 1D array representing the input TAC times in minutes.
-
         pTAC_vals (np.ndarray): A 1D array representing the input TAC values. This array should
                                 be of the same length as `pTAC_times`.
-
         tTAC_img (np.ndarray): A 4D array representing the 3D PET image over time.
                                The shape of this array should be (x, y, z, time).
-
         t_thresh_in_mins (float): A float representing the threshold time in minutes.
-
         method_name (str): The analysis method's name to apply. Must be one of: 'patlak', 'logan',
             or 'alt_logan'.
 
     Returns:
         Tuple[np.ndarray, np.ndarray]: A tuple of two 3D numpy arrays representing the calculated
             slope image and the intercept image, each of the same spatial dimensions as `tTAC_img`.
-                                       
+            
 
     Raises:
        ValueError: If the `method_name` is not one of the following: 'patlak', 'logan', 'alt_logan'.
@@ -151,11 +142,11 @@ def apply_mrtm2_to_all_voxels(tac_times_in_minutes: np.ndarray,
             parameters are calculated with a least squares fit.
         mask_img (np.ndarray): A 3D array representing the brain mask for `tgt_image`, where brain
             regions are labelled 1 and non-brain regions are labelled 0. This is made necessary in
-            order to save time during computation. 
+            order to save time during computation.
 
     Returns:
         bp_img (np.ndarray): A 3D array with computed BP values based on the MRTM2 parameter fit
-            results. 
+            results.
         simulation_img (np.ndarray): A 4D array with the same shape as `tgt_image` where each voxel
             is the best fit curve based on the solved parameters to the linear equation in MRTM2.
     """
@@ -313,7 +304,7 @@ class ReferenceTissueParametricImage:
         
         Returns:
             fit_results (np.ndarray, Tuple[np.ndarray, np.ndarray]): Kinetic parameters and
-                simulated data returned as arrays. 
+                simulated data returned as arrays.
         """
         pet_np = self.pet_image.get_fdata()
         mask_np = self.mask_image.get_fdata()
@@ -371,7 +362,7 @@ class ReferenceTissueParametricImage:
         Saves the analysis properties to a JSON file in the output directory.
 
         This method involves saving a dictionary of analysis properties, which include file paths,
-        analysis method, start and end frame times, threshold time, number of points fitted, and 
+        analysis method, start and end frame times, threshold time, number of points fitted, and
         various properties like the maximum, minimum, mean, and variance of slopes and intercepts
         found in the analysis. These analysis properties are written to a JSON file in the output
         directory with the name following the pattern
@@ -557,7 +548,11 @@ class GraphicalAnalysisParametricImage:
                 "'run_analysis' method must be called before 'save_analysis'.")
         self.save_parametric_images()
         self.save_analysis_properties()
-
+        
+    def __call__(self, method_name: str, t_thresh_in_mins: float, image_scale: float=1.0):
+        self.run_analysis(method_name=method_name, t_thresh_in_mins=t_thresh_in_mins, image_scale=image_scale)
+        self.save_analysis()
+    
     def calculate_analysis_properties(self,
                                       method_name: str,
                                       t_thresh_in_mins: float):
@@ -748,9 +743,9 @@ class GraphicalAnalysisParametricImage:
         Saves the slope and intercept images as NIfTI files in the specified output directory.
 
         This method generates and saves two NIfTI files: one for the slope image and one for the
-        intercept image. It uses the output directory and filename prefix provided during 
+        intercept image. It uses the output directory and filename prefix provided during
         instantiation of the class, along with the analysis method name, to generate a filename
-        prefix for both images. The filenames follow the patterns 
+        prefix for both images. The filenames follow the patterns
         `{output_filename_prefix}-parametric-{method}-slope.nii.gz` and
         `{output_filename_prefix}-parametric-{method}-intercept.nii.gz` respectively. The affine
         transformation matrix for the new NIfTI images is derived from the original 4D PET image.
@@ -772,9 +767,8 @@ class GraphicalAnalysisParametricImage:
         nifty_img_affine = safe_load_4dpet_nifti(
             filename=self.pet4D_img_path).affine
         try:
-            tmp_slope_img = nibabel.Nifti1Image(
-                dataobj=self.slope_image, affine=nifty_img_affine)
-            nibabel.save(tmp_slope_img, f"{file_name_prefix}-slope.nii.gz")
+            tmp_slope_img = nibabel.Nifti1Image(dataobj=self.slope_image, affine=nifty_img_affine)
+            nibabel.save(tmp_slope_img, f"{file_name_prefix}_slope.nii.gz")
 
             tmp_intercept_img = nibabel.Nifti1Image(
                 dataobj=self.intercept_image, affine=nifty_img_affine)
@@ -794,7 +788,7 @@ class GraphicalAnalysisParametricImage:
         Saves the analysis properties to a JSON file in the output directory.
 
         This method involves saving a dictionary of analysis properties, which include file paths,
-        analysis method, start and end frame times, threshold time, number of points fitted, and 
+        analysis method, start and end frame times, threshold time, number of points fitted, and
         various properties like the maximum, minimum, mean, and variance of slopes and intercepts
         found in the analysis. These analysis properties are written to a JSON file in the output
         directory with the name following the pattern
@@ -818,3 +812,39 @@ class GraphicalAnalysisParametricImage:
                                            f"{self.analysis_props['MethodName']}_props.json")
         with open(analysis_props_file, 'w', encoding='utf-8') as f:
             json.dump(obj=self.analysis_props, fp=f, indent=4)
+
+
+def generate_cmrglc_parametric_image_from_ki_image(input_ki_image_path: str,
+                                                   output_image_path: str,
+                                                   plasma_glucose_file_path: str,
+                                                   glucose_rescaling_constant: float,
+                                                   lumped_constant: float,
+                                                   rescaling_const: float):
+    r"""
+    Generate and save a CMRglc image by rescaling a Patlak-Ki image.
+
+    This function reads a Patlak-Ki image, rescales it using provided parameters (plasma glucose file,
+    lumped constant, and a rescaling constant), and saves the resulting image as a CMRglc image.
+
+    The final image will be `rescaling_constant * K_i * plasma_glucose / lumped_constant`.
+
+    Args:
+        input_ki_image_path (str): Path to the Patlak-Ki image file.
+        output_image_path (str): Path to save the rescaled CMRglc image.
+        plasma_glucose_file_path (str): File path to stored plasma glucose concentration.
+            Assumed to be just one number in the file.
+        glucose_rescaling_constant (float): Rescaling constant for the glucose concentration.
+        lumped_constant (float): Lumped constant value used for rescaling.
+        rescaling_const (float): Additional rescaling constant applied to the Patlak-Ki values.
+
+    Returns:
+        None
+    """
+    patlak_image = ImageIO(verbose=False).load_nii(image_path=input_ki_image_path)
+    patlak_affine = patlak_image.affine
+    plasma_glucose = read_plasma_glucose_concentration(file_path=plasma_glucose_file_path,
+                                                       correction_scale=glucose_rescaling_constant)
+    cmr_vals = (plasma_glucose / lumped_constant) * patlak_image.get_fdata() * rescaling_const
+    cmr_image = nibabel.Nifti1Image(dataobj=cmr_vals, affine=patlak_affine)
+    nibabel.save(cmr_image, f"{output_image_path}")
+    safe_copy_meta(input_image_path=input_ki_image_path, out_image_path=output_image_path)

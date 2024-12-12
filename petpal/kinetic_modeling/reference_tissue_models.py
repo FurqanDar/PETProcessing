@@ -7,8 +7,6 @@ Todo:
 import numpy as np
 from scipy.optimize import curve_fit as sp_fit
 import numba
-
-
 from .graphical_analysis import get_index_from_threshold
 from .graphical_analysis import cumulative_trapezoidal_integral as cum_trapz
 from . import tcms_as_convolutions as tcms_conv
@@ -98,7 +96,7 @@ def calc_srtm_tac(tac_times_in_minutes: np.ndarray,
 
 
     where :math:`C_\mathrm{R}(t)` is the reference TAC, :math:`R_{1}=\frac{k_1^\prime}{k_1}`,
-    :math:`k_{2}` is the rate-constant from the tissue compartment to plasma, and 
+    :math:`k_{2}` is the rate-constant from the tissue compartment to plasma, and
     :math:`\mathrm{BP}` is the binding potential.
 
 
@@ -153,7 +151,7 @@ def _calc_simplified_frtm_tac(tac_times_in_minutes: np.ndarray,
         C(t) = R_{1}C_\mathrm{R}(t) + \left[ A_{1}e^{-\alpha_{1}t} + A_{2}e^{-\alpha_{2}t} \right]
         \otimes C_\mathrm{R}(t),
 
-    where :math:`R_{1}\equiv\frac{k_1^\prime}{k_1}`, and 
+    where :math:`R_{1}\equiv\frac{k_1^\prime}{k_1}`, and
     :math:`A_{1},\,A_{2},\,\alpha_1,\,\alpha_2` can be calculated from the underlying kinetic
     constants. See :func:`_calc_frtm_params_from_kinetic_params` for more details about
     the parameter calculation.
@@ -197,29 +195,29 @@ def _calc_frtm_params_from_kinetic_params(r1: float,
 
         \alpha_{1} &= \frac{\beta - \chi}{2}\\
         \alpha_{2} &= \frac{\beta + \chi}{2}\\
-        A_{1} &= \left(\frac{k_{3} + k_{4} -\alpha_{2}}{\chi} \right)\left( \frac{k_{2}}{R_{1}} - 
+        A_{1} &= \left(\frac{k_{3} + k_{4} -\alpha_{2}}{\chi} \right)\left( \frac{k_{2}}{R_{1}} -
         \alpha_{2} \right)\\
-        A_{2} &= \left(\frac{\alpha_{1}-k_{3} - k_{4} }{\chi} \right)\left( \frac{k_{2}}{R_{1}} - 
+        A_{2} &= \left(\frac{\alpha_{1}-k_{3} - k_{4} }{\chi} \right)\left( \frac{k_{2}}{R_{1}} -
         \alpha_{1} \right),
 
     where additionally we have:
 
     .. math::
 
-        \alpha_{1} &= \frac{k_{2} + k_{3} + k_{4} - \sqrt{\left( k_{2} + k_{3} + k_{4} \right)^2 - 
+        \alpha_{1} &= \frac{k_{2} + k_{3} + k_{4} - \sqrt{\left( k_{2} + k_{3} + k_{4} \right)^2 -
         4k_{2}k_{4}}}{2}\\
-        \alpha_{2} &= \frac{k_{2} + k_{3} + k_{4} + \sqrt{\left( k_{2} + k_{3} + k_{4} \right)^2 - 
+        \alpha_{2} &= \frac{k_{2} + k_{3} + k_{4} + \sqrt{\left( k_{2} + k_{3} + k_{4} \right)^2 -
         4k_{2}k_{4}}}{2}\\
-        A_{1} &= \left( \frac{k_{3} + k_{4} -\alpha_{2}}{\alpha_{1} - \alpha_{2}} \right)\left( 
+        A_{1} &= \left( \frac{k_{3} + k_{4} -\alpha_{2}}{\alpha_{1} - \alpha_{2}} \right)\left(
         \frac{k_{2}}{R_{1}}
         - \alpha_{2} \right)\\
-        A_{2} &= \left(  \frac{\alpha_{1}-k_{3} - k_{4} }{\alpha_{1} - \alpha_{2}} \right)\left( 
+        A_{2} &= \left(  \frac{\alpha_{1}-k_{3} - k_{4} }{\alpha_{1} - \alpha_{2}} \right)\left(
         \frac{k_{2}}{R_{1}}
         - \alpha_{1} \right)
 
 
     Args:
-        r1 (float): The ratio of the clearance rate of tracer from plasma to the reference to the 
+        r1 (float): The ratio of the clearance rate of tracer from plasma to the reference to the
             transfer rate of the tracer from plasma to the tissue;
             :math:`R_{1}\equiv\frac{k_1^\prime}{k_1}`.
         k2 (float): The rate of tracer transfer from the first tissue compartment to plasma.
@@ -266,14 +264,14 @@ def calc_frtm_tac(tac_times_in_minutes: np.ndarray,
 
     .. math::
 
-        \alpha_{1} &= \frac{k_{2} + k_{3} + k_{4} - \sqrt{\left( k_{2} + k_{3} + k_{4} \right)^2 - 
+        \alpha_{1} &= \frac{k_{2} + k_{3} + k_{4} - \sqrt{\left( k_{2} + k_{3} + k_{4} \right)^2 -
         4k_{2}k_{4}}}{2}\\
-        \alpha_{2} &= \frac{k_{2} + k_{3} + k_{4} + \sqrt{\left( k_{2} + k_{3} + k_{4} \right)^2 - 
+        \alpha_{2} &= \frac{k_{2} + k_{3} + k_{4} + \sqrt{\left( k_{2} + k_{3} + k_{4} \right)^2 -
         4k_{2}k_{4}}}{2}\\
-        A_{1} &= \left( \frac{k_{3} + k_{4} -\alpha_{2}}{\alpha_{1} - \alpha_{2}} \right)\left( 
+        A_{1} &= \left( \frac{k_{3} + k_{4} -\alpha_{2}}{\alpha_{1} - \alpha_{2}} \right)\left(
         \frac{k_{2}}{R_{1}}
         - \alpha_{2} \right)\\
-        A_{2} &= \left(  \frac{\alpha_{1}-k_{3} - k_{4} }{\alpha_{1} - \alpha_{2}} \right)\left( 
+        A_{2} &= \left(  \frac{\alpha_{1}-k_{3} - k_{4} }{\alpha_{1} - \alpha_{2}} \right)\left(
         \frac{k_{2}}{R_{1}}
         - \alpha_{1} \right)
 
@@ -283,7 +281,7 @@ def calc_frtm_tac(tac_times_in_minutes: np.ndarray,
         r1 (float): The ratio of the clearance rate of tracer from plasma to the reference to the transfer rate of the
             tracer from plasma to the tissue; :math:`R_{1}\equiv\frac{k_1^\prime}{k_1}`.
         k2 (float): The rate of tracer transfer from the first tissue compartment to plasma.
-        k3 (float): The rate of tracer transfer from the first tissue compartment to the second 
+        k3 (float): The rate of tracer transfer from the first tissue compartment to the second
             tissue compartment.
         k4 (float): The rate of tracer transfer from the second tissue compartment to the first
             tissue compartment.
@@ -331,7 +329,7 @@ def fit_srtm_to_tac(tac_times_in_minutes: np.ndarray,
         bp_start (float): Starting guess for the binding potential.
 
     Returns:
-        tuple: (``fit_parameters``, ``fit_covariance``). Output from 
+        tuple: (``fit_parameters``, ``fit_covariance``). Output from
             :func:`scipy.optimize.curve_fit`
 
     Raises:
@@ -375,7 +373,7 @@ def fit_srtm2_to_tac(tac_times_in_minutes: np.ndarray,
         bp_start (float): Starting guess for the binding potential.
 
     Returns:
-        tuple: (``fit_parameters``, ``fit_covariance``). Output from 
+        tuple: (``fit_parameters``, ``fit_covariance``). Output from
             :func:`scipy.optimize.curve_fit`
 
     Raises:
@@ -409,11 +407,11 @@ def fit_srtm_to_tac_with_bounds(tac_times_in_minutes: np.ndarray,
     bounds for the kinetic parameters.
 
     .. important::
-        This function assumes that the reference TAC is uniformly sampled with respect to time 
+        This function assumes that the reference TAC is uniformly sampled with respect to time
         since we perform convolutions.
 
     This function is a wrapper around `scipy.optimize.curve_fit` and uses parameter bounds during
-    optimization. The bounds for each parameter are formatted as: 
+    optimization. The bounds for each parameter are formatted as:
     ``(starting_value, lo_bound, hi_bound)``.
 
     Args:
@@ -463,7 +461,7 @@ def fit_srtm2_to_tac_with_bounds(tac_times_in_minutes: np.ndarray,
         since we perform convolutions.
 
     This function is a wrapper around `scipy.optimize.curve_fit` and uses parameter bounds during
-    optimization. The bounds for each parameter are formatted as: 
+    optimization. The bounds for each parameter are formatted as:
     ``(starting_value, lo_bound, hi_bound)``.
 
     Args:
@@ -471,7 +469,7 @@ def fit_srtm2_to_tac_with_bounds(tac_times_in_minutes: np.ndarray,
         tgt_tac_vals (np.ndarray): Target TAC to fit with the SRTM2.
         ref_tac_vals (np.ndarray): Reference TAC values.
         k2_prime (int): The value for :math:`k_2^\prime`. Defaults to 0.5.
-        r1_bounds (np.ndarray): The bounds for the :math:`R_1\equiv\frac{k_1^\prime}{k_1}` 
+        r1_bounds (np.ndarray): The bounds for the :math:`R_1\equiv\frac{k_1^\prime}{k_1}`
             parameter. Defaults to [0.5, 0.0, 10.0].
         bp_bounds (np.ndarray): The bounds for the binding potential parameter.
             Defaults to [0.5, 0.0, 10.0].
@@ -609,8 +607,8 @@ def fit_frtm_to_tac_with_bounds(tac_times_in_minutes: np.ndarray,
         This function assumes that the reference TAC is uniformly sampled with respect to time
         since we perform convolutions.
 
-    This function is a wrapper around `scipy.optimize.curve_fit` and uses parameter bounds during 
-    optimization. The bounds for each parameter are formatted as: 
+    This function is a wrapper around `scipy.optimize.curve_fit` and uses parameter bounds during
+    optimization. The bounds for each parameter are formatted as:
     ``(starting_value, lo_bound, hi_bound)``.
 
     Args:
@@ -671,7 +669,7 @@ def fit_frtm2_to_tac_with_bounds(tac_times_in_minutes: np.ndarray,
         tgt_tac_vals (np.ndarray): Target TAC to fit with the SRTM.
         ref_tac_vals (np.ndarray): Reference TAC values.
         k2_prime (float): The value for the :math:`k_2^\prime` parameter. Defaults to 0.5.
-        r1_bounds (np.ndarray): The bounds for the :math:`R_1\equiv\frac{k_1^\prime}{k_1}` 
+        r1_bounds (np.ndarray): The bounds for the :math:`R_1\equiv\frac{k_1^\prime}{k_1}`
             parameter. Defaults to [0.5, 0.0, 10.0].
         k3_bounds (np.ndarray): The bounds for :math:`k_3` parameter. Defaults to [0.5, 0.0, 10.0].
         k4_bounds (np.ndarray): The bounds for :math:`k_4` parameter. Defaults to [0.5, 0.0, 10.0].
@@ -718,7 +716,7 @@ def fit_mrtm_original_to_tac(tac_times_in_minutes: np.ndarray,
 
     .. math::
 
-        \frac{\int_{0}^{T}C(t)\mathrm{d}t}{C(T)}=\frac{V}{V^{\prime}} 
+        \frac{\int_{0}^{T}C(t)\mathrm{d}t}{C(T)}=\frac{V}{V^{\prime}}
         \frac{\int_{0}^{T}C^{\prime}(t)\mathrm{d}t}{C(T)}
         - \frac{V}{V^{\prime}k_{2}^{\prime}} \frac{C^{\prime}(T)}{C(T)} + b
 
@@ -790,7 +788,7 @@ def fit_mrtm_2003_to_tac(tac_times_in_minutes: np.ndarray,
 
     .. math::
 
-        C(T)=-\frac{V}{V^{\prime}b} \int_{0}^{T}C^{\prime}(t)\mathrm{d}t + \frac{1}{b} 
+        C(T)=-\frac{V}{V^{\prime}b} \int_{0}^{T}C^{\prime}(t)\mathrm{d}t + \frac{1}{b}
         \int_{0}^{T}C(t)\mathrm{d}t - \frac{V}{V^{\prime}k_{2}^{\prime}b}C^{\prime}(T)
 
 
@@ -933,7 +931,7 @@ def calc_bp_from_mrtm_2003_fit(fit_vals: np.ndarray) -> float:
 
         \mathrm{BP} = -\left(\frac{\beta_0}{\beta_1} + 1\right)
 
-    where :math:`\beta_0` is the first fit coefficient, and :math:`\beta_1` is the second fit 
+    where :math:`\beta_0` is the first fit coefficient, and :math:`\beta_1` is the second fit
     coefficient.
 
     Args:

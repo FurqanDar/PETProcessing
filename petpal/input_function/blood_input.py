@@ -1,9 +1,9 @@
 from typing import Tuple
-
 import numpy as np
 from pandas import read_csv
 from scipy.interpolate import interp1d as sp_interp
 from scipy.optimize import curve_fit as sp_fit
+from ..utils import image_io
 
 
 def extract_blood_input_function_from_csv(file_path: str) -> Tuple[np.ndarray, np.ndarray]:
@@ -101,6 +101,7 @@ class BloodInputFunction(object):
         
         y[below_thresh] = self.below_func(t[below_thresh])
         y[above_thresh] = self.above_func(t[above_thresh])
+        y[y < 0] = 0
         
         return y
     
@@ -124,9 +125,82 @@ class BloodInputFunction(object):
         :return: A callable function that takes x-data as an input to compute the line values
         """
         
+        # noinspection PyTupleAssignmentBalance
         popt, _ = sp_fit(f=BloodInputFunction._linear_function, xdata=x_data, ydata=y_data, full_output=False)
         
         def fitted_line_function(x):
             return BloodInputFunction._linear_function(x, *popt)
         
         return fitted_line_function
+
+
+def resample_blood_data_on_scanner_times(blood_tac_path: str,
+                                         out_tac_path: str,
+                                         reference_4dpet_img_path: str,
+                                         lin_fit_thresh_in_mins: float,
+                                         rescale_constant: float = 37000.0):
+    r"""
+    Resample blood time-activity curve (TAC) based on PET scanner frame times. The function assumes
+    that the PET meta-data have 'FrameReferenceTime' in seconds. The saved TAC is in minutes.
+
+    This function takes the raw blood TAC sampled at arbitrary times, resamples it
+    to the frame times of a 4D PET image, and saves the resampled TAC to a file.
+
+    Args:
+        reference_4dpet_img_path (str): Path to the 4D PET image file.
+        blood_tac_path (str): Path to the file containing raw blood time-activity data.
+        lin_fit_thresh_in_mins (float): Threshold in minutes for piecewise linear fit.
+        out_tac_path (str): Path to save the resampled blood TAC.
+        rescale_constant (float): Constant to rescale the blood TAC data.
+
+    Returns:
+        None. In the saved TAC file, the first column will be time in minutes,
+            and the second column will be the activity.
+
+    See Also:
+        - :class:`BloodInputFunction`
+
+
+    Example:
+
+       .. code-block:: python
+
+          resample_blood_data_on_scanner_times(
+              pet4d_path='pet_image.nii.gz',
+              raw_blood_tac='blood_path.csv',
+              lin_fit_thresh_in_mins=0.5,
+              out_tac_path='resampled_blood_tac.csv'
+          )
+
+
+    """
+    assert rescale_constant > 0.0, "Rescale constant must be greater than zero."
+    image_meta_data = image_io.load_metadata_for_nifty_with_same_filename(image_path=reference_4dpet_img_path)
+    frame_times = np.asarray(image_meta_data['FrameReferenceTime']) / 60.0
+    blood_times, blood_activity = image_io.safe_load_tac(filename=blood_tac_path)
+    blood_intp = BloodInputFunction(time=blood_times, activity=blood_activity, thresh_in_mins=lin_fit_thresh_in_mins)
+    resampled_blood = blood_intp.calc_blood_input_function(t=frame_times)
+    resampled_blood *= rescale_constant
+    resampled_tac = np.asarray([frame_times, resampled_blood], dtype=float)
+    
+    np.savetxt(X=resampled_tac.T, fname=out_tac_path, header="time(mins)\tactivity", comments='')
+    
+    return None
+
+
+def read_plasma_glucose_concentration(file_path: str, correction_scale: float = 1.0 / 18.0) -> float:
+    r"""
+    Temporary hacky function to read a single plasma glucose concentration value from a file.
+
+    This function reads a single numerical value from a specified file and applies a correction scale to it.
+    The primary use is to quickly extract plasma glucose concentration for further processing. The default
+    scaling os 1.0/18.0 is the one used in the CMMS study to get the right units.
+
+    Args:
+        file_path (str): Path to the file containing the plasma glucose concentration value.
+        correction_scale (float): Scale factor for correcting the read value. Default is `1.0/18.0`.
+
+    Returns:
+        float: Corrected plasma glucose concentration value.
+    """
+    return correction_scale * float(np.loadtxt(file_path))

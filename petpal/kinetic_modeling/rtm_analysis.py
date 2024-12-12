@@ -395,12 +395,32 @@ class RTMAnalysis:
 
 
 class MultiTACRTMAnalysis(RTMAnalysis, MultiTACAnalysisMixin):
+    """
+    A class for performing reference tissue model (RTM) analysis on multiple tissue TACs.
+
+    Attributes:
+        ref_tac_path (str): Path to the reference TAC file.
+        roi_tacs_dir (str): Directory containing region of interest TAC files.
+        output_directory (str): Directory for saving analysis results.
+        output_filename_prefix (str): Prefix for output filenames.
+        method (str): Method used for RTM analysis.
+    """
     def __init__(self,
                  ref_tac_path: str,
                  roi_tacs_dir: str,
                  output_directory: str,
                  output_filename_prefix: str,
                  method: str):
+        """
+        Initializes the MultiTACRTMAnalysis object with required paths and analysis method.
+
+        Args:
+            ref_tac_path (str): Path to the reference TAC file.
+            roi_tacs_dir (str): Directory containing region of interest TAC files.
+            output_directory (str): Directory for saving analysis results.
+            output_filename_prefix (str): Prefix for output filenames.
+            method (str): Method used for RTM analysis.
+        """
         MultiTACAnalysisMixin.__init__(self,
                                        input_tac_path=ref_tac_path,
                                        tacs_dir=roi_tacs_dir,)
@@ -413,6 +433,16 @@ class MultiTACRTMAnalysis(RTMAnalysis, MultiTACAnalysisMixin):
 
 
     def init_analysis_props(self, method: str) -> list[dict]:
+        """
+        Initializes analysis properties for each tissue TAC using the specified method.
+        Overrides :meth:`RTMAnalysis.init_analysis_props`.
+
+        Args:
+            method (str): Method used for initializing analysis properties.
+
+        Returns:
+            list[dict]: A list of analysis property dictionaries for each TAC.
+        """
         num_of_tacs = self.num_of_tacs
         analysis_props = [RTMAnalysis.init_analysis_props(self, method=method) for a_tac in range(num_of_tacs)]
         for tac_id, a_prop_dict in enumerate(analysis_props):
@@ -425,6 +455,19 @@ class MultiTACRTMAnalysis(RTMAnalysis, MultiTACAnalysisMixin):
                       t_thresh_in_mins: float = None,
                       k2_prime: float = None,
                       **tac_load_kwargs) -> list:
+        """
+        Calculates the fit for each TAC, updating the analysis properties with model fit results.
+        Overrides :meth:`RTMAnalysis.calculate_fit`.
+
+        Args:
+            bounds (Union[None, np.ndarray], optional): Bounds for the fitting parameters. Defaults to None.
+            t_thresh_in_mins (float, optional): Threshold in minutes for fit calculation. Defaults to None.
+            k2_prime (float, optional): A reference tissue model parameter. Defaults to None.
+            **tac_load_kwargs: Additional keyword arguments for TAC loading.
+
+        Returns:
+            list: A list of fit results for each TAC.
+        """
         ref_tac_times, ref_tac_vals = safe_load_tac(self.ref_tac_path)
         fit_results = []
         for _, a_tac in enumerate(self.tacs_files_list):
@@ -445,6 +488,15 @@ class MultiTACRTMAnalysis(RTMAnalysis, MultiTACAnalysisMixin):
                                  fit_results: list[np.ndarray],
                                  t_thresh_in_mins: float = None,
                                  k2_prime: float = None):
+        """
+        Calculates additional properties of the fit based on the fit results and threshold for each TAC.
+        Overrides :meth:`RTMAnalysis.calculate_fit_properties`.
+
+        Args:
+            fit_results (list[np.ndarray]): Results from the fitting procedure.
+            t_thresh_in_mins (float, optional): Threshold in minutes used for fitting. Defaults to None.
+            k2_prime (float, optional): A reference tissue model parameter. Defaults to None.
+        """
         if self.method.startswith("frtm") or self.method.startswith("srtm"):
             for props_dict, fit_vals in zip(self.analysis_props, fit_results):
                 self._calc_frtm_or_srtm_fit_props(fit_results=fit_vals,
@@ -458,6 +510,12 @@ class MultiTACRTMAnalysis(RTMAnalysis, MultiTACAnalysisMixin):
                                           props_dict=props_dict)
 
     def save_analysis(self):
+        """
+        Saves the analysis results to a JSON file for each segment/TAC. Overrides :meth:`RTMAnalysis.save_analysis`.
+
+        Raises:
+            RuntimeError: If 'run_analysis' method has not been called before 'save_analysis'.
+        """
         if not self._has_analysis_been_run:
             raise RuntimeError("'run_analysis' method must be called before 'save_analysis'.")
 

@@ -12,6 +12,7 @@ Subpackages
    petpal.input_function
    petpal.visualizations
    petpal.utils
+   pipelines/index
 
 Module contents
 ---------------

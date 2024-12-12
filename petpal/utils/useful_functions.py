@@ -202,3 +202,21 @@ def weighted_series_sum(input_image_4d_path: str,
                             out_image_path=out_image_path)
 
     return pet_sum_image
+
+
+def read_plasma_glucose_concentration(file_path: str, correction_scale: float = 1.0 / 18.0) -> float:
+    r"""
+    Temporary hacky function to read a single plasma glucose concentration value from a file.
+
+    This function reads a single numerical value from a specified file and applies a correction scale to it.
+    The primary use is to quickly extract plasma glucose concentration for further processing. The default
+    scaling os 1.0/18.0 is the one used in the CMMS study to get the right units.
+
+    Args:
+        file_path (str): Path to the file containing the plasma glucose concentration value.
+        correction_scale (float): Scale factor for correcting the read value. Default is `1.0/18.0`.
+
+    Returns:
+        float: Corrected plasma glucose concentration value.
+    """
+    return correction_scale * float(np.loadtxt(file_path))

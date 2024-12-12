@@ -1,5 +1,5 @@
-petpal.utils.image\_io module
-=============================
+ImageIO Utilities
+=================
 
 .. automodule:: petpal.utils.image_io
    :members:
