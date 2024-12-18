@@ -576,10 +576,12 @@ class TACFitterWithoutBloodVolume(TACFitter):
         """
         assert tcm_func in [pet_tcms.generate_tac_1tcm_c1_from_tac,
                             pet_tcms.generate_tac_2tcm_with_k4zero_cpet_from_tac,
-                            pet_tcms.generate_tac_serial_2tcm_cpet_from_tac], (
+                            pet_tcms.generate_tac_serial_2tcm_cpet_from_tac,
+                            pet_tcms.gen_tac_2tcm_cpet_from_tac], (
             "`tcm_func should be one of `pet_tcms.generate_tac_1tcm_c1_from_tac`, "
             "`pet_tcms.generate_tac_2tcm_with_k4zero_cpet_from_tac`, "
-            "`pet_tcms.generate_tac_serial_2tcm_cpet_from_tac`")
+            "`pet_tcms.generate_tac_serial_2tcm_cpet_from_tac`,  "
+            "`pet_tcms.gen_tac_2tcm_cpet_from_tac`")
 
         self.tcm_func = tcm_func
         self.fit_param_names = _get_fitting_params_for_tcm_func(self.tcm_func)[:-1]

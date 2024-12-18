@@ -289,7 +289,7 @@ class StepsContainer:
         """
         obj = cls(name=name)
         obj.add_step(TCMFittingAnalysisStep.default_1tcm())
-        obj.add_step(TCMFittingAnalysisStep.default_serial2tcm())
+        obj.add_step(TCMFittingAnalysisStep.default_2tcm())
         obj.add_step(TCMFittingAnalysisStep.default_irreversible_2tcm())
         return obj
     
