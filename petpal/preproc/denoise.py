@@ -161,7 +161,7 @@ class Denoiser:
 
         self.feature_data = zscore(feature_data, axis=0)
 
-        num_clusters = [4, 5, 3] # TODO: Copy all of Hamed's values for this once one run-through works.
+        num_clusters = [4, 3, 1] # TODO: Copy all of Hamed's values for this once one run-through works.
 
         self.smoothing_kernel = self._generate_2d_gaussian_filter()
 
@@ -465,7 +465,7 @@ class Denoiser:
         # Log errors if any images couldn't be loaded
         if len(images_failed_to_load) > 0:
             raise OSError(
-                f'{len(images_failed_to_load)} images could not be loaded. See errors below.\n{print(errors)}')
+                f'{len(images_failed_to_load)} images could not be loaded. See errors below.\n{errors}')
 
         # Unpack images
         pet_image, mri_image, head_mask_image = images_loaded
