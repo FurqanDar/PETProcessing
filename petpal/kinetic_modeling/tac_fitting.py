@@ -809,7 +809,8 @@ class TCMAnalysis(object):
         tcm_funcs = {
                    '1tcm': pet_tcms.generate_tac_1tcm_c1_from_tac,
                    '2tcm-k4zero': pet_tcms.generate_tac_2tcm_with_k4zero_cpet_from_tac,
-                   'serial-2tcm': pet_tcms.generate_tac_serial_2tcm_cpet_from_tac
+                   'serial-2tcm': pet_tcms.generate_tac_serial_2tcm_cpet_from_tac,
+                   '2tcm': pet_tcms.gen_tac_2tcm_cpet_from_tac,
                     }
 
         return tcm_funcs[compartment_model]
