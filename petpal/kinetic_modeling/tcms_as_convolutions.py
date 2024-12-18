@@ -225,6 +225,41 @@ def discrete_convolution_with_exponential(func_times: np.ndarray, func_vals: np.
         return c_out
 
 
+@numba.njit(fastmath=True, cache=True)
+def gen_tac_2tcm_cpet_vals_from_tac(tac_times, tac_vals, k1, k2, k3, k4, vb):
+    k234 = k2 + k3 + k4
+    beta = np.sqrt(k234 * k234 - 4.0 * k2 * k4)
+    a1 = (k234 - beta) / 2.0
+    a2 = (k234 + beta) / 2.0
+    
+    c_a1 = discrete_convolution_with_exponential(func_times=tac_times,
+                                                 func_vals=tac_vals,
+                                                 k1=1.0,
+                                                 k2=a1)
+    
+    c_a2 = discrete_convolution_with_exponential(func_times=tac_times,
+                                                 func_vals=tac_vals,
+                                                 k1=1.0,
+                                                 k2=a2)
+    
+    if beta <= 1.0e-8:
+        f1 = 0.0
+        f2 = 0.0
+        b1 = 0.0
+        b2 = 0.0
+    else:
+        f1 = k1 / beta * (k4 - a1)
+        f2 = k1 / beta * (a2 - k4)
+        b1 = k1 / beta * k3
+        b2 = -b1
+    
+    c_1 = f1 * c_a1 + f2 * c_a2
+    c_2 = b1 * c_a1 + b2 * c_a2
+    c_pet = (1.0 - vb) * (c_1 + c_2) + vb * tac_vals
+    
+    return c_pet
+
+
 def generate_tac_1tcm_c1_from_tac(tac_times: np.ndarray,
                                   tac_vals: np.ndarray,
                                   k1: float,
