@@ -184,6 +184,47 @@ def response_function_serial_2tcm_c2(t: np.ndarray, k1: float, k2: float, k3: fl
     return (k1 * k3 / delta_a) * (np.exp(-alpha_1 * t) - np.exp(-alpha_2 * t))
 
 
+@numba.njit(fastmath=True, cache=True)
+def discrete_convolution_with_exponential(func_times: np.ndarray, func_vals: np.ndarray, k1: float, k2: float):
+    """
+    Computes the convolution of an exponential function with the input function.
+    c(t) = k1 * exp(-k2 * t) ⊗ u(t) where ⊗ represents the convolution operator.
+    This implementation is `O(N)` due to the simple recurrence relationship
+    arising from an exponential kernel.
+
+    Args:
+        func_vals (np.ndarray): Array containing input function values for :math:`t\geq0`.
+            Assumed to be evenly sampled with respect to :math:`t`.
+        func_times (np.ndarray): Array containing time-points where :math:`t\geq0`.
+            Assumed to be evenly sampled with respect to :math:`t`.
+        k1 (float): Rate constant for transport from first tissue compartment.
+        k2 (float): Rate constant for transport from second tissue compartment.
+
+    Returns:
+        (np.ndarray): Array containing the convolution of an exponential function with the input function.
+    """
+    dt = func_times[1] - func_times[0]
+    num_time = len(func_times)
+    c_out = np.zeros(num_time)
+    
+    prev = 0
+    if k2 <= 1e-8:
+        for i in range(0, num_time):
+            prev += func_vals[i]
+            c_out[i] = prev
+        return k1 * c_out * dt
+    else:
+        _k1 = k1 * dt
+        _k2 = k2 * dt
+        ek2 = np.exp(-_k2)
+        tmp = _k1 * (1.0 - ek2) / _k2
+        u_tmp = tmp * func_vals
+        for i in range(0, num_time):
+            prev = prev * ek2 + u_tmp[i]
+            c_out[i] = prev
+        return c_out
+
+
 def generate_tac_1tcm_c1_from_tac(tac_times: np.ndarray,
                                   tac_vals: np.ndarray,
                                   k1: float,

@@ -184,6 +184,9 @@ def weighted_series_sum(input_image_4d_path: str,
         frame_start_adjusted = frame_start[calc_first_frame:calc_last_frame]
         frame_duration_adjusted = frame_duration[calc_first_frame:calc_last_frame]
         decay_correction_adjusted = decay_correction[calc_first_frame:calc_last_frame]
+    
+    if verbose:
+        print(f"(ImageOps4d): WSS Is over {pet_series_adjusted.shape[-1]} frames.")
 
     wsc = math_lib.weighted_sum_computation
     image_weighted_sum = wsc(frame_duration=frame_duration_adjusted,
