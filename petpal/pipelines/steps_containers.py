@@ -749,7 +749,7 @@ class StepsPipeline:
             obj.add_dependency(sending='register_pet_to_t1', receiving=f'parametric_{method}_fit')
             obj.add_dependency(sending='resample_PTAC_on_scanner', receiving=f'parametric_{method}_fit')
         
-        for fit_model in ['1tcm', '2tcm-k4zero', 'serial-2tcm', 'patlak', 'logan', 'alt_logan']:
+        for fit_model in ['1tcm', '2tcm-k4zero', '2tcm', 'patlak', 'logan', 'alt_logan']:
             obj.add_dependency(sending='write_roi_tacs', receiving=f"roi_{fit_model}_fit")
             obj.add_dependency(sending='resample_PTAC_on_scanner', receiving=f"roi_{fit_model}_fit")
         

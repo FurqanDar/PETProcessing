@@ -782,8 +782,8 @@ class TCMAnalysis(object):
             
         """
         tcm = compartment_model.lower().replace(' ', '-')
-        if tcm not in ['1tcm', '2tcm-k4zero', 'serial-2tcm']:
-            raise ValueError("compartment_model must be one of '1tcm', '2tcm-k4zero', or 'serial-2tcm'")
+        if tcm not in ['1tcm', '2tcm-k4zero', 'serial-2tcm', '2tcm']:
+            raise ValueError("compartment_model must be one of '1tcm', '2tcm-k4zero', or '2tcm', or 'serial-2tcm'")
         return tcm
 
     @staticmethod
