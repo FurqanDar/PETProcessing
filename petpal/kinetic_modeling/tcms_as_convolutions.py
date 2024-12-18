@@ -226,21 +226,35 @@ def discrete_convolution_with_exponential(func_times: np.ndarray, func_vals: np.
 
 
 @numba.njit(fastmath=True, cache=True)
-def gen_tac_2tcm_cpet_vals_from_tac(tac_times, tac_vals, k1, k2, k3, k4, vb):
+def gen_tac_2tcm_cpet_vals_from_tac(tac_times: np.ndarray,
+                                    tac_vals: np.ndarray,
+                                    k1: float,
+                                    k2: float,
+                                    k3: float,
+                                    k4: float,
+                                    vb: float = 0.0):
+    """
+    Generates PET TAC values using the Two-Tissue Compartment Model (2TCM).
+
+    Args:
+        tac_times (np.ndarray): Time points for the input TAC values.
+        tac_vals (np.ndarray): TAC values corresponding to the time points, usually in minutes.
+        k1 (float): Rate constant for blood-to-tissue transport.
+        k2 (float): Rate constant for tissue-to-blood transport.
+        k3 (float): Rate constant for exchange between two compartments.
+        k4 (float): Rate constant for reverse exchange between two compartments.
+        vb (float, optional): Vascular blood fraction. Defaults to 0.0.
+
+    Returns:
+        np.ndarray: Simulated PET TAC values computed using the serial 2TCM.
+    """
     k234 = k2 + k3 + k4
     beta = np.sqrt(k234 * k234 - 4.0 * k2 * k4)
     a1 = (k234 - beta) / 2.0
     a2 = (k234 + beta) / 2.0
     
-    c_a1 = discrete_convolution_with_exponential(func_times=tac_times,
-                                                 func_vals=tac_vals,
-                                                 k1=1.0,
-                                                 k2=a1)
-    
-    c_a2 = discrete_convolution_with_exponential(func_times=tac_times,
-                                                 func_vals=tac_vals,
-                                                 k1=1.0,
-                                                 k2=a2)
+    c_a1 = discrete_convolution_with_exponential(func_times=tac_times, func_vals=tac_vals, k1=1.0, k2=a1)
+    c_a2 = discrete_convolution_with_exponential(func_times=tac_times, func_vals=tac_vals, k1=1.0, k2=a2)
     
     if beta <= 1.0e-8:
         f1 = 0.0
@@ -259,6 +273,35 @@ def gen_tac_2tcm_cpet_vals_from_tac(tac_times, tac_vals, k1, k2, k3, k4, vb):
     
     return c_pet
 
+
+def gen_tac_2tcm_cpet_from_tac(tac_times: np.ndarray,
+                               tac_vals: np.ndarray,
+                               k1: float,
+                               k2: float,
+                               k3: float,
+                               k4: float,
+                               vb: float = 0.0):
+    """
+    Generates PET TAC using the Two-Tissue Compartment Model (2TCM). Wrapper around
+    :func:`gen_tac_2tcm_cpet_from_tac` to return a TAC (``[times, vals]``) rather than just values.
+
+    Args:
+        tac_times (np.ndarray): Time points for the input TAC values.
+        tac_vals (np.ndarray): TAC values corresponding to the time points, usually in minutes.
+        k1 (float): Rate constant for blood-to-tissue transport.
+        k2 (float): Rate constant for tissue-to-blood transport.
+        k3 (float): Rate constant for exchange between two compartments.
+        k4 (float): Rate constant for reverse exchange between two compartments.
+        vb (float, optional): Vascular blood fraction. Defaults to 0.0.
+
+    Returns:
+        np.ndarray: Simulated PET TAC values computed using the serial 2TCM.
+        
+    See Also:
+        :func:`gen_tac_2tcm_cpet_from_tac` used to generate PET TAC values.
+    """
+    c_pet = gen_tac_2tcm_cpet_vals_from_tac(tac_times=tac_times, tac_vals=tac_vals, k1=k1, k2=k2, k3=k3, k4=k4, vb=vb)
+    return np.asarray([tac_times, c_pet])
 
 def generate_tac_1tcm_c1_from_tac(tac_times: np.ndarray,
                                   tac_vals: np.ndarray,
