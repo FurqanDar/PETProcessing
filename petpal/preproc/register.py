@@ -33,9 +33,9 @@ def register_pet(input_reg_image_path: str,
             anatomical image to which PET image is registered.
         motion_target_option (str | tuple): Target image for computing
             transformation. See :meth:`determine_motion_target`.
-        type_of_transform (str): Type of transform to perform on the PET image, must be one of 
-            antspy's transformation types, i.e. 'DenseRigid' or 'Translation'. Any transformation 
-            type that uses >6 degrees of freedom is not recommended, use with caution. See 
+        type_of_transform (str): Type of transform to perform on the PET image, must be one of
+            antspy's transformation types, i.e. 'DenseRigid' or 'Translation'. Any transformation
+            type that uses >6 degrees of freedom is not recommended, use with caution. See
             :py:func:`ants.registration`.
         out_image_path (str): Path to a .nii or .nii.gz file to which the registered PET series
             is written.
