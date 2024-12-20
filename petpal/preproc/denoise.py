@@ -136,20 +136,31 @@ class Denoiser:
             nib.Nifti1Image: Denoised PET image.
 
         """
+        
+        start_time = time.perf_counter_ns()
         self.flattened_head_mask = self.head_mask_image.get_fdata().flatten().astype(bool)
         self.flattened_pet_data = flatten_pet_spatially(self.pet_image.get_fdata())
         self.flattened_head_pet_data = self.flattened_pet_data[self.flattened_head_mask, :]
         flattened_mri_data = self.mri_image.get_fdata().flatten()
+        end_time = time.perf_counter_ns()
+        time_elapsed = end_time - start_time
+        time_elapsed_secs = time_elapsed / 1.0e9
+        time_elapsed_mins = time_elapsed_secs / 60.0
+        print(f"Flattening the data structs took {time_elapsed_secs} seconds or {time_elapsed_mins} minutes.")
         
         num_pet_pcs = 4
-        
+        start_time = time.perf_counter_ns()
         feature_data = np.zeros(shape=(self.flattened_head_pet_data.shape[0], num_pet_pcs + 1))
         feature_data[:, :-1] = self._temporal_pca(spatially_flattened_pet_data=self.flattened_head_pet_data,
                                                   num_components=num_pet_pcs)
         feature_data[:, -1] = flattened_mri_data[self.flattened_head_mask]
         
         self.feature_data = zscore(feature_data, axis=0)
-        
+        end_time = time.perf_counter_ns()
+        time_elapsed = end_time - start_time
+        time_elapsed_secs = time_elapsed / 1.0e9
+        time_elapsed_mins = time_elapsed_secs / 60.0
+        print(f"Flattening the data structs took {time_elapsed_secs} seconds or {time_elapsed_mins} minutes.")
         num_clusters = [4, 3, 1]  # TODO: Copy all of Hamed's values for this once one run-through works.
         
         self.smoothing_kernel = self._generate_2d_gaussian_filter()
