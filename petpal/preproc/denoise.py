@@ -1,12 +1,32 @@
 """ Provides Denoiser Class to run cluster-based denoising on PET images.
 
+IMPORTANT: This module is not finished. "To-do" comments can be found throughout the code; see below for a summary of
+missing functionality.
+
+- Formally cite Hamed's publication when it is released
+- Extend the run() function to perform multiple iterations of tiered k-means clustering, rather than one.
+- Add logic to weight each iteration by some measure of its quality (i.e. how close was the voxel to the centroid of its
+    cluster in terms of t1 mri intensity).
+- Incorporate changes from Furqan that improve computation time
+- Change a number of functions in Denoiser class to allow for more flexible combinations of input data. (We would most
+    certainly want to use t2 data).
+
+This module implements a cluster-based denoising approach by Hamed Yousefi, which incorporates multiple modalities along
+with the raw PET data. All additional data must be registered to the PET space prior to denoising, to ensure the best
+results. To limit the computations to the relevant data, the user must also provide a nifti image containing a mask of
+the head (brain and surrounding tissue/skull/etc...).
+
+Typical Usage example:
+
+    import petpal.preproc.denoise
+    denoiser = denoise.Denoiser(path_to_pet="/path/to/4D/pet/data",
+                                path_to_mri="/path/to/mri/data",
+                                path_to_head_mask="/path/to/head_mask/data")
+    denoised_image = denoiser.run()
+
 TODO: Credit Hamed Yousefi and his publication formally once it's published.
 
 """
-# Temp!!!
-from skimage.io import imshow
-import matplotlib.pyplot as plt
-
 # Import Python Standard Libraries
 import logging
 import math
@@ -49,6 +69,7 @@ class Denoiser:
                  path_to_head_mask: str,
                  verbosity: int = 0):
 
+        # TODO: Allow for more flexible combinations of input data, or at least a few presets if nothing else.
         if verbosity in [-2, -1, 0, 1, 2]:
             log_level = 30 - (10 * verbosity)
             logger.setLevel(level=log_level)
@@ -169,6 +190,9 @@ class Denoiser:
         denoised_image = nib.Nifti1Image(dataobj=first_iteration,
                                          affine=self.pet_image.affine,
                                          header=self.pet_image.header)
+
+        # TODO: Once functionality is added to run multiple iterations with different values for num_clusters, weight
+        #   each iteration based on some quality metric (TBD).
 
         return denoised_image
 
@@ -298,7 +322,7 @@ class Denoiser:
         for i in range(len(cluster_voxel_indices)):
             pixel_flat_index = pixels_emanating_from_center[i] # O(1)
             pixel_coordinates = (pixel_flat_index % x, math.floor(pixel_flat_index / x)) # maybe change to //
-            pixel_ring_space_distances = ring_space_distances[pixel_coordinates[0], pixel_coordinates[1], :] # TODO: Move this outside of loop
+            pixel_ring_space_distances = ring_space_distances[pixel_coordinates[0], pixel_coordinates[1], :]
             normalized_ring_space_distances = pixel_ring_space_distances / np.linalg.norm(pixel_ring_space_distances) # O(1)
             best_candidate_voxel_index = np.argmax(
                 np.dot(normalized_feature_distances, normalized_ring_space_distances)) # Try changing this to np.dot
@@ -428,7 +452,10 @@ class Denoiser:
         """
         Radon transform image, apply smoothing, and transform back to original domain
 
-            ring_space_map: """
+            ring_space_map:
+
+        TODO: incorporate Furqan's changes to these computations that speed it up.
+        """
         theta = np.linspace(0.0, 180.0, 7240)
         radon_transformed_image = radon(image_data, theta=theta)
         smoothed_radon_image = convolve(radon_transformed_image, kernel, mode='constant')
@@ -553,7 +580,7 @@ class Denoiser:
         mri_plus_pca_data = np.zeros(shape=(pca_data.shape[0], pca_data.shape[1] + 1))
         mri_plus_pca_data[:, :-1] = pca_data
         mri_plus_pca_data[:, -1] = flat_mri_data[spatially_flat_non_brain_mask]
-        mri_plus_pca_data = zscore(mri_plus_pca_data, axis=0)  # TODO: Verify that this is the right axis with data
+        mri_plus_pca_data = zscore(mri_plus_pca_data, axis=0)
 
         return mri_plus_pca_data
 
