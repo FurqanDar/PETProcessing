@@ -25,8 +25,8 @@ Typical Usage example:
     denoised_image = denoiser.run()
 
 TODO: Credit Hamed Yousefi and his publication formally once it's published.
-
 """
+
 # Import Python Standard Libraries
 import logging
 import math
@@ -37,7 +37,6 @@ from typing import Union
 import nibabel as nib
 import numpy as np
 from numba import njit
-from numpy.ma.core import shape
 from scipy.ndimage import convolve
 from scipy.stats import zscore, norm
 from skimage.transform import radon, iradon
@@ -51,7 +50,31 @@ from ..utils.image_io import ImageIO
 logger = logging.getLogger(__name__)
 
 class Denoiser:
-    """Wrapper class for handling inputs, outputs, and logging for denoising, as well as the main pipeline functions"""
+    """Handles entire denoising process from IO to computation.
+
+    This class uses a cluster-based approach to denoising with the following (summarized) steps:
+        1. Extract and organize feature data consisting of the MRI data and temporal Principal Components of the 4D PET.
+        2. Perform k-means clustering on the feature data three different times, each time operating on the previous
+            cluster's data, forming a tree-like structure.
+        3. For each frame in each of the resulting clusters (the deepest depth of the tree), rearrange the PET data for
+            that cluster into a 'ring space', such that voxels with similar cluster characteristics are placed near each
+            other.
+        4. Perform the radon transform, then smooth with a rectangular kernel, before performing the inverse radon to
+            take the image back to the 'ring space'.
+        5. Populate the output 4D volume with these smoothed values, mapping each pixel in the 'ring space' to the
+            locations in the original pet data.
+
+    Attributes:
+        pet_image: nibabel.Nifti1Image object with data and metadata for the original PET.
+        mri_image: nibabel.Nifti1Image object with data and metadata for the original MRI.
+        head_mask_image: nibabel.Nifti1Image object with data and metadata for the head mask.
+        flattened_head_mask: head mask data flattened for reuse.
+        flattened_head_pet_data: pet data corresponding to the head, flattened for reuse.
+        flattened_pet_data: all pet data, flattened for reuse.
+        feature_data: array containing all the feature data extracted from the inputs.
+        smoothing_kernel: array used for smoothing the radon-transformed 'ring space' images.
+
+    """
 
     # Class attributes; The fewer the better with respect to memory.
     pet_image = None
@@ -68,6 +91,18 @@ class Denoiser:
                  path_to_mri: str,
                  path_to_head_mask: str,
                  verbosity: int = 0):
+        """Initializes a Denoiser object based on input image paths and an optional verbosity.
+
+        Args:
+            path_to_pet (str): path to PET nifti image
+            path_to_mri (str): path to MRI nifti image
+            path_to_head_mask (str): path to head mask nifti image
+            verbosity (int): Level of desired detail in any logs from -2 (very little detail) to 2 (debug mode)
+
+        Raises:
+            ValueError: verbosity given was not one of [-2, -1, 0, 1, 2]
+        """
+
 
         # TODO: Allow for more flexible combinations of input data, or at least a few presets if nothing else.
         if verbosity in [-2, -1, 0, 1, 2]:
@@ -86,18 +121,14 @@ class Denoiser:
                                                       path_to_head_mask=path_to_head_mask)
 
 
-
-
-    # Should run the entire process; Probably just call run()
     def __call__(self):
-        """Denoise an image"""
-
+        """Run the entire process if an instance is called directly (i.e. 'my_denoiser_object()')"""
+        self.run()
 
     # "Pipeline" Functions: Functions that string a number of other functions.
     def run_single_iteration(self,
                              num_clusters: list[int]) -> np.ndarray:
-        """
-        Generate a denoised image using one iteration of the method, to be weighted with others downstream.
+        """Generate a 'denoised' image using one iteration of the method, to be weighted with others downstream.
 
         Args:
             num_clusters (list[int]): List of length 3 containing the number of clusters to use to separate the feature
