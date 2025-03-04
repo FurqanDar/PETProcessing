@@ -46,7 +46,7 @@ class GraphicalAnalysisPlot(ABC):
             implementations).
         t_thresh_idx (int): The index at which the time threshold is crossed in the TACs (calculated in specific
             implementations).
-        x (np.ndarray): The "x" valu0es for plotting (calculated in specific implementations).
+        x (np.ndarray): The "x" values for plotting (calculated in specific implementations).
         y (np.ndarray): The "y" values for plotting (calculated in specific implementations).
         fit_params (dict): The parameters fit to the data using least squares. Contains 'slope', 'intercept', and
             'r_squared' (calculated in specific implementations).

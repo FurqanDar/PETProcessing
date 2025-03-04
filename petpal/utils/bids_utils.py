@@ -13,7 +13,8 @@ import pathlib
 from bids_validator import BIDSValidator
 from nibabel.filebasedimages import FileBasedImage
 from nibabel.nifti1 import Nifti1Image
-from petpal.utils.image_io import safe_load_meta
+
+from .image_io import safe_load_meta
 
 class BidsInstance:
     """

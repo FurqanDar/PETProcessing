@@ -497,7 +497,7 @@ def windowed_motion_corr_to_target(input_image_path: str,
     input_image_list = ants.ndimage_to_list(input_image)
     window_idx_pairs = get_window_index_pairs_for_image(image_path=input_image_path, w_size=w_size)
     half_life = get_half_life_from_nifti(image_path=input_image_path)
-    frame_info_dict = get_frame_timing_info_for_nifti(image_path=input_image_path)
+    frame_timing_info = get_frame_timing_info_for_nifti(image_path=input_image_path)
 
     target_image = determine_motion_target(motion_target_option=motion_target_option,
                                            input_image_4d_path=input_image_path,
@@ -515,7 +515,7 @@ def windowed_motion_corr_to_target(input_image_path: str,
                                                                     window_start_id=st_id,
                                                                     window_end_id=end_id,
                                                                     half_life=half_life,
-                                                                    image_frame_info=frame_info_dict)
+                                                                    image_frame_info=frame_timing_info)
         window_registration = ants.registration(fixed=target_image,
                                                 moving=window_tgt_image,
                                                 type_of_transform=type_of_transform,

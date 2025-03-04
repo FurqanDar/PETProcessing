@@ -4,10 +4,11 @@ Module to handle abstracted functionalities
 import os
 import nibabel
 import numpy as np
+import pandas as pd
 from scipy.interpolate import interp1d
 import ants
-from . import image_io, math_lib
 
+from . import image_io, math_lib
 
 FULL_NAME = [
     'Background',
@@ -210,7 +211,7 @@ def weighted_series_sum_over_window_indecies(input_image_4d: ants.core.ANTsImage
                                              window_start_id: int,
                                              window_end_id: int,
                                              half_life: float,
-                                             image_frame_info: dict, ):
+                                             image_frame_info: image_io.ScanTimingInfo) -> ants.core.ANTsImage | None:
     r"""
     Computes a weighted series sum over a specified window of indices for a 4D PET image.
 
@@ -220,10 +221,12 @@ def weighted_series_sum_over_window_indecies(input_image_4d: ants.core.ANTsImage
         window_start_id (int): Start index of the image window.
         window_end_id (int): End index of the image window.
         half_life (float): Radioactive tracer's half-life in seconds.
-        image_frame_info (dict): Frame timing information with keys:
-            - `start` (np.ndarray): Frame start times.
-            - `duration` (np.ndarray): Frame durations.
-            - `decay` (np.ndarray): Decay correction factors.
+        image_frame_info (image_io.ScanTimingInfo): Frame timing information with:
+            - duration (np.ndarray): Frame durations.
+            - start (np.ndarray): Frame start times.
+            - end (np.ndarray): Frame ends.
+            - center (np.ndarray): Frame centers.
+            - decay (np.ndarray): Decay correction factors.
 
     Returns:
         ants.core.ANTsImage: Resultant image after weighted sum computation.
@@ -243,9 +246,9 @@ def weighted_series_sum_over_window_indecies(input_image_4d: ants.core.ANTsImage
                                                                      window_start_id=window_start_id,
                                                                      window_end_id=window_end_id,
                                                                      half_life=half_life,
-                                                                     frame_starts=image_frame_info['start'],
-                                                                     frame_durations=image_frame_info['duration'],
-                                                                     decay_factors=image_frame_info['decay'],)
+                                                                     frame_starts=image_frame_info.start,
+                                                                     frame_durations=image_frame_info.duration,
+                                                                     decay_factors=image_frame_info.decay,)
 
     window_wss = ants.from_numpy(data=window_wss,
                                  origin=input_image_4d.origin[:-1],
@@ -302,3 +305,33 @@ def check_physical_space_for_ants_image_pair(image_1: ants.core.ANTsImage,
     org_cons = np.allclose(image_1.origin[:3], image_2.origin[:3])
 
     return dir_cons and spc_cons and org_cons
+
+
+def convert_ctab_to_dseg(ctab_path: str,
+                         dseg_path: str,
+                         column_names: list[str]=None):
+    """
+    Convert a FreeSurfer compatible color table into a BIDS compatible label
+    map ``dseg.tsv``.
+
+    Args:
+        ctab_path (str): Path to FreeSurfer compatible color table.
+        dseg_path (str): Path to ``dseg.tsv`` label mapfile to save.
+        column_names (list[str]): List of columns present in color table. Must
+            include 'mapping' and 'name'.
+    """
+    if column_names==None:
+        column_names = ['mapping','name','r','g','b','a','ttype']
+    fs_ctab = pd.read_csv(ctab_path,
+                          delim_whitespace=True,
+                          header=None,
+                          comment='#',
+                          names=column_names)
+    label_names = {'name': fs_ctab['name'],
+                   'mapping': fs_ctab['mapping'],
+                   'abbreviation': build_label_map(fs_ctab['name'])}
+    label_map = pd.DataFrame(data=label_names,
+                             columns=['name','abbreviation','mapping']).rename_axis('index')
+    label_map = label_map.sort_values(by=['mapping'])
+    label_map.to_csv(dseg_path,sep='\t')
+    return label_map

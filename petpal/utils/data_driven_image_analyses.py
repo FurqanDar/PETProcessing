@@ -469,12 +469,6 @@ def generate_temporal_pca_quantile_threshold_tacs_of_image_over_mask(input_image
     if quantiles is None:
         quantiles = [0.5, 0.75, 0.9, 0.975]
 
-    image_timing_info = get_frame_timing_info_for_nifti(image_path=input_image_path)
-
-    tac_ref_times = (image_timing_info['start'] + image_timing_info['end']) / 2.0
-    if tac_ref_times[-1] > 200.0:
-        tac_ref_times /= 60.0
-
     input_image = ants.image_read(input_image_path)
     mask_image = ants.image_read(mask_image_path)
 
@@ -489,6 +483,8 @@ def generate_temporal_pca_quantile_threshold_tacs_of_image_over_mask(input_image
                                         )
 
     if output_arrays_path is not None:
+        image_timing_info = get_frame_timing_info_for_nifti(image_path=input_image_path)
+        tac_ref_times = image_timing_info.center_in_mins
         out_array = _gen_reshaped_quantiled_tacs(times=tac_ref_times,
                                                  tacs_mean=tacs_mean,
                                                  tacs_std=tacs_std)

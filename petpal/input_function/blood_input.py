@@ -47,7 +47,7 @@ def extract_blood_input_function_activity_from_csv(file_path: str) -> np.ndarray
 
 # TODO: Maybe a class that tracks unitful quantities so we don't have to worry about units
 class BloodInputFunction(object):
-    """A general purpose class to deal with blood input function related data. The primarily functionality is to be able to
+    """A general purpose class to deal with blood input function related data. The primary functionality is to be able to
     compute the blood input function at any time, given the raw time and activity data.
     
     Using a manual threshold, we split the raw data into two parts:
