@@ -24,7 +24,7 @@ This script utilizes the :class:`TCMAnalysis<petpal.tac_fitting.TCMAnalysis>` cl
 
 Example:
     In the proceeding example, we assume that we have an input TAC named 'input_tac.txt', and an ROI TAC named
-    'roi_tac.txt`. We want to try fitting a serial 2TCM to the ROI tac.
+    'roi_tac.txt'. We want to try fitting a serial 2TCM to the ROI tac.
     
     .. code-block:: bash
 

@@ -45,7 +45,7 @@ def undo_decay_correction(input_image_path: str,
         json_data = image_io.load_metadata_for_nifti_with_same_filename(image_path=input_image_path)
 
     frame_info = image_io.get_frame_timing_info_for_nifti(image_path=input_image_path)
-    decay_factors = frame_info['decay']
+    decay_factors = frame_info.decay
 
     uncorrected_image_numpy = decay_corrected_image.numpy()
 
@@ -101,11 +101,9 @@ def decay_correct(input_image_path: str,
     uncorrected_image = ants.image_read(filename=input_image_path)
 
     frame_info = image_io.get_frame_timing_info_for_nifti(image_path=input_image_path)
-    frame_times_start = frame_info['start']
-    frame_durations = frame_info['duration']
-    frame_reference_times = [start + (duration / 2) for start, duration in zip(frame_times_start, frame_durations)]
+    frame_reference_times = frame_info.center
 
-    original_decay_factors = np.asarray(frame_info['decay'])
+    original_decay_factors = frame_info.decay
     if np.any(original_decay_factors != 1):
         raise ValueError(f'Decay Factors other than 1 found in metadata for {input_image_path}. This likely means the '
                          f'image has not had its previous decay correction undone. Try running undo_decay_correction '
