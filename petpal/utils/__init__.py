@@ -6,6 +6,7 @@ from . import useful_functions
 from . import time_activity_curve
 from . import decorators
 from . import data_driven_image_analyses
+from . import scan_timing
 
 def main():
     print("PETPAL - Utilities")

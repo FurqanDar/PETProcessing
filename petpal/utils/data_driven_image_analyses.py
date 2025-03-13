@@ -4,7 +4,7 @@ from sklearn.decomposition import PCA
 
 from ..preproc.image_operations_4d import extract_roi_voxel_tacs_from_image_using_mask
 from .useful_functions import check_physical_space_for_ants_image_pair
-from .image_io import get_frame_timing_info_for_nifti
+from .scan_timing import get_frame_timing_info_for_nifti
 
 
 def temporal_pca_analysis_of_image_over_mask(input_image: ants.core.ANTsImage,

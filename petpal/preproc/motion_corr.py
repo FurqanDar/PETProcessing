@@ -7,12 +7,12 @@ registration.
 import ants
 import numpy as np
 
+
 from .image_operations_4d import determine_motion_target
 from ..utils import image_io
+from ..utils.scan_timing import get_window_index_pairs_for_image, get_frame_timing_info_for_nifti
 from ..utils.useful_functions import weighted_series_sum_over_window_indecies
-from ..utils.image_io import (get_frame_timing_info_for_nifti,
-                              get_window_index_pairs_for_image,
-                              get_half_life_from_nifti)
+from ..utils.image_io import get_half_life_from_nifti
 
 
 def motion_corr(input_image_4d_path: str,

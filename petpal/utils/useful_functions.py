@@ -8,7 +8,7 @@ import pandas as pd
 from scipy.interpolate import interp1d
 import ants
 
-from . import image_io, math_lib
+from . import image_io, math_lib, scan_timing
 
 FULL_NAME = [
     'Background',
@@ -211,7 +211,7 @@ def weighted_series_sum_over_window_indecies(input_image_4d: ants.core.ANTsImage
                                              window_start_id: int,
                                              window_end_id: int,
                                              half_life: float,
-                                             image_frame_info: image_io.ScanTimingInfo) -> ants.core.ANTsImage | None:
+                                             image_frame_info: scan_timing.ScanTimingInfo) -> ants.core.ANTsImage | None:
     r"""
     Computes a weighted series sum over a specified window of indices for a 4D PET image.
 
@@ -221,7 +221,7 @@ def weighted_series_sum_over_window_indecies(input_image_4d: ants.core.ANTsImage
         window_start_id (int): Start index of the image window.
         window_end_id (int): End index of the image window.
         half_life (float): Radioactive tracer's half-life in seconds.
-        image_frame_info (image_io.ScanTimingInfo): Frame timing information with:
+        image_frame_info (scan_timing.ScanTimingInfo): Frame timing information with:
             - duration (np.ndarray): Frame durations.
             - start (np.ndarray): Frame start times.
             - end (np.ndarray): Frame ends.
