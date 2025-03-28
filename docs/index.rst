@@ -14,6 +14,12 @@ PET Processing Module Documentation
    petpal
    petpal.cli
 
+.. toctree::
+   :maxdepth: 1
+   :caption: Tutorials:
+
+   pipelines/examples/index
+
 
 
 Indices and tables
