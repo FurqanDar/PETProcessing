@@ -1,5 +1,5 @@
-Module to handle timing information of PET scans.
-===============================
+Module to handle timing information of PET scans
+================================================
 
 .. automodule:: petpal.utils.scan_timing
    :members:

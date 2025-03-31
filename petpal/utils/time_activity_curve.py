@@ -115,22 +115,25 @@ def safe_load_tac(filename: str,
                   **kwargs) -> np.ndarray:
     """
     Loads time-activity curves (TAC) from a file.
+
     Tries to read a TAC from specified file and raises an exception if unable to do so. We assume
     that the file has two columns, the first corresponding to time and second corresponding to
     activity.
+
     Args:
         filename (str): The name of the file to be loaded.
         with_uncertainty (bool): Load uncertainty of measured activity along with timing and 
             activity.
         **kwargs (dict): keyword arguments to pass to :func:`np.loadtxt`.
+
     Returns:
         np.ndarray: A numpy array containing the loaded TAC. The first index corresponds to the
             times, and the second corresponds to the activity. If with_uncertainty is True, the
             third index corresponds to the uncertainty.
+
     Raises:
         Exception: An error occurred loading the TAC.
 
-        
     Example:
 
         .. code-block:: python
