@@ -508,23 +508,24 @@ class BIDS_Pipeline(BIDSyPathsForPipelines, StepsPipeline):
         
         The following is a basic example demonstrating how to instantiate the basic default
         pipeline which performs the following steps:
-            1. Crop the raw PET image using a threshold.
-            2. Motion correct the cropped image to a mean-PET target where the frames have mean intensities
-               greater than or equal to the total mean intensity.
-            3. Computes a `weighted-series-sum` image from the cropped PET image. **We add this step since
-               it is not part of the default pipeline.**
-            4. Registers the motion corrected PET image to a T1w reference image.
-            5. For each of the ROI segments defined, we extract TACs and save them.
-            6. For the blood TAC, which is assumed to be decay corrected (and WB corrected if appliclable),
-               we resample the TAC on the PET scan frame times.
-            7. Generate parametric patlak slope and intercept images from the register PET image.
-            8. Generate parametric logan slope and intercept images from the register PET image.
-            9. For each ROI TAC, calculate a 1TCM fit.
-            10. For each ROI TAC, calculate a 1TCM fit.
-            11. For each ROI TAC, calculate an irreversible 2TCM (:math:`k_{4}=0`) fit.
-            12. For each ROI TAC, calculate a serial 2TCM fit.
-            13. For each ROI TAC, calculate a patlak fit.
-            14. For each ROI TAC, calculate a logan fit.
+
+        #. Crop the raw PET image using a threshold.
+        #. Motion correct the cropped image to a mean-PET target where the frames have mean intensities
+           greater than or equal to the total mean intensity.
+        #. Computes a `weighted-series-sum` image from the cropped PET image. **We add this step since
+           it is not part of the default pipeline.**
+        #. Registers the motion corrected PET image to a T1w reference image.
+        #. For each of the ROI segments defined, we extract TACs and save them.
+        #. For the blood TAC, which is assumed to be decay corrected (and WB corrected if appliclable),
+           we resample the TAC on the PET scan frame times.
+        #. Generate parametric patlak slope and intercept images from the register PET image.
+        #. Generate parametric logan slope and intercept images from the register PET image.
+        #. For each ROI TAC, calculate a 1TCM fit.
+        #. For each ROI TAC, calculate a 1TCM fit.
+        #. For each ROI TAC, calculate an irreversible 2TCM (:math:`k_{4}=0`) fit.
+        #. For each ROI TAC, calculate a serial 2TCM fit.
+        #. For each ROI TAC, calculate a patlak fit.
+        #. For each ROI TAC, calculate a logan fit.
         
         We assume that we are running the following code in the ``/code`` folder of a BIDS project.
         

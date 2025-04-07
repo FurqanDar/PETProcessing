@@ -1,25 +1,25 @@
-"""
+r"""
 The 'image_operations_4d' module provides several functions used to do preprocessing
 on 4D PET imaging series. These functions typically take one or more paths to imaging
 data in NIfTI format, and save modified data to a NIfTI file, and may return the
 modified imaging array as output.
 
 TODO:
-    * (weighted_series_sum) Refactor the DecayFactor key extraction into its own function
-    * (weighted_series_sum) Refactor verbose reporting into the class as it is unrelated to
-      computation
-    * (write_tacs) Shift to accepting color-key dictionaries rather than a file path.
-    * (extract_tac_from_4dnifty_using_mask) Write the number of voxels in the mask, or the
-      volume of the mask. This is necessary for certain analyses with the resulting tacs,
-      such as finding the average uptake encompassing two regions.
-    * Methods that create new images should copy over a previous metadata file, if one exists,
-      and create a new one if it does not.
-    * (stitch_broken_scans) Separate 'add desc entity' section to its own function somewhere.
-    * (stitch_broken_scans) Assumes non-BIDS key 'DecayFactor' instead of BIDS-required 'DecayCorrectionFactor' for
-      ease-of-use with NIL data. Should be changed in the future.
-    * (stitch_broken_scans) Currently writes intermediate files even if output_image_path is None.
-    * (suvr) Allow list to be passed as ref_region to use multiple regions together as a reference region (i.e. left
-    and right cerebellum gray matter).
+    *   (weighted_series_sum) Refactor the DecayFactor key extraction into its own function
+    *   (weighted_series_sum) Refactor verbose reporting into the class as it is unrelated to
+        computation
+    *   (write_tacs) Shift to accepting color-key dictionaries rather than a file path.
+    *   (extract_tac_from_4dnifty_using_mask) Write the number of voxels in the mask, or the
+        volume of the mask. This is necessary for certain analyses with the resulting tacs,
+        such as finding the average uptake encompassing two regions.
+    *   Methods that create new images should copy over a previous metadata file, if one exists,
+        and create a new one if it does not.
+    *   (stitch_broken_scans) Separate 'add desc entity' section to its own function somewhere.
+    *   (stitch_broken_scans) Assumes non-BIDS key 'DecayFactor' instead of BIDS-required 'DecayCorrectionFactor' for
+        ease-of-use with NIL data. Should be changed in the future.
+    *   (stitch_broken_scans) Currently writes intermediate files even if output_image_path is None.
+    *   (suvr) Allow list to be passed as ref_region to use multiple regions together as a reference region (i.e. left
+        and right cerebellum gray matter).
 
 """
 import os
