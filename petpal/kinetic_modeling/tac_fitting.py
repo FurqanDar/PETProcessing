@@ -134,6 +134,7 @@ class TACFitter(object):
             import petpal.kinetic_modeling.tac_fitting as pet_fit
             import matplotlib.pyplot as plt
             import petpal.utils.testing_utils as pet_tst
+            import petpal.visualizations.tac_plots as tac_plots
             
             tcm_func = pet_tcm.generate_tac_1tcm_c1_from_tac
             pTAC = np.asarray(np.loadtxt('../../../../../data/tcm_tacs/fdg_plasma_clamp_evenly_resampled.txt').T)
@@ -145,7 +146,7 @@ class TACFitter(object):
             fit_params = fitter.fit_results[0]
             fit_tac = pet_tcm.generate_tac_1tcm_c1_from_tac(*pTAC, *fit_params)
             
-            plotter = pet_tst.TACPlots()
+            plotter = tac_plots.TacFigure()
             plotter.add_tac(*pTAC, label='Input TAC', color='black', ls='--')
             plotter.add_tac(*tTAC, label='Tissue TAC', color='blue', ls='', marker='o', mec='k')
             plotter.add_tac(*fit_tac, label='Fit TAC', color='red', ls='-', marker='', lw=2.5)

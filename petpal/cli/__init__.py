@@ -7,6 +7,7 @@ from . import cli_tac_fitting
 from . import cli_tac_interpolation
 from . import cli_brier_fdg_processing
 from . import cli_preproc_2
+from . import cli_plot_tacs
 
 def main():
     print("PETPAL - Positron Emission Tomography Processing and Analysis Library)")

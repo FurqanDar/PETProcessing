@@ -59,6 +59,7 @@ classifiers = [  # These are added to PyPI package when published; Used for sear
     petpal-brier-fdg-pipeline = "petpal.cli.cli_brier_fdg_processing:main"
     petpal-pib-proc = "petpal.cli.cli_pib_processing:main"
     petpal-pvc = "petpal.cli.cli_pvc:main"
+    petpal-plot-tacs = "petpal.cli.cli_plot_tacs:main"
 
 [project.urls]
     Repository = "https://github.com/FurqanDar/PETPAL.git"

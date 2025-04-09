@@ -1,75 +1,8 @@
 import numpy as np
-import matplotlib.pyplot as plt
 from scipy.stats import linregress
 
 
 _TEXT_BOX_ = {'facecolor': 'lightblue', 'edgecolor': 'black', 'lw': 2.0, 'alpha': 0.2}
-
-
-class TACPlots(object):
-    r"""
-    A class for plotting Time Activity Curves (TACs) on linear and semi-logarithmic scales.
-
-    This class simplifies the process of comparing TACs on different scales. It generates a
-    side-by-side plot with a linear-linear scale for the first plot and a log-x scale for the
-    second plot. Users can add TACs to the plots and optionally generate a legend.
-
-    Attributes:
-        fig (matplotlib.figure.Figure): The figure object that contains the plots.
-        axes (ndarray of Axes): The axes objects where the TACs are plotted.
-
-    Example:
-    
-    .. code-block:: python
-
-        tac_plots = TACPlots()
-        tac_plots.add_tac(tac_times_in_minutes, tac_vals, label='TAC 1', color='blue')
-        tac_plots.add_tac(tac_times_2, tac_vals_2, label='TAC 2', color='red')
-        tac_plots.gen_legend()
-        plt.show()
-
-    """
-    def __init__(self,
-                 figsize: tuple = (8, 4),
-                 xlabel: str = r'$t$ [minutes]',
-                 ylabel: str = r'TAC [$\mathrm{kBq/ml}$]'):
-        r"""
-        Initialize the TACPlots with two subplots, one with a linear scale and the other with a semi-logarithmic scale.
-
-        Args:
-            figsize (tuple): The total size of the figure. Defaults to an 8x4 inches figure.
-            xlabel (str): The label for the x-axis. Defaults to '$t$ [minutes]'.
-            ylabel (str): The label for the y-axis. Defaults to 'TAC [$\mathrm{kBq/ml}$]'.
-        """
-        self.fig, self.axes = plt.subplots(1, 2, sharey=True, constrained_layout=True, figsize=figsize)
-        self.fax = self.axes.flatten()
-        [ax.set(xlabel=xlabel) for ax in self.fax]
-        self.fax[0].set(ylabel=ylabel, title='Linear')
-        self.fax[1].set(xscale='log', title='SemiLog-X')
-    
-    def add_tac(self, tac_times: np.ndarray, tac_vals: np.ndarray, **kwargs):
-        r"""
-        Add a TAC to both subplots.
-
-        Args:
-            tac_times (np.ndarray): The time points for the TAC.
-            tac_vals (np.ndarray): The corresponding values for the TAC.
-            kwargs (dict): Additional keyword arguments for the plot() function.
-        """
-        [ax.plot(tac_times, tac_vals, **kwargs) for ax in self.fax]
-
-    def gen_legend(self):
-        r"""
-        Generate a legend using the labels provided in the add_tac() method.
-
-        Note:
-            It is recommended to add all TACs before generating the legend. Any TACs added after the legend is
-        generated will not be included in the legend.
-        
-        """
-        handles, labels = self.fax[0].get_legend_handles_labels()
-        if handles:
-            self.fig.legend(handles, labels, bbox_to_anchor=(1.0, 0.5), loc='center left')
 
 
 def generate_random_parameter_samples(num_samples, num_params, hi, lo):
