@@ -175,6 +175,52 @@ def crop_image(input_image_path: str,
     return cropped_image
 
 
+def rescale_image(input_image: ants.core.ANTsImage, rescale_constant: float, op: str = '/') -> ants.core.ANTsImage:
+    r"""Rescales a 3D or 4D ANTsImage intensity values by performing division or
+    multiplication with a given constant.
+
+    This function supports two operations: dividing the input image by a
+    rescale constant or multiplying it by the constant. Division is only
+    allowed with a positive rescale constant to avoid invalid operations.
+    The operation is applied element-wise across the image data.
+
+    Args:
+        input_image (ants.core.ANTsImage): Input image, given as an ANTsImage object.
+        rescale_constant (float): The constant to rescale the image intensities. For division (`op="/"`),
+            this value must be greater than zero.
+        op (str, optional): Operation to perform, either `'/'` for division or `'*'` for
+            multiplication. Default is `'/'`.
+
+    Returns:
+        ants.core.ANTsImage: The rescaled ANTsImage with updated intensity values.
+
+    Raises:
+        AssertionError: If `op` is not one of `'/'` or `'*'`.
+        AssertionError: If division (`op="/"`) is requested, but `rescale_constant` is not greater than zero.
+
+    Example:
+        .. code-block:: python
+
+            import ants
+            from petpal.preproc.image_operations_4d import rescale_image
+
+            # Load a sample ANTsImage
+            input_img = ants.image_read('example_image.nii')
+
+            # Rescale intensities by division with a constant (e.g., 2.0)
+            rescaled_img = rescale_image(input_image=input_img, rescale_constant=2.0, op='/')
+
+            # Rescale intensities by multiplication with a constant (e.g., 1.5)
+            rescaled_img = rescale_image(input_image=input_img, rescale_constant=1.5, op='*')
+    """
+    assert op in ('/', '*'), "Operations supported by this function are `/` (division) or `*` (multiplication)."
+    if op == '/':
+        assert rescale_constant > 0, "Rescaling constant must be greater than zero."
+        return input_image / rescale_constant
+    else:
+        return input_image * rescale_constant
+
+
 def determine_motion_target(motion_target_option: str | tuple | list,
                             input_image_4d_path: str = None,
                             half_life: float = None) -> str:

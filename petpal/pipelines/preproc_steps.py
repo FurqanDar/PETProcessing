@@ -1,14 +1,16 @@
 import warnings
 import copy
 from typing import Union
+
 from .steps_base import *
-from ..preproc.image_operations_4d import SimpleAutoImageCropper, write_tacs
+from ..preproc.image_operations_4d import SimpleAutoImageCropper, write_tacs, rescale_image
 from ..preproc.register import register_pet
 from ..preproc.motion_corr import (motion_corr_frames_above_mean_value,
                                    windowed_motion_corr_to_target)
 from ..input_function import blood_input
 from ..utils.bids_utils import parse_path_to_get_subject_and_session_id, snake_to_camel_case, gen_bids_like_dir_path, gen_bids_like_filepath
 from ..utils.image_io import safe_copy_meta
+from ..utils.decorators import ANTsImageToANTsImage
 
 class TACsFromSegmentationStep(FunctionBasedStep):
     """
@@ -523,7 +525,8 @@ class ImageToImageStep(FunctionBasedStep):
         sup_str_list.insert(args_ind, f"Input & Output Paths:\n{io_dict}")
         def_args_ind = sup_str_list.index("Default Arguments:")
         sup_str_list.pop(def_args_ind + 1)
-        sup_str_list.pop(def_args_ind + 1)
+        if not hasattr(self.function, '__wrapped__'):
+            sup_str_list.pop(def_args_ind + 1)
         
         return "\n".join(sup_str_list)
     
@@ -575,18 +578,19 @@ class ImageToImageStep(FunctionBasedStep):
         self.output_image_path = filepath
     
     @classmethod
-    def default_threshold_cropping(cls, **overrides):
+    def default_threshold_cropping(cls, name: str = 'thresh_crop',  **overrides):
         """
         Creates a default instance for threshold cropping using :class:`SimpleAutoImageCropper<petpal.preproc.image_operations_4d.SimpleAutoImageCropper>`.
         All paths are empty-strings.
 
         Args:
+            name (str): Name of the step. Defaults to 'thresh_crop'.
             **overrides: Override default parameters.
 
         Returns:
             ImageToImageStep: A new instance for threshold cropping.
         """
-        defaults = dict(name='thresh_crop', function=SimpleAutoImageCropper, input_image_path='',
+        defaults = dict(name=name, function=SimpleAutoImageCropper, input_image_path='',
                         output_image_path='', )
         override_dict = defaults | overrides
         try:
@@ -596,20 +600,21 @@ class ImageToImageStep(FunctionBasedStep):
             return cls(**defaults)
     
     @classmethod
-    def default_moco_frames_above_mean(cls, verbose=False, **overrides):
+    def default_moco_frames_above_mean(cls, name: str = 'moco_frames_above_mean', verbose=False, **overrides):
         """
         Creates a default instance for motion correction frames above mean value using
         :func:`motion_corr_frames_above_mean_value<petpal.preproc.motion_corr.motion_corr_frames_above_mean_value>`.
         All paths are empty-strings.
 
         Args:
+            name (str): Name of the step. Defaults to 'moco_frames_above_mean'
             verbose (bool): Whether to run in verbose mode.
             **overrides: Override default parameters.
 
         Returns:
             ImageToImageStep: A new instance for motion correction frames above mean value.
         """
-        defaults = dict(name='moco_frames_above_mean', function=motion_corr_frames_above_mean_value,
+        defaults = dict(name=name, function=motion_corr_frames_above_mean_value,
                         input_image_path='', output_image_path='', motion_target_option='mean_image', verbose=verbose,
                         half_life=None, )
         override_dict = defaults | overrides
@@ -620,20 +625,21 @@ class ImageToImageStep(FunctionBasedStep):
             return cls(**defaults)
 
     @classmethod
-    def default_windowed_moco(cls, verbose=False, **overrides):
+    def default_windowed_moco(cls, name: str = 'windowed_moco', verbose=False, **overrides):
         """
         Creates a default instance for motion correction of frames using a windowed strategy.
         See :func:`windowed_motion_corr_to_target<petpal.preproc.motion_corr.windowed_motion_corr_to_target>`
         for more details. All paths are empty-strings.
 
         Args:
+            name (str): Name of the step. Defaults to 'windowed_moco'.
             verbose:
             **overrides:
 
         Returns:
             ImageToImageStep: A new instance for windowed motion correction of frames.
         """
-        defaults = dict(name='windowed_moco', function=windowed_motion_corr_to_target,
+        defaults = dict(name=name, function=windowed_motion_corr_to_target,
                         input_image_path='', output_image_path='',
                         motion_target_option='weighted_series_sum', w_size=60.0,
                         verbose=verbose)
@@ -645,12 +651,13 @@ class ImageToImageStep(FunctionBasedStep):
             return cls(**defaults)
 
     @classmethod
-    def default_register_pet_to_t1(cls, reference_image_path='', half_life:float=None, verbose=False, **overrides):
+    def default_register_pet_to_t1(cls, name:str = 'register_pet_to_t1', reference_image_path='', half_life:float=None, verbose=False, **overrides):
         """
         Creates a default instance for registering PET to T1 image using :func:`register_pet<petpal.preproc.register.register_pet>`.
         All paths are empty-strings.
 
         Args:
+            name (str): Name of the step. Defaults to 'register_pet_to_t1'
             reference_image_path (str): Path to the reference image.
             half_life (float): Half-life value, in seconds, for the radiotracer. Used to
                 generate a weighted_series_sum image.
@@ -661,10 +668,40 @@ class ImageToImageStep(FunctionBasedStep):
             ImageToImageStep: A new instance for registering PET to T1 image.
 
         """
-        defaults = dict(name='register_pet_to_t1', function=register_pet, input_image_path='', output_image_path='',
+        defaults = dict(name=name, function=register_pet, input_image_path='', output_image_path='',
                         reference_image_path=reference_image_path, motion_target_option='weighted_series_sum',
                         verbose=verbose, half_life=half_life)
         override_dict = defaults | overrides
+        try:
+            return cls(**override_dict)
+        except RuntimeError as err:
+            warnings.warn(f"Invalid override: {err}. Using default instance instead.", stacklevel=2)
+            return cls(**defaults)
+
+    @classmethod
+    def default_rescale_image(cls, name: str = 'rescale_image', **overrides):
+        r"""Creates a default step-instance for rescaling an image using :class:`rescale_image<petpal.preproc.image_operations_4d.rescale_image>`.
+
+        The defaults for this step will divide the input image by 37000.0 which is usually done to go
+        from kBq/ml to nCi/ml.
+
+        Notes:
+             The function :class:`rescale_image<petpal.preproc.image_operations_4d.rescale_image>` is wrapped using
+             :func:`ANTsImageToANTsImage<petpal.utils.decorators.ANTsImageToANTsImage>` since steps require input and output
+             paths.
+
+        Args:
+            name (str): Name of the step. Defaults to 'rescale_image'.
+            **overrides:
+
+        Returns:
+            ImageToImageStep: A new step instance for rescaling the input image.
+        """
+        defaults = dict(name=name, function=ANTsImageToANTsImage(rescale_image),
+                        input_image_path='', output_image_path='',
+                        rescale_constant=37000.0, op='/')
+        override_dict = defaults | overrides
+
         try:
             return cls(**override_dict)
         except RuntimeError as err:
