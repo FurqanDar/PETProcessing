@@ -217,7 +217,7 @@ class RegionalTacFigure(TacFigure,MultiTACAnalysisMixin):
     """
     Handle plotting regional TACs generated with PETPAL. Used when visualizing activity in several
     brain regions in the same participant, especially after running PETPAL's
-    :py:func:`~petpal.preproc.image_operations_4d.write_tacs` or 
+    :py:func:`~petpal.preproc.regional_tac_extraction.write_tacs` or 
     :py:class:`~petpal.preproc.symmetric_geometric_transfer_matrix.Sgtm` methods.
 
     Example:
