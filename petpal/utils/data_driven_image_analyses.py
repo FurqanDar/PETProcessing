@@ -2,7 +2,7 @@ import ants
 import numpy as np
 from sklearn.decomposition import PCA
 
-from ..preproc.image_operations_4d import extract_roi_voxel_tacs_from_image_using_mask
+from ..preproc.regional_tac_extraction import extract_roi_voxel_tacs_from_image_using_mask
 from .useful_functions import check_physical_space_for_ants_image_pair
 from .scan_timing import ScanTimingInfo
 
