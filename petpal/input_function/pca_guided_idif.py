@@ -49,7 +49,7 @@ from sklearn.decomposition import PCA
 from lmfit import Minimizer
 from lmfit.minimizer import MinimizerResult
 
-from ..preproc.image_operations_4d import extract_roi_voxel_tacs_from_image_using_mask as extract_masked_voxels
+from ..preproc.regional_tac_extraction import extract_roi_voxel_tacs_from_image_using_mask as extract_masked_voxels
 from ..utils.scan_timing import ScanTimingInfo
 from ..utils.data_driven_image_analyses import temporal_pca_analysis_of_image_over_mask as temporal_pca_over_mask
 from ..utils.constants import CONVERT_kBq_to_mCi_
