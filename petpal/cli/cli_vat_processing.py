@@ -6,6 +6,7 @@ import pandas as pd
 from petpal.kinetic_modeling import graphical_analysis,rtm_analysis
 from petpal.preproc import image_operations_4d, motion_corr, register, segmentation_tools
 from petpal.preproc import symmetric_geometric_transfer_matrix as sgtm
+import petpal.preproc.regional_tac_extraction
 from petpal.utils.bids_utils import gen_bids_like_dir_path, gen_bids_like_filename, gen_bids_like_filepath
 from petpal.utils.image_io import km_regional_fits_to_tsv
 from petpal.utils import useful_functions
@@ -152,13 +153,12 @@ def vat_protocol(subjstring: str,
     os.makedirs(tac_save_dir,exist_ok=True)
     tac_prefix = f'{sub}_{ses}'
     if 'tacs' not in skip:
-        image_operations_4d.write_tacs(input_image_path=pet_reg_anat_file,
-                                       label_map_path=segmentation_label_file,
-                                       segmentation_image_path=vat_wm_ref_segmentation_file,
-                                       out_tac_dir=tac_save_dir,
-                                       verbose=True,
-                                       out_tac_prefix=tac_prefix,
-                                       time_frame_keyword='FrameTimesStart')
+        petpal.preproc.regional_tac_extraction.write_tacs(input_image_path=pet_reg_anat_file,
+                                                          label_map_path=segmentation_label_file,
+                                                          segmentation_image_path=vat_wm_ref_segmentation_file,
+                                                          out_tac_dir=tac_save_dir,
+                                                          verbose=True,
+                                                          out_tac_prefix=tac_prefix)
 
     # kinetic modeling
     wmref_tac_path = vat_bids_filepath(suffix='tac',folder='tacs',seg='WMRef',ext='.tsv')

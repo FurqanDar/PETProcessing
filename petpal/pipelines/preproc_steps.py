@@ -2,8 +2,10 @@ import warnings
 import copy
 from typing import Union
 
+from ..preproc.regional_tac_extraction import write_tacs
+
 from .steps_base import *
-from ..preproc.image_operations_4d import SimpleAutoImageCropper, write_tacs, rescale_image
+from ..preproc.image_operations_4d import SimpleAutoImageCropper, rescale_image
 from ..preproc.register import register_pet, warp_pet_to_atlas
 from ..preproc.motion_corr import (motion_corr_frames_above_mean_value,
                                    windowed_motion_corr_to_target)
@@ -18,7 +20,7 @@ class TACsFromSegmentationStep(FunctionBasedStep):
 
     This class is specialized for handling the input and output paths related to TAC generation,
     extending the :class:`FunctionBasedStep<petpal.pipelines.steps_base.FunctionBasedStep>` with specific properties
-    and methods for TACs. The class uses :func:`write_tacs<petpal.preproc.image_operations_4d.write_tacs>` which
+    and methods for TACs. The class uses :func:`write_tacs<petpal.preproc.regional_tac_extraction.write_tacs>` which
     uses segmentation information to generate ROI TACs, and write them to disk.
 
     Attributes:
@@ -27,7 +29,6 @@ class TACsFromSegmentationStep(FunctionBasedStep):
         segmentation_label_map_path (str): Path to the segmentation label map.
         out_tacs_dir (str): Directory where the output TACs will be saved.
         out_tacs_prefix (str): Prefix for the output TACs.
-        time_keyword (str): Keyword for the time frame, default is 'FrameReferenceTime'.
         verbose (bool): Verbosity flag, default is False.
 
     """
@@ -37,7 +38,6 @@ class TACsFromSegmentationStep(FunctionBasedStep):
                  segmentation_label_map_path: str,
                  out_tacs_dir: str,
                  out_tacs_prefix: str,
-                 time_keyword='FrameReferenceTime',
                  verbose=False) -> None:
         """
         Initializes a TACsFromSegmentationStep with specified parameters.
@@ -48,19 +48,17 @@ class TACsFromSegmentationStep(FunctionBasedStep):
             segmentation_label_map_path (str): Path to the segmentation label map.
             out_tacs_dir (str): Directory where the output TACs will be saved.
             out_tacs_prefix (str): Prefix for the output TACs.
-            time_keyword (str): Keyword for the time frame, default is 'FrameReferenceTime'.
             verbose (bool): Verbosity flag, default is False.
         """
         super().__init__(name='write_roi_tacs', function=write_tacs, input_image_path=input_image_path,
                          segmentation_image_path=segmentation_image_path, label_map_path=segmentation_label_map_path,
-                         out_tac_dir=out_tacs_dir, out_tac_prefix=out_tacs_prefix, time_frame_keyword=time_keyword,
+                         out_tac_dir=out_tacs_dir, out_tac_prefix=out_tacs_prefix,
                          verbose=verbose, )
         self._input_image = input_image_path
         self._segmentation_image = segmentation_image_path
         self._segmentation_label_map = segmentation_label_map_path
         self._out_tacs_path = out_tacs_dir
         self._out_tacs_prefix = out_tacs_prefix
-        self.time_keyword = time_keyword
         self.verbose = verbose
     
     def __repr__(self):
@@ -76,7 +74,7 @@ class TACsFromSegmentationStep(FunctionBasedStep):
         in_kwargs = ArgsDict(
             dict(input_image_path=self.input_image_path, segmentation_image_path=self.segmentation_image_path,
                  segmentation_label_map_path=self.segmentation_label_map_path, out_tacs_dir=self.out_tacs_dir,
-                 out_tacs_prefix=self.out_tacs_prefix, time_keyword=self.time_keyword, verbose=self.verbose))
+                 out_tacs_prefix=self.out_tacs_prefix, verbose=self.verbose))
         
         for arg_name, arg_val in in_kwargs.items():
             info_str.append(f'{arg_name}={repr(arg_val)},')
@@ -253,14 +251,14 @@ class TACsFromSegmentationStep(FunctionBasedStep):
     def default_write_tacs_from_segmentation_rois(cls, **overrides):
         """
         Provides a class method to create an instance with default parameters. All paths
-        are set to empty strings, `time_keyword=FrameReferenceTime`, and `verbose=False`.
+        are set to empty strings, and `verbose=False`.
 
         Returns:
             TACsFromSegmentationStep: A new instance with default parameters.
         """
 
         defaults = dict(input_image_path='', segmentation_image_path='', segmentation_label_map_path='',
-                        out_tacs_dir='', out_tacs_prefix='', time_keyword='FrameReferenceTime', verbose=False)
+                        out_tacs_dir='', out_tacs_prefix='', verbose=False)
         override_dict = defaults | overrides
 
         try:

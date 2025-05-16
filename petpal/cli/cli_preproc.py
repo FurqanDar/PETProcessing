@@ -40,7 +40,7 @@ Examples:
 
    .. code-block:: bash
 
-       petpal-preproc write-tacs -i /path/to/input_img.nii.gz -o /tmp/petpal_tacs --segmentation /path/to/segmentation.nii.gz --label-map-path /path/to/dseg.tsv --time-frame-keyword FrameTimesStart
+       petpal-preproc write-tacs -i /path/to/input_img.nii.gz -o /tmp/petpal_tacs --segmentation /path/to/segmentation.nii.gz --label-map-path /path/to/dseg.tsv
 
 
    * Half life weighted sum of series:
@@ -87,6 +87,8 @@ See Also:
 import argparse
 import ants
 
+import petpal.preproc.regional_tac_extraction
+
 from ..utils import useful_functions
 from ..preproc import image_operations_4d, motion_corr, register
 
@@ -100,7 +102,7 @@ Examples:
   - Register to anatomical:
     petpal-preproc register-pet -i /path/to/input_img.nii.gz -o petpal_reg.nii.gz --motion-target 0 600 --anatomical /path/to/anat.nii.gz --half-life 6584
   - Write regional tacs:
-    petpal-preproc write-tacs -i /path/to/input_img.nii.gz -o /tmp/petpal_tacs --segmentation /path/to/segmentation.nii.gz --label-map-path /path/to/dseg.tsv --time-frame-keyword FrameTimesStart
+    petpal-preproc write-tacs -i /path/to/input_img.nii.gz -o /tmp/petpal_tacs --segmentation /path/to/segmentation.nii.gz --label-map-path /path/to/dseg.tsv
   - Half life weighted sum of series:
     petpal-preproc weighted-series-sum -i /path/to/input_img.nii.gz -o petpal_wss.nii.gz --half-life 6584 --start-time 1800 --end-time 7200
   - SUVR:
@@ -222,11 +224,6 @@ def _generate_args() -> argparse.ArgumentParser:
                             '--label-map-path',
                             required=True,
                             help='Path to label map dseg.tsv')
-    parser_tac.add_argument('-k',
-                            '--time-frame-keyword',
-                            required=False,
-                            help='Time keyword used for frame timing',
-                            default='FrameReferenceTime')
 
     parser_warp = subparsers.add_parser('warp-pet-atlas',
                                         help='Perform nonlinear warp on PET to atlas.')
@@ -352,12 +349,11 @@ def main():
                               half_life=args.half_life)
 
     if command=='write_tacs':
-        image_operations_4d.write_tacs(input_image_path=args.input_img,
-                                       out_tac_dir=args.out_tac_dir,
-                                       segmentation_image_path=args.segmentation,
-                                       label_map_path=args.label_map_path,
-                                       verbose=True,
-                                       time_frame_keyword=args.time_frame_keyword)
+        petpal.preproc.regional_tac_extraction.write_tacs(input_image_path=args.input_img,
+                                                          out_tac_dir=args.out_tac_dir,
+                                                          segmentation_image_path=args.segmentation,
+                                                          label_map_path=args.label_map_path,
+                                                          verbose=True)
 
     if command=='warp_pet_atlas':
         register.warp_pet_atlas(input_image_path=args.input_img,
