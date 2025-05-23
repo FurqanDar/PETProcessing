@@ -12,7 +12,7 @@ from petpal.kinetic_modeling.reference_tissue_models import (calc_k2prime_from_m
                                                              calc_bp_from_mrtm2_2003_fit,
                                                              calc_bp_from_mrtm_original_fit,
                                                              calc_bp_from_mrtm_2003_fit)
-from ..utils.time_activity_curve import safe_load_tac
+from ..utils.time_activity_curve import TimeActivityCurve, safe_load_tac
 from ..utils.time_activity_curve import MultiTACAnalysisMixin
 
 
@@ -49,7 +49,7 @@ class RTMAnalysis:
         .. code-block:: python
 
             import numpy as np
-            from petpal.kinetic_modeling.reference_tissue_models as pet_rtms
+            from petpal.kinetic_modeling.rtm_analysis as pet_rtms
 
             file_rtm = pet_rtms.RTMAnalysis(ref_tac_path="ref_tac.txt",
                                             roi_tac_path="roi_tac.txt",
@@ -198,8 +198,7 @@ class RTMAnalysis:
     def calculate_fit(self,
                       bounds: Union[None, np.ndarray] = None,
                       t_thresh_in_mins: float = None,
-                      k2_prime: float = None,
-                      **tac_load_kwargs):
+                      k2_prime: float = None):
         r"""
         Calculates the model fitting parameters for TACs using the chosen RTM analysis method.
 
@@ -219,12 +218,12 @@ class RTMAnalysis:
         """
         self.validate_analysis_inputs(k2_prime=k2_prime, t_thresh_in_mins=t_thresh_in_mins)
 
-        ref_tac_times, ref_tac_vals = safe_load_tac(filename=self.ref_tac_path, **tac_load_kwargs)
-        _tgt_tac_times, tgt_tac_vals = safe_load_tac(filename=self.roi_tac_path, **tac_load_kwargs)
-        analysis_obj = FitTACWithRTMs(tac_times_in_minutes=ref_tac_times,
-                                      target_tac_vals=tgt_tac_vals,
-                                      reference_tac_vals=ref_tac_vals,
-                                      method=self.method, bounds=bounds,
+        reference_tac = TimeActivityCurve.from_tsv(filename=self.ref_tac_path)
+        target_tac = TimeActivityCurve.from_tsv(filename=self.roi_tac_path)
+        analysis_obj = FitTACWithRTMs(target_tac=target_tac,
+                                      reference_tac=reference_tac,
+                                      method=self.method,
+                                      bounds=bounds,
                                       t_thresh_in_mins=t_thresh_in_mins,
                                       k2_prime=k2_prime)
         analysis_obj.fit_tac_to_model()
@@ -453,8 +452,7 @@ class MultiTACRTMAnalysis(RTMAnalysis, MultiTACAnalysisMixin):
     def calculate_fit(self,
                       bounds: Union[None, np.ndarray] = None,
                       t_thresh_in_mins: float = None,
-                      k2_prime: float = None,
-                      **tac_load_kwargs) -> list:
+                      k2_prime: float = None) -> list:
         """
         Calculates the fit for each TAC, updating the analysis properties with model fit results.
         Overrides :meth:`RTMAnalysis.calculate_fit`.
@@ -468,13 +466,12 @@ class MultiTACRTMAnalysis(RTMAnalysis, MultiTACAnalysisMixin):
         Returns:
             list: A list of fit results for each TAC.
         """
-        ref_tac_times, ref_tac_vals = safe_load_tac(self.ref_tac_path)
+        reference_tac = TimeActivityCurve.from_tsv(filename=self.ref_tac_path)
         fit_results = []
         for _, a_tac in enumerate(self.tacs_files_list):
-            _, tgt_tac_vals = safe_load_tac(a_tac)
-            analysis_obj = FitTACWithRTMs(tac_times_in_minutes=ref_tac_times,
-                                          target_tac_vals=tgt_tac_vals,
-                                          reference_tac_vals=ref_tac_vals,
+            target_tac = TimeActivityCurve.from_tsv(filename=a_tac)
+            analysis_obj = FitTACWithRTMs(reference_tac=reference_tac,
+                                          target_tac=target_tac,
                                           method=self.method,
                                           bounds=bounds,
                                           t_thresh_in_mins=t_thresh_in_mins,
@@ -511,7 +508,8 @@ class MultiTACRTMAnalysis(RTMAnalysis, MultiTACAnalysisMixin):
 
     def save_analysis(self):
         """
-        Saves the analysis results to a JSON file for each segment/TAC. Overrides :meth:`RTMAnalysis.save_analysis`.
+        Saves the analysis results to a JSON file for each segment/TAC. Overrides
+        :meth:`RTMAnalysis.save_analysis`.
 
         Raises:
             RuntimeError: If 'run_analysis' method has not been called before 'save_analysis'.
