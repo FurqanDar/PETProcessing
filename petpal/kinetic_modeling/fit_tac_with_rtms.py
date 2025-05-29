@@ -199,7 +199,7 @@ class FitTACWithRTMs:
                                                          float)
 
             # generating a reference region tac
-            tac_times_in_minutes, ref_tac_vals = pet_tcm.generate_tac_1tcm_c1_from_tac(tac_times_in_minutes=input_tac_times, tac_vals=input_tac_vals,
+            tac_times_in_minutes, ref_tac_vals = pet_tcm.gen_tac_1tcm_cpet_from_tac(tac_times_in_minutes=input_tac_times, tac_vals=input_tac_vals,
                                                                                 k1=1.0, k2=0.2)
 
             # generating an SRTM tac
