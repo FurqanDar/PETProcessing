@@ -544,3 +544,29 @@ def calc_vesselness_mask_from_quantiled_vesselness(input_image: ants.core.ANTsIm
     if morph_dil_radius > 0:
         vess_mask_img = vess_mask_img.morphology(operation='dilate', radius=morph_dil_radius)
     return vess_mask_img
+
+
+def unique_segmentation_labels(segmentation_img: ants.core.ANTsImage | np.ndarray,
+                               zeroth_roi: bool=False) -> np.ndarray:
+    """
+    Get a list of unique ROI labels in a segmentation image.
+
+    Args:
+        segmentation_img (ants.core.ANTsImage | np.ndarray): Segmentation image or array with
+            integer labels for distinct ROIs.
+        zeroth_roi (bool): Determines whether region index zero should be included as a unique
+            region. If True, ``0`` is included in output list, otherwise is not included. Default
+            False.
+
+    Returns:
+        labels (np.ndarray): Array of unique integers in the segmentation image.
+    """
+    if isinstance(segmentation_img, ants.core.ANTsImage):
+        segmentation_arr = segmentation_img.numpy()
+    else:
+        segmentation_arr = segmentation_img
+    labels = np.unique(segmentation_arr)
+    labels = labels.astype(np.uint32)
+    if not zeroth_roi:
+        labels = labels[labels != 0]
+    return labels
