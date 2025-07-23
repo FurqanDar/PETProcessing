@@ -4,6 +4,9 @@ from . import reference_tissue_models
 from . import tac_fitting
 from . import tac_interpolation
 from . import tcms_as_convolutions
+from . import fit_tac_with_rtms
+from . import rtm_analysis
+from . import tac_weighting
 
 
 def main():
