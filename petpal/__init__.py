@@ -1,13 +1,9 @@
-from . import kinetic_modeling
-from . import input_function
-from . import preproc
-from . import utils
-from . import visualizations
-from . import pipelines
 
-def main():
-    print("PET-PAL (Positron Emission Tomography Processing and Analysis Library)")
-    
-if __name__ == "__main__":
-    main()
-    
+__version__ = '0.3.7'
+
+from .kinetic_modeling import *
+from .input_function import *
+from .preproc import *
+from .utils import *
+from .visualizations import *
+from .pipelines import *
