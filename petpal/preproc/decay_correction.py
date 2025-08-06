@@ -127,3 +127,9 @@ def decay_correct(input_image_path: str,
                                     out_path=output_json_path)
 
     return corrected_image
+
+
+def calculate_frame_decay_factor(frame_reference_time: float,
+                                 half_life: float) -> float:
+    frame_decay_factor = math.exp((math.log(2)/half_life)*frame_reference_time)
+    return frame_decay_factor

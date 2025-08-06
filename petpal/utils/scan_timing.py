@@ -1,10 +1,19 @@
 """
 Module to handle timing information of PET scans.
 """
+import math
 from dataclasses import dataclass
 import numpy as np
 
 from .image_io import load_metadata_for_nifti_with_same_filename
+
+def calculate_frame_reference_time(frame_duration: float,
+                                 frame_start: float,
+                                 half_life: float): 
+    decay_constant = math.log(2)/half_life
+    frame_reference_time = frame_start + math.log((decay_constant*frame_duration)/(1-math.exp(-decay_constant*frame_duration)))/decay_constant
+    return frame_reference_time
+
 
 @dataclass
 class ScanTimingInfo:

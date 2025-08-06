@@ -8,6 +8,7 @@ from . import decorators
 from . import data_driven_image_analyses
 from . import constants
 from . import scan_timing
+from . import metadata
 
 def main():
     print("PETPAL - Utilities")

@@ -196,3 +196,4 @@ def gen_bids_like_filepath(sub_id: str, ses_id: str, bids_dir:str ='../',
     filename = gen_bids_like_filename(sub_id=sub_id, ses_id=ses_id, suffix=suffix, ext=ext, **extra_desc)
     filedir  = gen_bids_like_dir_path(sub_id=sub_id, ses_id=ses_id, sup_dir=bids_dir, modality=modality)
     return os.path.join(filedir, filename)
+    
