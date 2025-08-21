@@ -7,6 +7,7 @@ Available methods:
 * :meth:`vat_wm_ref_region`: Compute the white matter reference region for the VAT radiotracer.
 
 """
+from numbers import Integral
 import numpy as np
 import ants
 import nibabel
@@ -53,7 +54,7 @@ def combine_regions_as_mask(segmentation_img: ants.core.ANTsImage | np.ndarray,
     
 
     """
-    if isinstance(label, int):
+    if isinstance(label, Integral):
         label = [label]
     mask = sum(segmentation_img==l for l in label)
     return mask
